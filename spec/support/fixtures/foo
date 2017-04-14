@@ -1,3 +1,9 @@
 #!/usr/bin/env ruby
+$:.unshift __dir__ + '/../../lib'
+require 'hanami/cli'
 
-puts "world"
+module Foo
+  include Hanami::Cli
+end
+
+Foo::Cli.call
