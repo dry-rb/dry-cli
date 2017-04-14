@@ -6,11 +6,34 @@ module Foo
   include Hanami::Cli
 
   module Cli
-    class Hello
+    class Hi
       def call
         puts "world"
       end
     end
+
+    class Version
+      def call
+        puts "1.0.0"
+      end
+    end
+
+    register_as 'hello', Hi
+    register_as 'version', Version
+  end
+end
+
+module Webpack
+  include Hanami::Cli
+
+  module Cli
+    class Version
+      def call
+        puts "1.0.0 yay!"
+      end
+    end
+
+    register_as 'version', Version
   end
 end
 
