@@ -22,3 +22,6 @@ RSpec.configure do |config|
 
   Kernel.srand config.seed
 end
+
+require 'hanami-utils'
+Hanami::Utils.require!("spec/support/**/*.rb")

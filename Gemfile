@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
-
-# Specify your gem's dependencies in hanami-cli.gemspec
 gemspec
+
+gem 'byebug', require: false
