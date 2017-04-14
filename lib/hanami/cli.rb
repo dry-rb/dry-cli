@@ -6,7 +6,10 @@ module Hanami
       mod = Module.new do
         def self.call(arguments: ARGV)
           cmd     = arguments.first
-          command = const_get(constants.find { |c| c.to_s.downcase == cmd })
+          command = constants.find { |c| c.to_s.downcase == cmd }
+          exit(1) if command.nil?
+
+          command = const_get(command)
 
           command.new.call
         end
