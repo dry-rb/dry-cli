@@ -4,6 +4,14 @@ require 'hanami/cli'
 
 module Foo
   include Hanami::Cli
+
+  module Cli
+    class Hello
+      def call
+        puts "world"
+      end
+    end
+  end
 end
 
 Foo::Cli.call
