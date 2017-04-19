@@ -5,37 +5,37 @@ module Hanami
     require "hanami/cli/version"
 
     def self.included(base)
-      mod = Module.new do
-        def self.call(arguments: ARGV)
-          cmd     = arguments.first
-          command = Hanami::Cli.command(cmd)
-          exit(1) if command.nil?
+      base.extend ClassMethods
+    end
 
-          command.new.call
-        end
+    module ClassMethods
+      def call(arguments: ARGV)
+        cmd     = arguments.first
+        command = Hanami::Cli.command(cmd)
+        exit(1) if command.nil?
 
-        # This is only for temporary integration with
-        # hanami gem
-        def self.run(arguments: ARGV)
-          cmd     = arguments.first
-          command = Hanami::Cli.command(cmd)
-          return false if command.nil?
-
-          command.new.call
-          true
-        end
-
-        def self.register_as(name, command)
-          Hanami::Cli.register_as(name, command)
-        end
+        command.new.call
       end
 
-      base.const_set(:Cli, mod)
+      # This is only for temporary integration with
+      # hanami gem
+      def run(arguments: ARGV)
+        cmd     = arguments.first
+        command = Hanami::Cli.command(cmd)
+        return false if command.nil?
+
+        command.new.call
+        true
+      end
+
+      def register(name, command)
+        Hanami::Cli.register(name, command)
+      end
     end
 
     @__commands = Concurrent::Hash.new
 
-    def self.register_as(name, command)
+    def self.register(name, command)
       @__commands[name] = command
     end
 

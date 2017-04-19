@@ -3,9 +3,9 @@ $:.unshift __dir__ + '/../../lib'
 require 'hanami/cli'
 
 module Foo
-  include Hanami::Cli
+  module CLI
+    include Hanami::Cli
 
-  module Cli
     class Hi
       def call
         puts "world"
@@ -18,23 +18,23 @@ module Foo
       end
     end
 
-    register_as 'hello', Hi
-    register_as 'version', Version
+    register 'hello',   Hi
+    register 'version', Version
   end
 end
 
 module Webpack
-  include Hanami::Cli
+  module Commands
+    include Hanami::Cli
 
-  module Cli
     class Version
       def call
         puts "1.0.0 yay!"
       end
     end
 
-    register_as 'version', Version
+    register 'version', Version
   end
 end
 
-Foo::Cli.call
+Foo::CLI.call
