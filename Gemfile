@@ -1,4 +1,6 @@
 source 'https://rubygems.org'
 gemspec
 
-gem 'byebug', require: false
+unless ENV['TRAVIS']
+  gem 'byebug', require: false, platforms: :mri
+end
