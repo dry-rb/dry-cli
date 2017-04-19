@@ -14,12 +14,27 @@ module Foo
 
     class Version
       def call
-        puts "1.0.0"
+      end
+    end
+
+    module Generate
+      class Model
+        def call
+          puts "generated model"
+        end
+      end
+
+      class Action
+        def call
+        end
       end
     end
 
     register 'hello',   Hi
     register 'version', Version
+
+    register 'generate model',  Generate::Model
+    register 'generate action', Generate::Action
   end
 end
 
@@ -33,7 +48,23 @@ module Webpack
       end
     end
 
+    module Generate
+      class Configuration
+        def call
+          puts "generated configuration"
+        end
+      end
+
+      class Action
+        def call
+          puts "generated action"
+        end
+      end
+    end
+
     register 'version', Version
+    register 'generate webpack', Generate::Configuration
+    register 'generate action',  Generate::Action
   end
 end
 

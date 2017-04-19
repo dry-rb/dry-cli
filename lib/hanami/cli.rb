@@ -10,8 +10,7 @@ module Hanami
 
     module ClassMethods
       def call(arguments: ARGV)
-        cmd     = arguments.first
-        command = Hanami::Cli.command(cmd)
+        command = Hanami::Cli.command(arguments)
         exit(1) if command.nil?
 
         command.new.call
@@ -20,8 +19,7 @@ module Hanami
       # This is only for temporary integration with
       # hanami gem
       def run(arguments: ARGV)
-        cmd     = arguments.first
-        command = Hanami::Cli.command(cmd)
+        command = Hanami::Cli.command(arguments)
         return false if command.nil?
 
         command.new.call
@@ -39,8 +37,9 @@ module Hanami
       @__commands[name] = command
     end
 
-    def self.command(name)
-      @__commands.fetch(name, nil)
+    def self.command(arguments)
+      command = arguments.join(" ")
+      @__commands.fetch(command, nil)
     end
   end
 end
