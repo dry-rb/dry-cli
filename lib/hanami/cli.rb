@@ -14,6 +14,17 @@ module Hanami
           command.new.call
         end
 
+        # This is only for temporary integration with
+        # hanami gem
+        def self.run(arguments: ARGV)
+          cmd     = arguments.first
+          command = Hanami::Cli.command(cmd)
+          return false if command.nil?
+
+          command.new.call
+          true
+        end
+
         def self.register_as(name, command)
           Hanami::Cli.register_as(name, command)
         end
