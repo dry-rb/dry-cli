@@ -1,4 +1,6 @@
 source 'https://rubygems.org'
-
-# Specify your gem's dependencies in hanami-cli.gemspec
 gemspec
+
+unless ENV['TRAVIS']
+  gem 'byebug', require: false, platforms: :mri
+end

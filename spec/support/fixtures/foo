@@ -1,0 +1,71 @@
+#!/usr/bin/env ruby
+$:.unshift __dir__ + '/../../lib'
+require 'hanami/cli'
+
+module Foo
+  module CLI
+    include Hanami::Cli
+
+    class Hi
+      def call
+        puts "world"
+      end
+    end
+
+    class Version
+      def call
+      end
+    end
+
+    module Generate
+      class Model
+        def call
+          puts "generated model"
+        end
+      end
+
+      class Action
+        def call
+        end
+      end
+    end
+
+    register 'hello',   Hi
+    register 'version', Version
+
+    register 'generate model',  Generate::Model
+    register 'generate action', Generate::Action
+  end
+end
+
+module Webpack
+  module Commands
+    include Hanami::Cli
+
+    class Version
+      def call
+        puts "1.0.0 yay!"
+      end
+    end
+
+    module Generate
+      class Configuration
+        def call
+          puts "generated configuration"
+        end
+      end
+
+      class Action
+        def call
+          puts "generated action"
+        end
+      end
+    end
+
+    register 'version', Version
+    register 'generate webpack', Generate::Configuration
+    register 'generate action',  Generate::Action
+  end
+end
+
+Foo::CLI.call

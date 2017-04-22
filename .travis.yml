@@ -1,0 +1,19 @@
+language: ruby
+sudo: false
+cache: bundler
+before_install:
+  - gem update --system
+  - rvm @global do gem uninstall bundler -a -x
+  - rvm @global do gem install bundler -v 1.14.6
+script: 'bundle exec rake --trace'
+rvm:
+  - 2.3.4
+  - 2.4.1
+  - ruby-head
+  - jruby-9.1.8.0
+  - jruby-head
+
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+    - rvm: jruby-head
