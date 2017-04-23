@@ -18,6 +18,12 @@ module Foo
     end
 
     module Generate
+      class Help
+        def call
+          puts "help for generate"
+        end
+      end
+
       class Model
         def call
           puts "generated model"
@@ -30,9 +36,10 @@ module Foo
       end
     end
 
-    register 'hello',     Hello
-    register 'version',   Version
+    register 'hello', Hello
+    register 'version', '-v', '--version', Version
 
+    register 'generate --help', Generate::Help
     register 'generate model',  Generate::Model
     register 'generate action', Generate::Action
   end

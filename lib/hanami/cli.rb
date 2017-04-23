@@ -26,8 +26,8 @@ module Hanami
         true
       end
 
-      def register(name, command)
-        Hanami::Cli.register(name, command)
+      def register(*names, command)
+        names.each { |name| Hanami::Cli.register(name, command) }
       end
     end
 
