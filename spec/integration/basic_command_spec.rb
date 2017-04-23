@@ -1,8 +1,8 @@
 RSpec.describe "Basic command" do
   context "commands" do
     it "calls basic command" do
-      output = `foo hello`
-      expect(output).to match("world")
+      output = `foo version`
+      expect(output).to match("v1.0.0")
     end
 
     it "fails for unknown command" do
@@ -25,8 +25,8 @@ RSpec.describe "Basic command" do
 
   context "third-party gems" do
     it "allows to override basic commands" do
-      output = `foo version`
-      expect(output).to match("1.0.0 yay!")
+      output = `foo hello`
+      expect(output).to match("world")
     end
 
     it "allows to add a subcommand" do
