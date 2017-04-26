@@ -5,6 +5,14 @@ RSpec.describe "Basic command" do
       expect(output).to match("v1.0.0")
     end
 
+    it "calls basic command with alias" do
+      output = `foo -v`
+      expect(output).to match("v1.0.0")
+
+      output = `foo --version`
+      expect(output).to match("v1.0.0")
+    end
+
     it "fails for unknown command" do
       result = system("foo unknown")
       expect(result).to be(false)
@@ -15,6 +23,11 @@ RSpec.describe "Basic command" do
     it "calls subcommand" do
       output = `foo generate model`
       expect(output).to match("generated model")
+    end
+
+    it "calls subcommand with alias" do
+      output = `foo generate --help`
+      expect(output).to match("help for generate")
     end
 
     it "fails for unknown subcommand" do
