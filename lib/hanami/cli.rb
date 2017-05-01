@@ -3,6 +3,7 @@ require "concurrent"
 module Hanami
   module Cli
     require "hanami/cli/version"
+    require "hanami/cli/command"
 
     def self.included(base)
       base.extend ClassMethods
@@ -24,10 +25,6 @@ module Hanami
 
         command.new.call
         true
-      end
-
-      def register(*names, command)
-        names.each { |name| Hanami::Cli.register(name, command) }
       end
     end
 

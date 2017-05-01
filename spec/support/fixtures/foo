@@ -6,42 +6,45 @@ module Foo
   module CLI
     include Hanami::Cli
 
-    class Hello
+    class Hello < Hanami::Cli::Command
+      register 'hello'
+
       def call
       end
     end
 
-    class Version
+    class Version < Hanami::Cli::Command
+      register 'version', '--version', '-v'
+
       def call
         puts "v1.0.0"
       end
     end
 
     module Generate
-      class Help
+      class Help < Hanami::Cli::Command
+        register 'generate --help'
+
         def call
           puts "help for generate"
         end
       end
 
-      class Model
+      class Model < Hanami::Cli::Command
+        register 'generate model'
+
         def call
           puts "generated model"
         end
       end
 
-      class Action
+      class Action < Hanami::Cli::Command
+        register 'generate action'
+
         def call
         end
       end
     end
-
-    register 'hello', Hello
-    register 'version', '-v', '--version', Version
-
-    register 'generate --help', Generate::Help
-    register 'generate model',  Generate::Model
-    register 'generate action', Generate::Action
   end
 end
 
@@ -49,29 +52,31 @@ module Webpack
   module Commands
     include Hanami::Cli
 
-    class Hi
+    class Hi < Hanami::Cli::Command
+      register 'hello'
+
       def call
         puts "world"
       end
     end
 
     module Generate
-      class Configuration
+      class Configuration < Hanami::Cli::Command
+        register 'generate webpack'
+
         def call
           puts "generated configuration"
         end
       end
 
-      class Action
+      class Action < Hanami::Cli::Command
+        register 'generate action'
+
         def call
           puts "generated action"
         end
       end
     end
-
-    register 'hello',            Hi
-    register 'generate webpack', Generate::Configuration
-    register 'generate action',  Generate::Action
   end
 end
 
