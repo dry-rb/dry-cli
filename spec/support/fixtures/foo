@@ -14,7 +14,8 @@ module Foo
     end
 
     class Version < Hanami::Cli::Command
-      register 'version', '--version', '-v'
+      register 'version'
+      aliases '--version', '-v'
 
       def call
         puts "v1.0.0"
