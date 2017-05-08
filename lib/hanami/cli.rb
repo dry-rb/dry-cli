@@ -12,7 +12,10 @@ module Hanami
     module ClassMethods
       def call(arguments: ARGV)
         command = Hanami::Cli.command(arguments)
-        exit(1) if command.nil?
+        if command.nil?
+          render_commands
+          exit(1)
+        end
 
         command.new.call
       end
@@ -26,6 +29,15 @@ module Hanami
         command.new.call
         true
       end
+
+      private
+
+      def render_commands
+        puts "Commands:"
+        Hanami::Cli.commands.each do |command_name, command_values|
+          puts "  #{command_name} # #{command_values[:desc]}"
+        end
+      end
     end
 
     @__commands = Concurrent::Hash.new
@@ -36,8 +48,12 @@ module Hanami
     end
 
     def self.command(arguments)
-      command = arguments.join(" ")
+      command = arguments.join(' ')
       (@__commands[command] && @__commands[command][:command_class]) || command_by_alias(command)
+    end
+
+    def self.commands
+      @__commands
     end
 
     def self.add_option(command_class, option)
