@@ -11,13 +11,10 @@ module Hanami
 
     module ClassMethods
       def call(arguments: ARGV)
-        command = Hanami::Cli.command(arguments)
-        if command.nil?
-          render_commands
-          exit(1)
-        end
+        raw_command = Hanami::Cli.command(arguments)
+        exit(1) if raw_command.nil?
 
-        command.new.call
+        raw_command[:command_class].new(params: raw_command[:params], arguments: arguments).call
       end
 
       # This is only for temporary integration with
@@ -29,15 +26,6 @@ module Hanami
         command.new.call
         true
       end
-
-      private
-
-      def render_commands
-        puts "Commands:"
-        Hanami::Cli.commands.each do |command_name, command_values|
-          puts "  #{command_name} # #{command_values[:desc]}"
-        end
-      end
     end
 
     @__commands = Concurrent::Hash.new
@@ -48,8 +36,11 @@ module Hanami
     end
 
     def self.command(arguments)
-      command = arguments.join(' ')
-      (@__commands[command] && @__commands[command][:command_class]) || command_by_alias(command)
+      command_name = arguments.take_while { |argument| !argument.start_with?('-') }.join(' ')
+      command = @__commands[command_name]
+      return command if command
+
+      command_by_alias(arguments.join(' '))
     end
 
     def self.commands
@@ -65,11 +56,20 @@ module Hanami
       end
     end
 
+    def self.add_param(command_class, param)
+      @__commands.each do |command, values|
+        if values[:command_class] == command_class
+          @__commands[command][:params] ||= []
+          @__commands[command][:params] << param
+          break
+        end
+      end
+    end
+
     private
 
     def self.command_by_alias(command)
-      found_command = @__commands.detect{|_, values| values[:aliases].to_a.include?(command)}.to_a.last
-      found_command && found_command[:command_class]
+      @__commands.detect{|_, values| values[:aliases].to_a.include?(command)}.to_a.last
     end
   end
 end

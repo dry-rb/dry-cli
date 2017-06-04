@@ -17,6 +17,33 @@ RSpec.describe "Basic command" do
       result = system("foo unknown")
       expect(result).to be(false)
     end
+
+    context "works with params" do
+      it "without params" do
+        output = `foo server`
+        expect(output).to match("Server: {}")
+      end
+
+      it "a param using space" do
+        output = `foo server --port 1234`
+        expect(output).to match("Server: {:port=>\"1234\"}")
+      end
+
+      it "a param using equal sign" do
+        output = `foo server --port=1234`
+        expect(output).to match("Server: {:port=>\"1234\"}")
+      end
+
+      it "a param using alias" do
+        output = `foo server -p 1234`
+        expect(output).to match("Server: {:port=>\"1234\"}")
+      end
+
+      it "a param with unknown param" do
+        output = `foo server --unknown 1234`
+        expect(output).to match("Server: {}")
+      end
+    end
   end
 
   context "subcommands" do
