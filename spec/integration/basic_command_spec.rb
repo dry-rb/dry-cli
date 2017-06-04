@@ -63,7 +63,7 @@ DESC
   context "subcommands" do
     it "calls subcommand" do
       output = `foo generate model`
-      expect(output).to match("generated model")
+      expect(output).to match("generated model: {}")
     end
 
     it "calls subcommand with alias" do
@@ -79,7 +79,22 @@ DESC
     context "works with params" do
       it "without params" do
         output = `foo generate model`
-        expect(output).to match("generated model")
+        expect(output).to match("generated model: {}")
+      end
+
+      it "a param using space" do
+        output = `foo generate model --name user`
+        expect(output).to match("generated model: {:name=>\"user\"}")
+      end
+
+      it "a param using equal sign" do
+        output = `foo generate model --name=user`
+        expect(output).to match("generated model: {:name=>\"user\"}")
+      end
+
+      it "a param using alias" do
+        output = `foo generate model -n user`
+        expect(output).to match("generated model: {:name=>\"user\"}")
       end
 
       it "with help param" do
@@ -88,6 +103,7 @@ DESC
 command_options_help = <<-DESC
 Usage: foo generate model [options]
 
+    -n, --name name                  use the name for generating the model
     -h, --help                       Show this message
 DESC
         expect(output).to match(command_options_help)

@@ -48,8 +48,9 @@ module Foo
       class Model < Hanami::Cli::Command
         register 'generate model'
 
+        param :name, alias: '-n', desc: 'use the name for generating the model'
         def call
-          puts "generated model"
+          puts "generated model: #{options}"
         end
       end
 
