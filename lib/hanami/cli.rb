@@ -14,7 +14,7 @@ module Hanami
         command_name, command = Hanami::Cli.command(arguments)
         exit(1) if command.nil?
 
-        command[:command_class].new(name: command_name, params: command[:params], arguments: arguments).call
+        command[:command_class].new(command_name, params: command[:params], arguments: arguments, desc: command[:desc]).call
       end
 
       # This is only for temporary integration with

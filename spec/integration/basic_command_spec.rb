@@ -48,8 +48,13 @@ RSpec.describe "Basic command" do
         output = `foo server --help`
 
 command_options_help = <<-DESC
-Usage: foo server [options]
+Usage:
+  foo server
 
+Description:
+  Starts a hanami server
+
+Options:
     -p, --port port                  The port to run the server on
         --server server
         --host host
@@ -101,8 +106,10 @@ DESC
         output = `foo generate model --help`
 
 command_options_help = <<-DESC
-Usage: foo generate model [options]
+Usage:
+  foo generate model
 
+Options:
     -n, --name name                  use the name for generating the model
     -h, --help                       Show this message
 DESC

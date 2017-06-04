@@ -11,10 +11,11 @@ module Hanami
       module InstanceMethods
         attr_reader :options, :name
 
-        def initialize(name:, params:, arguments:)
+        def initialize(name, options = {})
           @name = name
-          @params = params.to_a
-          @arguments = arguments
+          @params = options[:params].to_a
+          @arguments = options[:arguments]
+          @desc = options[:desc]
           parse_params unless name.nil? || name.empty?
         end
         private
@@ -23,8 +24,16 @@ module Hanami
           return unless @params
           @options = {}
           OptionParser.new do |opts|
-            opts.set_program_name("#{Pathname.new($0).basename} #{name}")
+            opts.banner = "Usage:"
+            opts.separator("  #{Pathname.new($0).basename} #{name}")
             opts.separator("")
+            if @desc
+              opts.separator("Description:")
+              opts.separator("  #{@desc}")
+              opts.separator("")
+            end
+
+            opts.separator("Options:")
 
             @params.each do |param|
               opts.on(*param.option_parser_options) do |value|

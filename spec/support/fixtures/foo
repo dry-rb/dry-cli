@@ -31,6 +31,8 @@ module Foo
 
       register 'server'
 
+      desc 'Starts a hanami server'
+
       param :port, alias: '-p', desc: 'The port to run the server on'
       param :server
       param :host
