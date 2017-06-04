@@ -6,14 +6,18 @@ module Foo
   module CLI
     include Hanami::Cli
 
-    class Hello < Hanami::Cli::Command
+    class Hello
+      include Hanami::Cli::Command
+
       register 'hello'
 
       def call
       end
     end
 
-    class Version < Hanami::Cli::Command
+    class Version
+      include Hanami::Cli::Command
+
       register 'version'
       aliases '--version', '-v'
 
@@ -22,7 +26,9 @@ module Foo
       end
     end
 
-    class Server < Hanami::Cli::Command
+    class Server
+      include Hanami::Cli::Command
+
       register 'server'
 
       param :port, alias: '-p', desc: 'The port to run the server on'
@@ -35,7 +41,9 @@ module Foo
     end
 
     module Generate
-      class Help < Hanami::Cli::Command
+      class Help
+        include Hanami::Cli::Command
+
         register 'generate'
 
         param 'help'
@@ -45,7 +53,9 @@ module Foo
         end
       end
 
-      class Model < Hanami::Cli::Command
+      class Model
+        include Hanami::Cli::Command
+
         register 'generate model'
 
         param :name, alias: '-n', desc: 'use the name for generating the model'
@@ -54,7 +64,9 @@ module Foo
         end
       end
 
-      class Action < Hanami::Cli::Command
+      class Action
+        include Hanami::Cli::Command
+
         register 'generate action'
 
         def call
@@ -68,7 +80,9 @@ module Webpack
   module Commands
     include Hanami::Cli
 
-    class Hi < Hanami::Cli::Command
+    class Hi
+      include Hanami::Cli::Command
+
       register 'hello'
 
       def call
@@ -77,7 +91,9 @@ module Webpack
     end
 
     module Generate
-      class Configuration < Hanami::Cli::Command
+      class Configuration
+        include Hanami::Cli::Command
+
         register 'generate webpack'
 
         def call
@@ -85,7 +101,9 @@ module Webpack
         end
       end
 
-      class Action < Hanami::Cli::Command
+      class Action
+        include Hanami::Cli::Command
+
         register 'generate action'
 
         def call
