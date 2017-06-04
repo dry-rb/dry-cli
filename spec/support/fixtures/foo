@@ -22,9 +22,23 @@ module Foo
       end
     end
 
+    class Server < Hanami::Cli::Command
+      register 'server'
+
+      param :port, alias: "-p"
+      param :server
+      param :host
+
+      def call
+        puts "Server: #{options}"
+      end
+    end
+
     module Generate
       class Help < Hanami::Cli::Command
-        register 'generate --help'
+        register 'generate'
+
+        param 'help'
 
         def call
           puts "help for generate"
