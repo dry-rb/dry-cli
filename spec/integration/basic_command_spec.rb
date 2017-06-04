@@ -43,6 +43,20 @@ RSpec.describe "Basic command" do
         output = `foo server --unknown 1234`
         expect(output).to match("Server: {}")
       end
+
+      it "without params" do
+        output = `foo server --help`
+
+command_options_help = <<-DESC
+Usage: foo server [options]
+
+    -p, --port port                  The port to run the server on
+        --server server
+        --host host
+    -h, --help                       Show this message
+DESC
+        expect(output).to match(command_options_help)
+      end
     end
   end
 

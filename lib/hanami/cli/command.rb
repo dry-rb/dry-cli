@@ -20,7 +20,7 @@ module Hanami
       end
 
       def self.param(name, options = {})
-        param = Param.new(name: name, alias_name: options[:alias])
+        param = Param.new(name, options)
         Hanami::Cli.add_param(self, param)
       end
 
@@ -36,10 +36,18 @@ module Hanami
         return unless @params
         @options = {}
         OptionParser.new do |opts|
+          opts.set_program_name("#{Pathname.new($0).basename} server")
+          opts.separator("")
+
           @params.each do |param|
-            opts.on(param.alias_name, "--#{param.name}=#{param.name}", "--#{param.name} #{param.name}") do |value|
+            opts.on(param.alias_name, "--#{param.name}=#{param.name}", "--#{param.name} #{param.name}", param.desc) do |value|
               @options[param.name.to_sym] = value
             end
+          end
+
+          opts.on_tail("-h", "--help", "Show this message") do
+            puts opts
+            exit
           end
         end.parse!(@arguments)
       rescue OptionParser::InvalidOption

@@ -1,11 +1,12 @@
 module Hanami
   module Cli
     class Param
-      attr_reader :name, :alias_name
+      attr_reader :name, :alias_name, :desc
 
-      def initialize(name:, alias_name:)
+      def initialize(name, options = {})
         @name = name
-        @alias_name = alias_name
+        @alias_name = options[:alias]
+        @desc = options[:desc]
       end
     end
   end
