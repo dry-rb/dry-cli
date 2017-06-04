@@ -25,7 +25,7 @@ module Foo
     class Server < Hanami::Cli::Command
       register 'server'
 
-      param :port, alias: "-p"
+      param :port, alias: '-p', desc: 'The port to run the server on'
       param :server
       param :host
 
