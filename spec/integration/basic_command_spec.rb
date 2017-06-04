@@ -44,7 +44,7 @@ RSpec.describe "Basic command" do
         expect(output).to match("Server: {}")
       end
 
-      it "without params" do
+      it "with help param" do
         output = `foo server --help`
 
 command_options_help = <<-DESC
@@ -74,6 +74,24 @@ DESC
     it "fails for unknown subcommand" do
       result = system("foo generate unknown")
       expect(result).to be(false)
+    end
+
+    context "works with params" do
+      it "without params" do
+        output = `foo generate model`
+        expect(output).to match("generated model")
+      end
+
+      it "with help param" do
+        output = `foo generate model --help`
+
+command_options_help = <<-DESC
+Usage: foo generate model [options]
+
+    -h, --help                       Show this message
+DESC
+        expect(output).to match(command_options_help)
+      end
     end
   end
 

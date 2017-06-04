@@ -3,12 +3,13 @@ require "hanami/cli/param"
 module Hanami
   module Cli
     class Command
-      attr_reader :options
+      attr_reader :options, :name
 
-      def initialize(params:, arguments:)
-        @params = params
+      def initialize(name:, params:, arguments:)
+        @name = name
+        @params = params.to_a
         @arguments = arguments
-        parse_params
+        parse_params unless name.nil? || name.empty?
       end
 
       def self.desc(description)
@@ -36,7 +37,7 @@ module Hanami
         return unless @params
         @options = {}
         OptionParser.new do |opts|
-          opts.set_program_name("#{Pathname.new($0).basename} server")
+          opts.set_program_name("#{Pathname.new($0).basename} #{name}")
           opts.separator("")
 
           @params.each do |param|

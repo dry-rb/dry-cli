@@ -11,10 +11,10 @@ module Hanami
 
     module ClassMethods
       def call(arguments: ARGV)
-        raw_command = Hanami::Cli.command(arguments)
-        exit(1) if raw_command.nil?
+        command_name, command = Hanami::Cli.command(arguments)
+        exit(1) if command.nil?
 
-        raw_command[:command_class].new(params: raw_command[:params], arguments: arguments).call
+        command[:command_class].new(name: command_name, params: command[:params], arguments: arguments).call
       end
 
       # This is only for temporary integration with
@@ -38,9 +38,9 @@ module Hanami
     def self.command(arguments)
       command_name = arguments.take_while { |argument| !argument.start_with?('-') }.join(' ')
       command = @__commands[command_name]
-      return command if command
+      return [command_name, command] if command
 
-      command_by_alias(arguments.join(' '))
+      [command_name, command_by_alias(arguments.join(' '))]
     end
 
     def self.commands
