@@ -8,6 +8,10 @@ module Hanami
         @alias_name = options[:alias]
         @desc = options[:desc]
       end
+
+      def option_parser_options
+        [alias_name, "--#{name}=#{name}", "--#{name} #{name}", desc]
+      end
     end
   end
 end

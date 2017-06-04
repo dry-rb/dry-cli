@@ -41,7 +41,7 @@ module Hanami
           opts.separator("")
 
           @params.each do |param|
-            opts.on(param.alias_name, "--#{param.name}=#{param.name}", "--#{param.name} #{param.name}", param.desc) do |value|
+            opts.on(*param.option_parser_options) do |value|
               @options[param.name.to_sym] = value
             end
           end
