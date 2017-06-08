@@ -1,4 +1,5 @@
 require "hanami/cli/param"
+require "optparse"
 
 module Hanami
   module Cli
@@ -18,15 +19,18 @@ module Hanami
           @desc = options[:desc]
           parse_params unless name.nil? || name.empty?
         end
+
         private
 
         def parse_params
           return unless @params
+
           @options = {}
           OptionParser.new do |opts|
             opts.banner = "Usage:"
-            opts.separator("  #{Pathname.new($0).basename} #{name}")
+            opts.separator("  #{Pathname.new($PROGRAM_NAME).basename} #{name}")
             opts.separator("")
+
             if @desc
               opts.separator("Description:")
               opts.separator("  #{@desc}")
