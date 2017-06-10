@@ -38,7 +38,7 @@ module Foo
       param :host
 
       def call
-        puts "Server: #{options}"
+        puts "Server: #{parsed_options}"
       end
     end
 
@@ -62,7 +62,7 @@ module Foo
 
         param :name, alias: '-n', desc: 'use the name for generating the model'
         def call
-          puts "generated model: #{options}"
+          puts "generated model: #{parsed_options}"
         end
       end
 

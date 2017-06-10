@@ -11,10 +11,11 @@ module Hanami
 
     module ClassMethods
       def call(arguments: ARGV)
-        command_name, command = Hanami::Cli.command(arguments)
+        command = Hanami::Cli.command(arguments)
         exit(1) if command.nil?
 
-        command[:command_class].new(command_name, command.merge(arguments: arguments)).call
+        command.parse_arguments(arguments)
+        command.call
       end
 
       # This is only for temporary integration with
@@ -30,46 +31,32 @@ module Hanami
 
     @__commands = Concurrent::Hash.new
 
-    def self.register(name, command)
-      @__commands[name] ||= {}
-      @__commands[name][:command_class] = command
+    def self.register(command)
+      @__commands[command.name] ||= {}
+      @__commands[command.name] = command
     end
 
     def self.command(arguments)
       command_name = arguments.take_while { |argument| !argument.start_with?('-') }.join(' ')
       command = @__commands[command_name]
-      return [command_name, command] if command
+      command
+      return command if command
 
-      [command_name, command_by_alias(arguments.join(' '))]
+      command_by_alias(arguments.join(' '))
     end
 
     def self.commands
       @__commands
     end
 
-    def self.add_option(command_class, option)
-      @__commands.each do |command, values|
-        if values[:command_class] == command_class
-          @__commands[command].merge!(option)
-          break
-        end
-      end
-    end
-
-    def self.add_param(command_class, param)
-      @__commands.each do |command, values|
-        if values[:command_class] == command_class
-          @__commands[command][:params] ||= []
-          @__commands[command][:params] << param
-          break
-        end
-      end
-    end
-
     private
 
+    def self.command_by_class(command_class)
+      @__commands.values.detect {|command_instance| command_instance.class == command_class}
+    end
+
     def self.command_by_alias(command)
-      @__commands.detect{|_, values| values[:aliases].to_a.include?(command)}.to_a.last
+      @__commands.values.detect {|command_instance| command_instance.aliases.to_a.include?(command)}
     end
   end
 end
