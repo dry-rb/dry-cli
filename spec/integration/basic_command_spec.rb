@@ -60,7 +60,7 @@ Options:
         --host host
     -h, --help                       Show this message
 DESC
-        expect(output).to match(command_options_help)
+        expect(output).to eq(command_options_help)
       end
     end
   end
@@ -104,11 +104,14 @@ command_options_help = <<-DESC
 Usage:
   foo generate model
 
+Description:
+  Generate an entity
+
 Options:
     -n, --name name                  use the name for generating the model
     -h, --help                       Show this message
 DESC
-        expect(output).to match(command_options_help)
+        expect(output).to eq(command_options_help)
       end
     end
   end
@@ -127,6 +130,44 @@ DESC
     it "allows to override a subcommand" do
       output = `foo generate action`
       expect(output).to match("generated action")
+    end
+  end
+
+  context "rendering" do
+    it "prints first level" do
+      output = `foo`
+
+expected_rendering = <<-DESC
+Commands:
+  foo hello
+  foo version
+  foo server                 # Starts a hanami server
+  foo generate [SUBCOMMAND]  # Generate hanami classes
+DESC
+      expect(output).to eq(expected_rendering)
+    end
+
+    it "prints subcommand's commands" do
+      output = `foo generate`
+
+expected_rendering = <<-DESC
+Commands:
+  foo generate model                     # Generate an entity
+  foo generate action                    # Generate an action
+  foo generate webpack
+  foo generate application [SUBCOMMAND]  # Generate hanami applications
+DESC
+      expect(output).to eq(expected_rendering)
+    end
+
+    it "prints subcommand's subcommand" do
+      output = `foo generate application`
+
+expected_rendering = <<-DESC
+Commands:
+  foo generate application new  # Generate an application
+DESC
+      expect(output).to eq(expected_rendering)
     end
   end
 end

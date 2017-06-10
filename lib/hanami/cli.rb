@@ -12,7 +12,11 @@ module Hanami
     module ClassMethods
       def call(arguments: ARGV)
         command = Hanami::Cli.command(arguments)
-        exit(1) if command.nil?
+        if command.nil? || command.subcommand?
+          command_name = command.name if command
+          Hanami::Cli.render_commands(command_name)
+          exit(1)
+        end
 
         command.parse_arguments(arguments)
         command.call
@@ -46,6 +50,32 @@ module Hanami
 
     def self.commands
       @__commands
+    end
+
+    def self.render_commands(command_name)
+      command_level = command_name.to_s.split(' ').size
+      puts "Commands:"
+      row_sizes = @__commands.map do |command_name, command|
+        next 0 if command_level != command.level
+        row = "  #{Pathname.new($PROGRAM_NAME).basename} #{command_name}"
+        row << " [SUBCOMMAND]" if command.subcommand?
+        row.size
+      end
+
+      longest_row = row_sizes.max
+
+      @__commands.each do |command_name, command|
+        next 0 if command_level != command.level
+        row = "  #{Pathname.new($PROGRAM_NAME).basename} #{command_name}"
+        row << " [SUBCOMMAND]" if command.subcommand?
+        if command.description
+          printf "%-#{longest_row}s", row
+          printf "  # %s", command.description
+        else
+          printf "%s", row
+        end
+        puts
+      end
     end
 
     private

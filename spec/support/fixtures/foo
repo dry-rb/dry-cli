@@ -43,10 +43,22 @@ module Foo
     end
 
     module Generate
+      class Subcommand
+        class Subcommand
+          include Hanami::Cli::Command
+
+          register 'generate', subcommand: true
+
+          desc 'Generate hanami classes'
+        end
+      end
+
       class Model
         include Hanami::Cli::Command
 
         register 'generate model'
+
+        desc 'Generate an entity'
 
         param :name, alias: '-n', desc: 'use the name for generating the model'
         def call
@@ -96,8 +108,32 @@ module Webpack
 
         register 'generate action'
 
+        desc 'Generate an action'
+
         def call
           puts "generated action"
+        end
+      end
+
+      module Application
+        class Subcommand
+          include Hanami::Cli::Command
+
+          register 'generate application', subcommand: true
+
+          desc 'Generate hanami applications'
+        end
+
+        class New
+          include Hanami::Cli::Command
+
+          register 'generate application new'
+
+          desc 'Generate an application'
+
+          def call
+            puts "generated application new: #{parsed_options}"
+          end
         end
       end
     end

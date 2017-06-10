@@ -18,6 +18,18 @@ module Hanami
           @options = options
         end
 
+        def subcommand?
+          options[:subcommand]
+        end
+
+        def level
+          name.split(' ').size - 1
+        end
+
+        def description
+          options[:desc]
+        end
+
         def parse_arguments(arguments)
           return unless options[:params]
 
@@ -29,7 +41,7 @@ module Hanami
 
             if options[:desc]
               opts.separator("Description:")
-              opts.separator("  #{options[:desc]}")
+              opts.separator("  #{description}")
               opts.separator("")
             end
 
@@ -71,8 +83,8 @@ module Hanami
           new_command = new(old_command.name, old_command.options)
         end
 
-        def register(name)
-          Hanami::Cli.register(new(name))
+        def register(name, options = {})
+          Hanami::Cli.register(new(name, options))
         end
       end
     end
