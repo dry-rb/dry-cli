@@ -9,8 +9,11 @@ module Hanami
         @desc = options[:desc]
       end
 
-      def option_parser_options
-        [alias_name, "--#{name}=#{name}", "--#{name} #{name}", desc]
+      def parser_options
+        ["--#{name}=#{name}", "--#{name} #{name}"].tap do |options|
+          options.unshift(alias_name) if alias_name
+          options << desc if desc
+        end
       end
     end
   end

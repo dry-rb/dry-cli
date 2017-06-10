@@ -25,13 +25,13 @@ RSpec.describe "Basic command" do
       end
 
       it "a param using space" do
-        output = `foo server --port 1234`
-        expect(output).to match("Server: {:port=>\"1234\"}")
+        output = `foo server --server thin`
+        expect(output).to match("Server: {:server=>\"thin\"}")
       end
 
       it "a param using equal sign" do
-        output = `foo server --port=1234`
-        expect(output).to match("Server: {:port=>\"1234\"}")
+        output = `foo server --host=localhost`
+        expect(output).to match("Server: {:host=>\"localhost\"}")
       end
 
       it "a param using alias" do
@@ -69,11 +69,6 @@ DESC
     it "calls subcommand" do
       output = `foo generate model`
       expect(output).to match("generated model: {}")
-    end
-
-    it "calls subcommand with alias" do
-      output = `foo generate --help`
-      expect(output).to match("help for generate")
     end
 
     it "fails for unknown subcommand" do

@@ -43,18 +43,6 @@ module Foo
     end
 
     module Generate
-      class Help
-        include Hanami::Cli::Command
-
-        register 'generate'
-
-        param 'help'
-
-        def call
-          puts "help for generate"
-        end
-      end
-
       class Model
         include Hanami::Cli::Command
 

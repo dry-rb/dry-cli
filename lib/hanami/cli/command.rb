@@ -36,7 +36,7 @@ module Hanami
             opts.separator("Options:")
 
             options[:params].each do |param|
-              opts.on(*param.option_parser_options) do |value|
+              opts.on(*param.parser_options) do |value|
                 @parsed_options[param.name.to_sym] = value
               end
             end

@@ -39,7 +39,6 @@ module Hanami
     def self.command(arguments)
       command_name = arguments.take_while { |argument| !argument.start_with?('-') }.join(' ')
       command = @__commands[command_name]
-      command
       return command if command
 
       command_by_alias(arguments.join(' '))
