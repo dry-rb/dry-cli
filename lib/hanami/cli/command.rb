@@ -68,6 +68,10 @@ module Hanami
           end
         rescue OptionParser::InvalidOption
         end
+
+        def required_params
+          @required_params ||= options[:params].to_a.select(&:required?)
+        end
       end
 
       module ClassMethods

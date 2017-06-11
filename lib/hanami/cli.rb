@@ -66,6 +66,7 @@ module Hanami
       row_sizes = @__commands.map do |command_name, command|
         next 0 if command_level != command.level
         row = "  #{Pathname.new($PROGRAM_NAME).basename} #{command_name}"
+        command.required_params.each { |param| row << " #{param.name.upcase}"}
         row << " [SUBCOMMAND]" if command.subcommand?
         row.size
       end
@@ -75,6 +76,7 @@ module Hanami
       @__commands.sort.each do |command_name, command|
         next 0 if command_level != command.level
         row = "  #{Pathname.new($PROGRAM_NAME).basename} #{command_name}"
+        command.required_params.each { |param| row << " #{param.name.upcase}"}
         row << " [SUBCOMMAND]" if command.subcommand?
         if command.description
           printf "%-#{longest_row}s", row

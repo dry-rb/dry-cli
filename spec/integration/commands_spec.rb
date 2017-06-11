@@ -58,7 +58,7 @@ DESC
     end
 
     context "with required params" do
-      it "can access them" do
+      it "can be used" do
         output = `foo new hanami_app`
         expect(output).to eq("New: {} - project_name: hanami_app\n")
       end

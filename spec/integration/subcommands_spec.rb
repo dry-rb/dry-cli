@@ -43,7 +43,7 @@ DESC
     end
 
     context "with required params" do
-      it "can access them" do
+      it "can be used" do
         output = `foo generate model user`
         expect(output).to eq("generated model: {} - model_name: user\n")
       end

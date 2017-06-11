@@ -1,4 +1,18 @@
 RSpec.describe "Rendering" do
+  it "prints required params" do
+    output = `foo`
+
+expected_rendering = <<-DESC
+Commands:
+  foo generate [SUBCOMMAND]  # Generate hanami classes
+  foo hello
+  foo new PROJECT_NAME       # Creates a new hanami project
+  foo server                 # Starts a hanami server
+  foo version
+DESC
+    expect(output).to eq(expected_rendering)
+  end
+
   it "prints available commands for unknown subcommand" do
     output = `foo generate unknown`
 
@@ -6,7 +20,7 @@ expected_rendering = <<-DESC
 Commands:
   foo generate action                    # Generate an action
   foo generate application [SUBCOMMAND]  # Generate hanami applications
-  foo generate model                     # Generate an entity
+  foo generate model MODEL_NAME          # Generate an entity
   foo generate webpack
 DESC
     expect(output).to eq(expected_rendering)
@@ -19,7 +33,7 @@ expected_rendering = <<-DESC
 Commands:
   foo generate [SUBCOMMAND]  # Generate hanami classes
   foo hello
-  foo new                    # Creates a new hanami project
+  foo new PROJECT_NAME       # Creates a new hanami project
   foo server                 # Starts a hanami server
   foo version
 DESC
@@ -33,7 +47,7 @@ expected_rendering = <<-DESC
 Commands:
   foo generate [SUBCOMMAND]  # Generate hanami classes
   foo hello
-  foo new                    # Creates a new hanami project
+  foo new PROJECT_NAME       # Creates a new hanami project
   foo server                 # Starts a hanami server
   foo version
 DESC
@@ -47,7 +61,7 @@ expected_rendering = <<-DESC
 Commands:
   foo generate action                    # Generate an action
   foo generate application [SUBCOMMAND]  # Generate hanami applications
-  foo generate model                     # Generate an entity
+  foo generate model MODEL_NAME          # Generate an entity
   foo generate webpack
 DESC
     expect(output).to eq(expected_rendering)
