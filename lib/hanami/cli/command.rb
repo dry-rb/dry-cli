@@ -48,6 +48,7 @@ module Hanami
             opts.separator("Options:")
 
             options[:params].each do |param|
+              next if param.required?
               opts.on(*param.parser_options) do |value|
                 @parsed_options[param.name.to_sym] = value
               end
@@ -58,6 +59,13 @@ module Hanami
               exit
             end
           end.parse!(arguments)
+
+          options[:params].each do |param|
+            next unless param.required?
+            define_singleton_method param.name do
+              arguments.shift
+            end
+          end
         rescue OptionParser::InvalidOption
         end
       end
@@ -72,6 +80,12 @@ module Hanami
         def aliases(*names)
           old_command = Hanami::Cli.command_by_class(self)
           new_command = new(old_command.name, old_command.options.merge(aliases: names))
+          Hanami::Cli.commands[new_command.name] = new_command
+        end
+
+        def required_param(param_name)
+          old_command = Hanami::Cli.command_by_class(self)
+          new_command = new(old_command.name, old_command.options.merge(required_param: param_name))
           Hanami::Cli.commands[new_command.name] = new_command
         end
 

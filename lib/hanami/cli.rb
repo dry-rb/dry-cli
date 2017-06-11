@@ -11,7 +11,7 @@ module Hanami
 
     module ClassMethods
       def call(arguments: ARGV)
-        command = Hanami::Cli.command(arguments)
+        command, arguments = Hanami::Cli.command(arguments)
         if command.nil? || command.subcommand?
           command_name = command.name if command
           Hanami::Cli.render_commands(command_name)
@@ -41,11 +41,19 @@ module Hanami
     end
 
     def self.command(arguments)
-      command_name = arguments.take_while { |argument| !argument.start_with?('-') }.join(' ')
-      command = @__commands[command_name]
-      return command if command
+      command_names = arguments.take_while { |argument| !argument.start_with?('-') }
+      command = nil
+      command_names.size.times do |i|
+        splitted_names = command_names[0, command_names.size - i]
+        command = @__commands[splitted_names.join(' ')]
+        if command
+          arguments = arguments - splitted_names
+          break
+        end
+      end
+      [command, arguments]
 
-      command_by_alias(arguments.join(' '))
+      # command_by_alias(arguments.join(' '))
     end
 
     def self.commands
