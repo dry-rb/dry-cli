@@ -64,7 +64,7 @@ module Hanami
 
       longest_row = row_sizes.max
 
-      @__commands.each do |command_name, command|
+      @__commands.sort.each do |command_name, command|
         next 0 if command_level != command.level
         row = "  #{Pathname.new($PROGRAM_NAME).basename} #{command_name}"
         row << " [SUBCOMMAND]" if command.subcommand?

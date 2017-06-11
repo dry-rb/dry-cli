@@ -2,15 +2,15 @@ RSpec.describe "Basic command" do
   context "commands" do
     it "calls basic command" do
       output = `foo version`
-      expect(output).to match("v1.0.0")
+      expect(output).to eq("v1.0.0\n")
     end
 
     it "calls basic command with alias" do
       output = `foo -v`
-      expect(output).to match("v1.0.0")
+      expect(output).to eq("v1.0.0\n")
 
       output = `foo --version`
-      expect(output).to match("v1.0.0")
+      expect(output).to eq("v1.0.0\n")
     end
 
     it "fails for unknown command" do
@@ -21,27 +21,27 @@ RSpec.describe "Basic command" do
     context "works with params" do
       it "without params" do
         output = `foo server`
-        expect(output).to match("Server: {}")
+        expect(output).to eq("Server: {}\n")
       end
 
       it "a param using space" do
         output = `foo server --server thin`
-        expect(output).to match("Server: {:server=>\"thin\"}")
+        expect(output).to eq("Server: {:server=>\"thin\"}\n")
       end
 
       it "a param using equal sign" do
         output = `foo server --host=localhost`
-        expect(output).to match("Server: {:host=>\"localhost\"}")
+        expect(output).to eq("Server: {:host=>\"localhost\"}\n")
       end
 
       it "a param using alias" do
         output = `foo server -p 1234`
-        expect(output).to match("Server: {:port=>\"1234\"}")
+        expect(output).to eq("Server: {:port=>\"1234\"}\n")
       end
 
       it "a param with unknown param" do
         output = `foo server --unknown 1234`
-        expect(output).to match("Server: {}")
+        expect(output).to eq("Server: {}\n")
       end
 
       it "with help param" do
@@ -68,7 +68,7 @@ DESC
   context "subcommands" do
     it "calls subcommand" do
       output = `foo generate model`
-      expect(output).to match("generated model: {}")
+      expect(output).to eq("generated model: {}\n")
     end
 
     it "fails for unknown subcommand" do
@@ -79,22 +79,22 @@ DESC
     context "works with params" do
       it "without params" do
         output = `foo generate model`
-        expect(output).to match("generated model: {}")
+        expect(output).to eq("generated model: {}\n")
       end
 
       it "a param using space" do
         output = `foo generate model --name user`
-        expect(output).to match("generated model: {:name=>\"user\"}")
+        expect(output).to eq("generated model: {:name=>\"user\"}\n")
       end
 
       it "a param using equal sign" do
         output = `foo generate model --name=user`
-        expect(output).to match("generated model: {:name=>\"user\"}")
+        expect(output).to eq("generated model: {:name=>\"user\"}\n")
       end
 
       it "a param using alias" do
         output = `foo generate model -n user`
-        expect(output).to match("generated model: {:name=>\"user\"}")
+        expect(output).to eq("generated model: {:name=>\"user\"}\n")
       end
 
       it "with help param" do
@@ -119,17 +119,17 @@ DESC
   context "third-party gems" do
     it "allows to override basic commands" do
       output = `foo hello`
-      expect(output).to match("world")
+      expect(output).to eq("world\n")
     end
 
     it "allows to add a subcommand" do
       output = `foo generate webpack`
-      expect(output).to match("generated configuration")
+      expect(output).to eq("generated configuration\n")
     end
 
     it "allows to override a subcommand" do
       output = `foo generate action`
-      expect(output).to match("generated action")
+      expect(output).to eq("generated action\n")
     end
   end
 
@@ -139,10 +139,10 @@ DESC
 
 expected_rendering = <<-DESC
 Commands:
-  foo hello
-  foo version
-  foo server                 # Starts a hanami server
   foo generate [SUBCOMMAND]  # Generate hanami classes
+  foo hello
+  foo server                 # Starts a hanami server
+  foo version
 DESC
       expect(output).to eq(expected_rendering)
     end
@@ -152,10 +152,10 @@ DESC
 
 expected_rendering = <<-DESC
 Commands:
-  foo generate model                     # Generate an entity
   foo generate action                    # Generate an action
-  foo generate webpack
   foo generate application [SUBCOMMAND]  # Generate hanami applications
+  foo generate model                     # Generate an entity
+  foo generate webpack
 DESC
       expect(output).to eq(expected_rendering)
     end
