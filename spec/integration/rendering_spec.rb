@@ -4,11 +4,22 @@ RSpec.describe "Rendering" do
 
 expected_rendering = <<-DESC
 Commands:
+  foo destroy [SUBCOMMAND]   # Destroy hanami classes
   foo generate [SUBCOMMAND]  # Generate hanami classes
   foo hello
   foo new PROJECT_NAME       # Creates a new hanami project
   foo server                 # Starts a hanami server
   foo version
+DESC
+    expect(output).to eq(expected_rendering)
+  end
+
+  it "prints required params with labels" do
+    output = `foo destroy`
+
+expected_rendering = <<-DESC
+Commands:
+  foo destroy action APPLICATION_NAME CONTROLLER_NAME#ACTION_NAME
 DESC
     expect(output).to eq(expected_rendering)
   end
@@ -31,6 +42,7 @@ it "prints available commands for unknown command" do
 
 expected_rendering = <<-DESC
 Commands:
+  foo destroy [SUBCOMMAND]   # Destroy hanami classes
   foo generate [SUBCOMMAND]  # Generate hanami classes
   foo hello
   foo new PROJECT_NAME       # Creates a new hanami project
@@ -45,6 +57,7 @@ DESC
 
 expected_rendering = <<-DESC
 Commands:
+  foo destroy [SUBCOMMAND]   # Destroy hanami classes
   foo generate [SUBCOMMAND]  # Generate hanami classes
   foo hello
   foo new PROJECT_NAME       # Creates a new hanami project

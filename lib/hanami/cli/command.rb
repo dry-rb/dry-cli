@@ -72,6 +72,10 @@ module Hanami
         def required_params
           @required_params ||= options[:params].to_a.select(&:required?)
         end
+
+        def command_of_subcommand?(key)
+          name.start_with?(key.to_s)
+        end
       end
 
       module ClassMethods

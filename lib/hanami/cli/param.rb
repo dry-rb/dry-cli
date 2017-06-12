@@ -20,6 +20,10 @@ module Hanami
         options[:require]
       end
 
+      def label
+        options[:label]
+      end
+
       def parser_options
         ["--#{name}=#{name}", "--#{name} #{name}"].tap do |options|
           options.unshift(alias_name) if alias_name

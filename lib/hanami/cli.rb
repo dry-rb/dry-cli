@@ -63,20 +63,22 @@ module Hanami
     def self.render_commands(command_name)
       command_level = command_name.to_s.split(' ').size
       puts "Commands:"
-      row_sizes = @__commands.map do |command_name, command|
+      row_sizes = @__commands.map do |key, command|
         next 0 if command_level != command.level
-        row = "  #{Pathname.new($PROGRAM_NAME).basename} #{command_name}"
-        command.required_params.each { |param| row << " #{param.name.upcase}"}
+        next 0 unless command.command_of_subcommand?(command_name)
+        row = "  #{Pathname.new($PROGRAM_NAME).basename} #{key}"
+        command.required_params.each { |param| row << " #{param.label || param.name.upcase}"}
         row << " [SUBCOMMAND]" if command.subcommand?
         row.size
       end
 
       longest_row = row_sizes.max
 
-      @__commands.sort.each do |command_name, command|
+      @__commands.sort.each do |key, command|
         next 0 if command_level != command.level
-        row = "  #{Pathname.new($PROGRAM_NAME).basename} #{command_name}"
-        command.required_params.each { |param| row << " #{param.name.upcase}"}
+        next 0 unless command.command_of_subcommand?(command_name)
+        row = "  #{Pathname.new($PROGRAM_NAME).basename} #{key}"
+        command.required_params.each { |param| row << " #{param.label || param.name.upcase}"}
         row << " [SUBCOMMAND]" if command.subcommand?
         if command.description
           printf "%-#{longest_row}s", row

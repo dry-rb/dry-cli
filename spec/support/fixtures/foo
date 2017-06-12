@@ -56,6 +56,28 @@ module Foo
       end
     end
 
+    module Destroy
+      class Subcommand
+        include Hanami::Cli::Command
+
+        register 'destroy', subcommand: true
+
+        desc 'Destroy hanami classes'
+      end
+
+      class Action
+        include Hanami::Cli::Command
+
+        register 'destroy action'
+
+        param :application_name, require: true
+        param :controller_name__action_name, require: true, label: "CONTROLLER_NAME#ACTION_NAME"
+
+        def call
+        end
+      end
+    end
+
     module Generate
       class Subcommand
         include Hanami::Cli::Command
