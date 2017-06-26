@@ -49,7 +49,7 @@ module Foo
 
       desc 'Creates a new hanami project'
 
-      param :project_name, require: true
+      param :project_name, required: true
 
       def call(project_name:)
         puts "New: #{parsed_options} - project_name: #{project_name}"
@@ -70,8 +70,8 @@ module Foo
 
         register 'destroy action'
 
-        param :application_name, require: true
-        param :controller_name__action_name, require: true, label: "CONTROLLER_NAME#ACTION_NAME"
+        param :application_name, required: true
+        param :controller_name__action_name, required: true, label: "CONTROLLER_NAME#ACTION_NAME"
 
         def call(application_name:, controller_name__action_name:)
           puts "destroy action: application_name: #{application_name} - controller_name__action_name: #{controller_name__action_name}"
@@ -96,7 +96,7 @@ module Foo
         desc 'Generate an entity'
 
         param :name, alias: '-n', desc: 'use the name for generating the model'
-        param :model_name, require: true
+        param :model_name, required: true
 
         def call(model_name:)
           puts "generated model: #{parsed_options} - model_name: #{model_name}"

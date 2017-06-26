@@ -17,7 +17,7 @@ module Hanami
       end
 
       def required?
-        options[:require]
+        options[:required]
       end
 
       def label
