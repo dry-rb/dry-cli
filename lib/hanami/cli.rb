@@ -10,10 +10,14 @@ module Hanami
     end
 
     module ClassMethods
-      def call(arguments: ARGV)
+      # FIXME ignore_unknown_commands is a hack to help us to migrate Hanami commands.
+      # It MUST be removed once done
+      def call(arguments: ARGV, ignore_unknown_commands: false)
         command, arguments = Hanami::Cli.command(arguments)
         if command.nil? || command.subcommand?
           command_name = command.name if command
+          return nil if ignore_unknown_commands
+
           Hanami::Cli.render_commands(command_name)
           exit(1)
         end
