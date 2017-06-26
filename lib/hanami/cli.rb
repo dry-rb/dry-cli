@@ -22,8 +22,12 @@ module Hanami
           exit(1)
         end
 
-        command.parse_arguments(arguments)
-        command.call
+        required_params = command.parse_arguments(arguments)
+        if required_params
+          command.call(required_params)
+        else
+          command.call
+        end
       end
 
       # This is only for temporary integration with

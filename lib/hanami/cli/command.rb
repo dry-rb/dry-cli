@@ -60,12 +60,8 @@ module Hanami
             end
           end.parse!(arguments)
 
-          options[:params].each do |param|
-            next unless param.required?
-            define_singleton_method param.name do
-              arguments.shift
-            end
-          end
+          return if required_params.empty?
+          Hash[required_params.map(&:name).zip(arguments)]
         rescue OptionParser::InvalidOption
         end
 

@@ -51,7 +51,7 @@ module Foo
 
       param :project_name, require: true
 
-      def call
+      def call(project_name:)
         puts "New: #{parsed_options} - project_name: #{project_name}"
       end
     end
@@ -73,7 +73,8 @@ module Foo
         param :application_name, require: true
         param :controller_name__action_name, require: true, label: "CONTROLLER_NAME#ACTION_NAME"
 
-        def call
+        def call(application_name:, controller_name__action_name:)
+          puts "destroy action: application_name: #{application_name} - controller_name__action_name: #{controller_name__action_name}"
         end
       end
     end
@@ -97,7 +98,7 @@ module Foo
         param :name, alias: '-n', desc: 'use the name for generating the model'
         param :model_name, require: true
 
-        def call
+        def call(model_name:)
           puts "generated model: #{parsed_options} - model_name: #{model_name}"
         end
       end
