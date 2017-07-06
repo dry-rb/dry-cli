@@ -75,7 +75,7 @@ module Hanami
         next 0 if command_level != command.level
         next 0 unless command.command_of_subcommand?(command_name)
         row = "  #{Pathname.new($PROGRAM_NAME).basename} #{key}"
-        command.required_params.each { |param| row << " #{param.label || param.name.upcase}"}
+        command.required_params.each { |param| row << " #{param.description_name}"}
         row << " [SUBCOMMAND]" if command.subcommand?
         row.size
       end
@@ -86,7 +86,7 @@ module Hanami
         next 0 if command_level != command.level
         next 0 unless command.command_of_subcommand?(command_name)
         row = "  #{Pathname.new($PROGRAM_NAME).basename} #{key}"
-        command.required_params.each { |param| row << " #{param.label || param.name.upcase}"}
+        command.required_params.each { |param| row << " #{param.description_name}"}
         row << " [SUBCOMMAND]" if command.subcommand?
         if command.description
           printf "%-#{longest_row}s", row

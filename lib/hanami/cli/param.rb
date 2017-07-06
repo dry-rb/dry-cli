@@ -20,8 +20,8 @@ module Hanami
         options[:required]
       end
 
-      def label
-        options[:label]
+      def description_name
+        options[:label] || name.upcase
       end
 
       def parser_options

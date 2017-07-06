@@ -36,7 +36,7 @@ module Hanami
           @parsed_options = {}
           OptionParser.new do |opts|
             opts.banner = "Usage:"
-            opts.separator("  #{Pathname.new($PROGRAM_NAME).basename} #{name}")
+            opts.separator("  #{full_command_name}")
             opts.separator("")
 
             if options[:desc]
@@ -60,9 +60,26 @@ module Hanami
             end
           end.parse!(arguments)
 
-          return if required_params.empty?
-          Hash[required_params.map(&:name).zip(arguments)]
+          parse_required_params(arguments)
         rescue OptionParser::InvalidOption
+        end
+
+        def parse_required_params(arguments)
+          parse_required_params = Hash[required_params.map(&:name).zip(arguments)]
+          all_required_params_satisfied = required_params.all?{|param| !parse_required_params[param.name].nil?}
+
+          unless all_required_params_satisfied
+            parse_required_params_values = parse_required_params.values.compact
+            if parse_required_params_values.empty?
+              puts "ERROR: \"#{full_command_name}\" was called with no arguments"
+            else
+              puts "ERROR: \"#{full_command_name}\" was called with arguments #{parse_required_params_values}"
+            end
+            puts "Usage: \"#{full_command_name} #{required_params.map(&:description_name).join(' ')}\""
+            exit(1)
+          end
+
+          parse_required_params
         end
 
         def required_params
@@ -71,6 +88,10 @@ module Hanami
 
         def command_of_subcommand?(key)
           name.start_with?(key.to_s)
+        end
+
+        def full_command_name
+          "#{Pathname.new($PROGRAM_NAME).basename} #{name}"
         end
       end
 

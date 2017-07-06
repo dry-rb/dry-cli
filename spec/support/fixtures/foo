@@ -37,7 +37,7 @@ module Foo
       param :server
       param :host
 
-      def call
+      def call(**options)
         puts "Server: #{parsed_options}"
       end
     end

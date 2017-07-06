@@ -1,28 +1,36 @@
 RSpec.describe "Subcommands" do
   it "calls subcommand" do
     output = `foo generate model`
-    expect(output).to eq("generated model: {} - model_name: \n")
+    expected_output = <<-DESC
+ERROR: "foo generate model" was called with no arguments
+Usage: "foo generate model MODEL_NAME"
+DESC
+    expect(output).to eq(expected_output)
   end
 
   context "works with params" do
     it "without params" do
       output = `foo generate model`
-      expect(output).to eq("generated model: {} - model_name: \n")
+    expected_output = <<-DESC
+ERROR: "foo generate model" was called with no arguments
+Usage: "foo generate model MODEL_NAME"
+DESC
+    expect(output).to eq(expected_output)
     end
 
     it "a param using space" do
-      output = `foo generate model --name user`
-      expect(output).to eq("generated model: {:name=>\"user\"} - model_name: \n")
+      output = `foo generate model user --name user`
+      expect(output).to eq("generated model: {:name=>\"user\"} - model_name: user\n")
     end
 
     it "a param using equal sign" do
-      output = `foo generate model --name=user`
-      expect(output).to eq("generated model: {:name=>\"user\"} - model_name: \n")
+      output = `foo generate model user --name=user`
+      expect(output).to eq("generated model: {:name=>\"user\"} - model_name: user\n")
     end
 
     it "a param using alias" do
-      output = `foo generate model -n user`
-      expect(output).to eq("generated model: {:name=>\"user\"} - model_name: \n")
+      output = `foo generate model user -n user`
+      expect(output).to eq("generated model: {:name=>\"user\"} - model_name: user\n")
     end
 
     it "with help param" do
@@ -61,6 +69,24 @@ DESC
       it "more than required params" do
         output = `foo destroy action web users#index unexpected_param`
         expect(output).to eq("destroy action: {} - application_name: web - controller_name__action_name: users#index\n")
+      end
+
+      it "an error is displayed if there aren't required params" do
+        output = `foo destroy action`
+        expected_output = <<-DESC
+ERROR: "foo destroy action" was called with no arguments
+Usage: "foo destroy action APPLICATION_NAME CONTROLLER_NAME#ACTION_NAME"
+DESC
+        expect(output).to eq(expected_output)
+      end
+
+      it "an error is displayed if there are some required params" do
+        output = `foo destroy action web`
+        expected_output = <<-DESC
+ERROR: "foo destroy action" was called with arguments [\"web\"]
+Usage: "foo destroy action APPLICATION_NAME CONTROLLER_NAME#ACTION_NAME"
+DESC
+        expect(output).to eq(expected_output)
       end
     end
   end

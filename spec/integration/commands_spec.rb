@@ -62,6 +62,15 @@ DESC
         output = `foo new hanami_app`
         expect(output).to eq("New: {} - project_name: hanami_app\n")
       end
+
+      it "an error is displayed if there aren't required params" do
+        output = `foo new`
+        expected_output = <<-DESC
+ERROR: "foo new" was called with no arguments
+Usage: "foo new PROJECT_NAME"
+DESC
+        expect(output).to eq(expected_output)
+      end
     end
   end
 end
