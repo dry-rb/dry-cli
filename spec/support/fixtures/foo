@@ -37,8 +37,8 @@ module Foo
       param :server
       param :host
 
-      def call(**options)
-        puts "Server: #{parsed_options}"
+      def call(options)
+        puts "Server: #{options}"
       end
     end
 
@@ -51,8 +51,8 @@ module Foo
 
       param :project_name, required: true
 
-      def call(project_name:)
-        puts "New: #{parsed_options} - project_name: #{project_name}"
+      def call(project_name:, **options)
+        puts "New: #{options} - project_name: #{project_name}"
       end
     end
 
@@ -74,8 +74,8 @@ module Foo
         param :controller_name__action_name, required: true, label: "CONTROLLER_NAME#ACTION_NAME"
         param :url
 
-        def call(application_name:, controller_name__action_name:)
-          puts "destroy action: #{parsed_options} - application_name: #{application_name} - controller_name__action_name: #{controller_name__action_name}"
+        def call(application_name:, controller_name__action_name:, **options)
+          puts "destroy action: #{options} - application_name: #{application_name} - controller_name__action_name: #{controller_name__action_name}"
         end
       end
     end
@@ -99,8 +99,8 @@ module Foo
         param :name, alias: '-n', desc: 'use the name for generating the model'
         param :model_name, required: true
 
-        def call(model_name:)
-          puts "generated model: #{parsed_options} - model_name: #{model_name}"
+        def call(model_name:, **options)
+          puts "generated model: #{options} - model_name: #{model_name}"
         end
       end
 
@@ -169,8 +169,8 @@ module Webpack
 
           desc 'Generate an application'
 
-          def call
-            puts "generated application new: #{parsed_options}"
+          def call(options)
+            puts "generated application new: #{options}"
           end
         end
       end

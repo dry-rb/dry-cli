@@ -33,7 +33,7 @@ module Hanami
         def parse_arguments(arguments)
           return unless options[:params]
 
-          @parsed_options = {}
+          parsed_options = {}
           OptionParser.new do |opts|
             opts.banner = "Usage:"
             opts.separator("  #{full_command_name}")
@@ -50,7 +50,7 @@ module Hanami
             options[:params].each do |param|
               next if param.required?
               opts.on(*param.parser_options) do |value|
-                @parsed_options[param.name.to_sym] = value
+                parsed_options[param.name.to_sym] = value
               end
             end
 
@@ -60,11 +60,13 @@ module Hanami
             end
           end.parse!(arguments)
 
-          parse_required_params(arguments)
+          parse_required_params(arguments, parsed_options)
         rescue OptionParser::InvalidOption
+          puts "Error: Invalid param provided"
+          exit(1)
         end
 
-        def parse_required_params(arguments)
+        def parse_required_params(arguments, parsed_options)
           parse_required_params = Hash[required_params.map(&:name).zip(arguments)]
           all_required_params_satisfied = required_params.all?{|param| !parse_required_params[param.name].nil?}
 
@@ -79,7 +81,7 @@ module Hanami
             exit(1)
           end
 
-          parse_required_params
+          parse_required_params.merge(parsed_options)
         end
 
         def required_params

@@ -35,7 +35,7 @@ RSpec.describe "Commands" do
 
     it "a param with unknown param" do
       output = `foo server --unknown 1234`
-      expect(output).to eq("Server: {}\n")
+      expect(output).to eq("Error: Invalid param provided\n")
     end
 
     it "with help param" do
@@ -61,6 +61,11 @@ DESC
       it "can be used" do
         output = `foo new hanami_app`
         expect(output).to eq("New: {} - project_name: hanami_app\n")
+      end
+
+      it "with unknown param" do
+        output = `foo new hanami_app --unknown 1234`
+        expect(output).to eq("Error: Invalid param provided\n")
       end
 
       it "an error is displayed if there aren't required params" do
