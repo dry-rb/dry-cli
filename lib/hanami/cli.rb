@@ -4,6 +4,7 @@ module Hanami
   module Cli
     require "hanami/cli/version"
     require "hanami/cli/command"
+    require "hanami/cli/renderer"
 
     def self.included(base)
       base.extend ClassMethods
@@ -18,7 +19,7 @@ module Hanami
           command_name = command.name if command
           return nil if ignore_unknown_commands
 
-          Hanami::Cli.render_commands(command_name)
+          Hanami::Cli::Renderer.new(command_name).render
           exit(1)
         end
 
@@ -56,36 +57,6 @@ module Hanami
 
     def self.commands
       @__commands
-    end
-
-    def self.render_commands(command_name)
-      command_level = command_name.to_s.split(' ').size
-      puts "Commands:"
-      row_sizes = @__commands.map do |key, command|
-        next 0 if command_level != command.level
-        next 0 unless command.command_of_subcommand?(command_name)
-        row = "  #{Pathname.new($PROGRAM_NAME).basename} #{key}"
-        command.required_params.each { |param| row << " #{param.description_name}"}
-        row << " [SUBCOMMAND]" if command.subcommand?
-        row.size
-      end
-
-      longest_row = row_sizes.max
-
-      @__commands.sort.each do |key, command|
-        next 0 if command_level != command.level
-        next 0 unless command.command_of_subcommand?(command_name)
-        row = "  #{Pathname.new($PROGRAM_NAME).basename} #{key}"
-        command.required_params.each { |param| row << " #{param.description_name}"}
-        row << " [SUBCOMMAND]" if command.subcommand?
-        if command.description
-          printf "%-#{longest_row}s", row
-          printf "  # %s", command.description
-        else
-          printf "%s", row
-        end
-        puts
-      end
     end
 
     private
