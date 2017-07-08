@@ -124,7 +124,11 @@ module Hanami
           Hanami::Cli.commands[new_command.name] = new_command
         end
 
-        def param(name, options = {})
+        def argument(name, options = {})
+          option(name, options.merge(required: true))
+        end
+
+        def option(name, options = {})
           param = Param.new(name, options)
           old_command = Hanami::Cli.command_by_class(self)
           old_command.options[:params] ||= []

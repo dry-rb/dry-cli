@@ -33,9 +33,9 @@ module Foo
 
       desc 'Starts a hanami server'
 
-      param :port, alias: '-p', desc: 'The port to run the server on'
-      param :server
-      param :host
+      option :port, alias: '-p', desc: 'The port to run the server on'
+      option :server
+      option :host
 
       def call(options)
         puts "Server: #{options}"
@@ -49,7 +49,7 @@ module Foo
 
       desc 'Creates a new hanami project'
 
-      param :project_name, required: true
+      argument :project_name
 
       def call(project_name:, **options)
         puts "New: #{options} - project_name: #{project_name}"
@@ -70,10 +70,10 @@ module Foo
 
         register 'destroy action'
 
-        param :application_name, required: true
-        param :controller_name__action_name, required: true, label: "CONTROLLER_NAME#ACTION_NAME"
-        param :url
-        param :skip_view, type: :boolean, default: false
+        argument :application_name
+        argument :controller_name__action_name, label: "CONTROLLER_NAME#ACTION_NAME"
+        option :url
+        option :skip_view, type: :boolean, default: false
 
         def call(application_name:, controller_name__action_name:, **options)
           puts "destroy action: #{options} - application_name: #{application_name} - controller_name__action_name: #{controller_name__action_name}"
@@ -97,8 +97,8 @@ module Foo
 
         desc 'Generate an entity'
 
-        param :name, alias: '-n', desc: 'use the name for generating the model'
-        param :model_name, required: true
+        argument :model_name
+        option :name, alias: '-n', desc: 'use the name for generating the model'
 
         def call(model_name:, **options)
           puts "generated model: #{options} - model_name: #{model_name}"
