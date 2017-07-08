@@ -107,21 +107,11 @@ module Hanami
 
       module ClassMethods
         def desc(description)
-          old_command = Hanami::Cli.command_by_class(self)
-          new_command = new(old_command.name, old_command.options.merge(desc: description))
-          Hanami::Cli.commands[new_command.name] = new_command
+          generate_new_command(desc: description)
         end
 
         def aliases(*names)
-          old_command = Hanami::Cli.command_by_class(self)
-          new_command = new(old_command.name, old_command.options.merge(aliases: names))
-          Hanami::Cli.commands[new_command.name] = new_command
-        end
-
-        def required_param(param_name)
-          old_command = Hanami::Cli.command_by_class(self)
-          new_command = new(old_command.name, old_command.options.merge(required_param: param_name))
-          Hanami::Cli.commands[new_command.name] = new_command
+          generate_new_command(aliases: names)
         end
 
         def argument(name, options = {})
@@ -130,14 +120,25 @@ module Hanami
 
         def option(name, options = {})
           param = Param.new(name, options)
-          old_command = Hanami::Cli.command_by_class(self)
-          old_command.options[:params] ||= []
-          old_command.options[:params] << param
-          new_command = new(old_command.name, old_command.options)
+          command = current_command
+          command.options[:params] ||= []
+          command.options[:params] << param
+          generate_new_command(command: command, params: command.options[:params])
         end
 
         def register(name, options = {})
           Hanami::Cli.register(new(name, options))
+        end
+
+        private
+
+        def generate_new_command(command: current_command, **options)
+          new_command = new(command.name, command.options.merge(options))
+          Hanami::Cli.commands[new_command.name] = new_command
+        end
+
+        def current_command
+          Hanami::Cli.command_by_class(self)
         end
       end
     end
