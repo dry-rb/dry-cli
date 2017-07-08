@@ -60,6 +60,7 @@ module Hanami
             end
           end.parse!(arguments)
 
+          parsed_options = default_params.merge(parsed_options)
           parse_required_params(arguments, parsed_options)
         rescue OptionParser::InvalidOption
           puts "Error: Invalid param provided"
@@ -86,6 +87,13 @@ module Hanami
 
         def required_params
           @required_params ||= options[:params].to_a.select(&:required?)
+        end
+
+        def default_params
+          options[:params].to_a.inject({}) do |list, param|
+            list[param.name] = param.default unless param.default.nil?
+            list
+          end
         end
 
         def command_of_subcommand?(key)

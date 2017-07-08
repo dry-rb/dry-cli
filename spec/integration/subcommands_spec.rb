@@ -58,17 +58,22 @@ DESC
 
       it "more than one param" do
         output = `foo destroy action web users#index`
-        expect(output).to eq("destroy action: {} - application_name: web - controller_name__action_name: users#index\n")
+        expect(output).to eq("destroy action: {:skip_view=>false} - application_name: web - controller_name__action_name: users#index\n")
       end
 
       it "more than one param and with optional params" do
         output = `foo destroy action web users#index --url=/signin`
-        expect(output).to eq("destroy action: {:url=>\"/signin\"} - application_name: web - controller_name__action_name: users#index\n")
+        expect(output).to eq("destroy action: {:skip_view=>false, :url=>\"/signin\"} - application_name: web - controller_name__action_name: users#index\n")
+      end
+
+      it "more than one param and with boolean params" do
+        output = `foo destroy action web users#index --skip-view --url=/signin`
+        expect(output).to eq("destroy action: {:skip_view=>true, :url=>\"/signin\"} - application_name: web - controller_name__action_name: users#index\n")
       end
 
       it "more than required params" do
         output = `foo destroy action web users#index unexpected_param`
-        expect(output).to eq("destroy action: {} - application_name: web - controller_name__action_name: users#index\n")
+        expect(output).to eq("destroy action: {:skip_view=>false} - application_name: web - controller_name__action_name: users#index\n")
       end
 
       it "an error is displayed if there aren't required params" do

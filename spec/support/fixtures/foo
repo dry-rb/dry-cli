@@ -73,6 +73,7 @@ module Foo
         param :application_name, required: true
         param :controller_name__action_name, required: true, label: "CONTROLLER_NAME#ACTION_NAME"
         param :url
+        param :skip_view, type: :boolean, default: false
 
         def call(application_name:, controller_name__action_name:, **options)
           puts "destroy action: #{options} - application_name: #{application_name} - controller_name__action_name: #{controller_name__action_name}"

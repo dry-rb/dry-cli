@@ -1,3 +1,5 @@
+require 'hanami/utils/string'
+
 module Hanami
   module Cli
     class Param
@@ -20,15 +22,30 @@ module Hanami
         options[:required]
       end
 
+      def type
+        options[:type]
+      end
+
+      def default
+        options[:default]
+      end
+
       def description_name
         options[:label] || name.upcase
       end
 
       def parser_options
-        ["--#{name}=#{name}", "--#{name} #{name}"].tap do |options|
-          options.unshift(alias_name) if alias_name
-          options << desc if desc
+        dasherized_name = Hanami::Utils::String.new(name).dasherize
+        parser_options = []
+        if type == :boolean
+          parser_options << "--#{dasherized_name}"
+        else
+          parser_options << "--#{dasherized_name}=#{name}"
+          parser_options << "--#{dasherized_name} #{name}"
         end
+        parser_options.unshift(alias_name) if alias_name
+        parser_options << desc if desc
+        parser_options
       end
     end
   end
