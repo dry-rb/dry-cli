@@ -1,5 +1,5 @@
 require "hanami/cli/param"
-require "optparse"
+require "hanami/cli/command/params_parser"
 
 module Hanami
   module Cli
@@ -16,6 +16,7 @@ module Hanami
           @name = name
           @aliases = options[:aliases]
           @options = options
+          @params_parser = ParamsParser.new(self)
         end
 
         def subcommand?
@@ -30,59 +31,14 @@ module Hanami
           options[:desc]
         end
 
+        def params
+          options[:params]
+        end
+
         def parse_arguments(arguments)
           return unless options[:params]
 
-          parsed_options = {}
-          OptionParser.new do |opts|
-            opts.banner = "Usage:"
-            opts.separator("  #{full_command_name}")
-            opts.separator("")
-
-            if options[:desc]
-              opts.separator("Description:")
-              opts.separator("  #{description}")
-              opts.separator("")
-            end
-
-            opts.separator("Options:")
-
-            options[:params].each do |param|
-              next if param.required?
-              opts.on(*param.parser_options) do |value|
-                parsed_options[param.name.to_sym] = value
-              end
-            end
-
-            opts.on_tail("-h", "--help", "Show this message") do
-              puts opts
-              exit
-            end
-          end.parse!(arguments)
-
-          parsed_options = default_params.merge(parsed_options)
-          parse_required_params(arguments, parsed_options)
-        rescue OptionParser::InvalidOption
-          puts "Error: Invalid param provided"
-          exit(1)
-        end
-
-        def parse_required_params(arguments, parsed_options)
-          parse_required_params = Hash[required_params.map(&:name).zip(arguments)]
-          all_required_params_satisfied = required_params.all?{|param| !parse_required_params[param.name].nil?}
-
-          unless all_required_params_satisfied
-            parse_required_params_values = parse_required_params.values.compact
-            if parse_required_params_values.empty?
-              puts "ERROR: \"#{full_command_name}\" was called with no arguments"
-            else
-              puts "ERROR: \"#{full_command_name}\" was called with arguments #{parse_required_params_values}"
-            end
-            puts "Usage: \"#{full_command_name} #{required_params.map(&:description_name).join(' ')}\""
-            exit(1)
-          end
-
-          parse_required_params.merge(parsed_options)
+          @params_parser.parse(arguments)
         end
 
         def required_params
@@ -90,7 +46,7 @@ module Hanami
         end
 
         def default_params
-          options[:params].to_a.inject({}) do |list, param|
+          params.to_a.inject({}) do |list, param|
             list[param.name] = param.default unless param.default.nil?
             list
           end
@@ -98,10 +54,6 @@ module Hanami
 
         def command_of_subcommand?(key)
           name.start_with?(key.to_s)
-        end
-
-        def full_command_name
-          "#{Pathname.new($PROGRAM_NAME).basename} #{name}"
         end
       end
 
@@ -114,10 +66,16 @@ module Hanami
           generate_new_command(aliases: names)
         end
 
+        #
+        # FIXME: Use custom argument class instead Param class
+        #
         def argument(name, options = {})
           option(name, options.merge(required: true))
         end
 
+        #
+        # FIXME: Use custom option class instead Param class
+        #
         def option(name, options = {})
           param = Param.new(name, options)
           command = current_command
