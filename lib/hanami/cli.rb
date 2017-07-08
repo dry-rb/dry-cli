@@ -29,16 +29,6 @@ module Hanami
           command.call
         end
       end
-
-      # This is only for temporary integration with
-      # hanami gem
-      def run(arguments: ARGV)
-        command = Hanami::Cli.command(arguments)
-        return false if command.nil?
-
-        command.new.call
-        true
-      end
     end
 
     @__commands = Concurrent::Hash.new
