@@ -15,22 +15,22 @@ RSpec.describe "Commands" do
   context "works with params" do
     it "without params" do
       output = `foo server`
-      expect(output).to eq("Server: {}\n")
+      expect(output).to eq("Server: {:code_reloading=>true}\n")
     end
 
     it "a param using space" do
       output = `foo server --server thin`
-      expect(output).to eq("Server: {:server=>\"thin\"}\n")
+      expect(output).to eq("Server: {:code_reloading=>true, :server=>\"thin\"}\n")
     end
 
     it "a param using equal sign" do
       output = `foo server --host=localhost`
-      expect(output).to eq("Server: {:host=>\"localhost\"}\n")
+      expect(output).to eq("Server: {:code_reloading=>true, :host=>\"localhost\"}\n")
     end
 
     it "a param using alias" do
       output = `foo server -p 1234`
-      expect(output).to eq("Server: {:port=>\"1234\"}\n")
+      expect(output).to eq("Server: {:code_reloading=>true, :port=>\"1234\"}\n")
     end
 
     it "a param with unknown param" do
@@ -52,6 +52,7 @@ Options:
     -p, --port port                  The port to run the server on
         --server server
         --host host
+        --[no-]code-reloading
     -h, --help                       Show this message
 DESC
       expect(output).to eq(command_options_help)
@@ -66,6 +67,14 @@ DESC
       it "with unknown param" do
         output = `foo new hanami_app --unknown 1234`
         expect(output).to eq("Error: Invalid param provided\n")
+      end
+
+      it "with boolean param" do
+        output = `foo server`
+        expect(output).to eq("Server: {:code_reloading=>true}\n")
+
+        output = `foo server --no-code-reloading`
+        expect(output).to eq("Server: {:code_reloading=>false}\n")
       end
 
       it "an error is displayed if there aren't required params" do

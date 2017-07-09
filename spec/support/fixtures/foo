@@ -36,6 +36,7 @@ module Foo
       option :port, alias: '-p', desc: 'The port to run the server on'
       option :server
       option :host
+      option :code_reloading, type: :boolean, default: true
 
       def call(options)
         puts "Server: #{options}"

@@ -38,7 +38,7 @@ module Hanami
         dasherized_name = Hanami::Utils::String.new(name).dasherize
         parser_options = []
         if type == :boolean
-          parser_options << "--#{dasherized_name}"
+          parser_options << "--[no-]#{dasherized_name}"
         else
           parser_options << "--#{dasherized_name}=#{name}"
           parser_options << "--#{dasherized_name} #{name}"
