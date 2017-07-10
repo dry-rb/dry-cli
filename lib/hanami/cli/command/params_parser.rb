@@ -1,8 +1,8 @@
 require "optparse"
 
 module Hanami
-  module Cli
-    module Command
+  class Cli
+    class Command
       class ParamsParser
         attr_reader :command
 

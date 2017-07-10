@@ -1,19 +1,19 @@
 module Hanami
-  module Cli
+  class Cli
     class Renderer
-      attr_reader :command_name
+      attr_reader :commands
 
-      def initialize(command_name)
-        @command_name = command_name
+      def initialize(command_registry)
+        @commands = command_registry
       end
 
-      def render
+      def render(current_command)
         puts "Commands:"
-        longest_row = row_sizes.max
+        longest_row = row_sizes(current_command).max
 
-        Hanami::Cli.commands.sort.each do |key, command|
-          next if command_level != command.level
-          next unless command.command_of_subcommand?(command_name)
+        commands.sort.each do |key, command|
+          next if command_level(current_command) != command.level
+          next unless command.command_of_subcommand?(current_command)
           row = build_row(key, command)
           print_row(row, longest_row, command)
         end
@@ -21,14 +21,14 @@ module Hanami
 
       private
 
-      def command_level
-        @command_level ||= command_name.to_s.split(' ').size
+      def command_level(current_command)
+        current_command.to_s.split(' ').size
       end
 
-      def row_sizes
-        Hanami::Cli.commands.map do |key, command|
-          next 0 if command_level != command.level
-          next 0 unless command.command_of_subcommand?(command_name)
+      def row_sizes(current_command)
+        commands.map do |key, command|
+          next 0 if command_level(current_command) != command.level
+          next 0 unless command.command_of_subcommand?(current_command)
           build_row(key, command).size
         end
       end
