@@ -50,7 +50,7 @@ module Foo
 
       desc 'Creates a new hanami project'
 
-      argument :project_name
+      argument :project_name, required: true
 
       def call(project_name:, **options)
         puts "New: #{options} - project_name: #{project_name}"
@@ -71,8 +71,8 @@ module Foo
 
         register 'destroy action'
 
-        argument :application_name
-        argument :controller_name__action_name, label: "CONTROLLER_NAME#ACTION_NAME"
+        argument :application_name, required: true
+        argument :controller_name__action_name, required: true, label: "CONTROLLER_NAME#ACTION_NAME"
         option :url
         option :skip_view, type: :boolean, default: false
 
@@ -98,11 +98,23 @@ module Foo
 
         desc 'Generate an entity'
 
-        argument :model_name
+        argument :model_name, required: true
         option :name, alias: '-n', desc: 'use the name for generating the model'
 
         def call(model_name:, **options)
           puts "generated model: #{options} - model_name: #{model_name}"
+        end
+      end
+
+      class Secret
+        include Hanami::Cli::Command
+
+        register 'generate secret'
+
+        argument :app
+
+        def call(app:, **options)
+          puts "generate secret: - app: #{app}"
         end
       end
 

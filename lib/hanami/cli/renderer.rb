@@ -36,7 +36,7 @@ module Hanami
       def build_row(command_name, command)
         "".tap do |row|
           row << "  #{program_name} #{command_name}"
-          command.required_params.each do |param|
+          command.required_arguments.each do |param|
             row << " #{param.description_name}"
           end
           row << " [SUBCOMMAND]" if command.subcommand?

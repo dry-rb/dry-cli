@@ -50,8 +50,9 @@ module Hanami
         private
 
         def parse_required_params(arguments, parsed_options)
-          parse_required_params = Hash[command.required_params.map(&:name).zip(arguments)]
-          all_required_params_satisfied = command.required_params.all?{|param| !parse_required_params[param.name].nil?}
+          parse_params = Hash[command.arguments.map(&:name).zip(arguments)]
+          parse_required_params = Hash[command.required_arguments.map(&:name).zip(arguments)]
+          all_required_params_satisfied = command.required_arguments.all?{|param| !parse_required_params[param.name].nil?}
 
           unless all_required_params_satisfied
             parse_required_params_values = parse_required_params.values.compact
@@ -60,11 +61,11 @@ module Hanami
             else
               puts "ERROR: \"#{full_command_name}\" was called with arguments #{parse_required_params_values}"
             end
-            puts "Usage: \"#{full_command_name} #{command.required_params.map(&:description_name).join(' ')}\""
+            puts "Usage: \"#{full_command_name} #{command.required_arguments.map(&:description_name).join(' ')}\""
             exit(1)
           end
 
-          parse_required_params.merge(parsed_options)
+          parse_params.merge(parsed_options)
         end
 
         def full_command_name

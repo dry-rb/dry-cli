@@ -32,6 +32,7 @@ Commands:
   foo generate action                    # Generate an action
   foo generate application [SUBCOMMAND]  # Generate hanami applications
   foo generate model MODEL_NAME          # Generate an entity
+  foo generate secret
   foo generate webpack
 DESC
     expect(output).to eq(expected_rendering)
@@ -75,6 +76,7 @@ Commands:
   foo generate action                    # Generate an action
   foo generate application [SUBCOMMAND]  # Generate hanami applications
   foo generate model MODEL_NAME          # Generate an entity
+  foo generate secret
   foo generate webpack
 DESC
     expect(output).to eq(expected_rendering)

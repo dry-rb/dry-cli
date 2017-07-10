@@ -34,6 +34,10 @@ module Hanami
         options[:label] || name.upcase
       end
 
+      def argument?
+        options[:argument] || false
+      end
+
       def parser_options
         dasherized_name = Hanami::Utils::String.new(name).dasherize
         parser_options = []

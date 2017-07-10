@@ -41,8 +41,12 @@ module Hanami
           @params_parser.parse(arguments)
         end
 
-        def required_params
-          @required_params ||= options[:params].to_a.select(&:required?)
+        def arguments
+          @arguments ||= options[:params].to_a.select(&:argument?)
+        end
+
+        def required_arguments
+          @required_arguments ||= arguments.select(&:required?)
         end
 
         def default_params
@@ -70,7 +74,7 @@ module Hanami
         # FIXME: Use custom argument class instead Param class
         #
         def argument(name, options = {})
-          option(name, options.merge(required: true))
+          option(name, options.merge(argument: true))
         end
 
         #

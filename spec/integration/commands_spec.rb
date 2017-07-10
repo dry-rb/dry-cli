@@ -38,6 +38,14 @@ RSpec.describe "Commands" do
       expect(output).to eq("Error: Invalid param provided\n")
     end
 
+    it "with boolean param" do
+      output = `foo server`
+      expect(output).to eq("Server: {:code_reloading=>true}\n")
+
+      output = `foo server --no-code-reloading`
+      expect(output).to eq("Server: {:code_reloading=>false}\n")
+    end
+
     it "with help param" do
       output = `foo server --help`
 
@@ -69,12 +77,12 @@ DESC
         expect(output).to eq("Error: Invalid param provided\n")
       end
 
-      it "with boolean param" do
-        output = `foo server`
-        expect(output).to eq("Server: {:code_reloading=>true}\n")
+      it "no required" do
+        output = `foo generate secret web`
+        expect(output).to eq("generate secret: - app: web\n")
 
-        output = `foo server --no-code-reloading`
-        expect(output).to eq("Server: {:code_reloading=>false}\n")
+        output = `foo generate secret`
+        expect(output).to eq("generate secret: - app: \n")
       end
 
       it "an error is displayed if there aren't required params" do
