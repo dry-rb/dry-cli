@@ -1,7 +1,7 @@
 require 'hanami/utils/string'
 
 module Hanami
-  module Cli
+  class Cli
     class Param
       attr_reader :name, :options
 

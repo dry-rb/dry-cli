@@ -1,36 +1,31 @@
 #!/usr/bin/env ruby
 $:.unshift __dir__ + '/../../lib'
 require 'hanami/cli'
+require 'hanami/cli/command'
+require 'hanami/cli/command_registry'
+
+module MyCLI
+  class Commands
+    extend Hanami::Cli::CommandRegistry
+  end
+end
 
 module Foo
-  module CLI
-    include Hanami::Cli
-
-    class Hello
-      include Hanami::Cli::Command
-
-      register 'hello'
-
+  class Cli
+    class Hello < Hanami::Cli::Command
       def call
       end
     end
+    MyCLI::Commands.register "hello", Hello
 
-    class Version
-      include Hanami::Cli::Command
-
-      register 'version'
-      aliases '--version', '-v'
-
+    class Version < Hanami::Cli::Command
       def call
         puts "v1.0.0"
       end
     end
+    MyCLI::Commands.register "version", Version, aliases: ["--version", "-v"]
 
-    class Server
-      include Hanami::Cli::Command
-
-      register 'server'
-
+    class Server < Hanami::Cli::Command
       desc 'Starts a hanami server'
 
       option :port, alias: '-p', desc: 'The port to run the server on'
@@ -42,12 +37,9 @@ module Foo
         puts "Server: #{options}"
       end
     end
+    MyCLI::Commands.register "server", Server
 
-    class New
-      include Hanami::Cli::Command
-
-      register 'new'
-
+    class New < Hanami::Cli::Command
       desc 'Creates a new hanami project'
 
       argument :project_name, required: true
@@ -56,21 +48,15 @@ module Foo
         puts "New: #{options} - project_name: #{project_name}"
       end
     end
+    MyCLI::Commands.register "new", New
 
     module Destroy
-      class Subcommand
-        include Hanami::Cli::Command
-
-        register 'destroy', subcommand: true
-
+      class Subcommand < Hanami::Cli::Command
         desc 'Destroy hanami classes'
       end
+      MyCLI::Commands.register 'destroy', Subcommand, subcommand: true
 
-      class Action
-        include Hanami::Cli::Command
-
-        register 'destroy action'
-
+      class Action < Hanami::Cli::Command
         argument :application_name, required: true
         argument :controller_name__action_name, required: true, label: "CONTROLLER_NAME#ACTION_NAME"
         option :url
@@ -80,22 +66,16 @@ module Foo
           puts "destroy action: #{options} - application_name: #{application_name} - controller_name__action_name: #{controller_name__action_name}"
         end
       end
+      MyCLI::Commands.register "destroy action", Action
     end
 
     module Generate
-      class Subcommand
-        include Hanami::Cli::Command
-
-        register 'generate', subcommand: true
-
+      class Subcommand < Hanami::Cli::Command
         desc 'Generate hanami classes'
       end
+      MyCLI::Commands.register 'generate', Subcommand, subcommand: true
 
-      class Model
-        include Hanami::Cli::Command
-
-        register 'generate model'
-
+      class Model < Hanami::Cli::Command
         desc 'Generate an entity'
 
         argument :model_name, required: true
@@ -105,91 +85,70 @@ module Foo
           puts "generated model: #{options} - model_name: #{model_name}"
         end
       end
+      MyCLI::Commands.register "generate model", Model
 
-      class Secret
-        include Hanami::Cli::Command
-
-        register 'generate secret'
-
+      class Secret < Hanami::Cli::Command
         argument :app
 
         def call(app:, **options)
           puts "generate secret: - app: #{app}"
         end
       end
+      MyCLI::Commands.register "generate secret", Secret
 
-      class Action
-        include Hanami::Cli::Command
-
-        register 'generate action'
-
+      class Action < Hanami::Cli::Command
         def call
         end
       end
+      MyCLI::Commands.register "generate action", Action
     end
   end
 end
 
 module Webpack
   module Commands
-    include Hanami::Cli
-
-    class Hi
-      include Hanami::Cli::Command
-
-      register 'hello'
-
+    class Hi < Hanami::Cli::Command
       def call
         puts "world"
       end
     end
+    MyCLI::Commands.register "hello", Hi
 
     module Generate
-      class Configuration
-        include Hanami::Cli::Command
-
-        register 'generate webpack'
-
+      class Configuration < Hanami::Cli::Command
         def call
           puts "generated configuration"
         end
       end
+      MyCLI::Commands.register "generate webpack", Configuration
 
-      class Action
-        include Hanami::Cli::Command
-
-        register 'generate action'
-
+      class Action < Hanami::Cli::Command
         desc 'Generate an action'
 
         def call
           puts "generated action"
         end
       end
+      MyCLI::Commands.register "generate action", Action
 
       module Application
-        class Subcommand
-          include Hanami::Cli::Command
-
-          register 'generate application', subcommand: true
-
+        class Subcommand < Hanami::Cli::Command
           desc 'Generate hanami applications'
         end
+        MyCLI::Commands.register 'generate application', Subcommand, subcommand: true
 
-        class New
-          include Hanami::Cli::Command
-
-          register 'generate application new'
-
+        class New < Hanami::Cli::Command
           desc 'Generate an application'
 
           def call(options)
             puts "generated application new: #{options}"
           end
         end
+        MyCLI::Commands.register "generate application new", New
       end
     end
   end
 end
 
-Foo::CLI.call
+cli = Hanami::Cli.new(MyCLI::Commands)
+cli.call

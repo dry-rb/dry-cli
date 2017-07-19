@@ -1,5 +1,5 @@
 module Hanami
-  module Cli
+  class Cli
     VERSION = "1.0.0".freeze
   end
 end
