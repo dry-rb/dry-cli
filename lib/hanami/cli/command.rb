@@ -1,44 +1,52 @@
-require "hanami/cli/command/class_interface"
+require "hanami/cli/option"
+require "concurrent/array"
 
 module Hanami
   class Cli
     class Command
-      extend ClassInterface
+      def self.inherited(base)
+        base.extend ClassMethods
+      end
 
-      attr_reader :name, :description, :params, :options
+      module ClassMethods
+        def self.extended(base)
+          base.class_eval do
+            @command_name = nil
+            @description  = nil
+            @arguments    = Concurrent::Array.new
+            @options      = Concurrent::Array.new
+          end
+        end
 
-      def initialize(name:, description:, params: [], **options)
-        @name = name
+        attr_reader :description
+        attr_reader :arguments
+        attr_accessor :command_name
+      end
+
+      def self.desc(description)
         @description = description
-        @params = params
-        @options = options
       end
 
-      def subcommand?
-        options[:subcommand]
+      def self.argument(name, options = {})
+        @arguments << Argument.new(name, options)
       end
 
-      def level
-        name.split(' ').size - 1
+      def self.option(name, options = {})
+        @options << Option.new(name, options)
       end
 
-      def arguments
-        params.select(&:argument?)
+      def self.params
+        (@arguments + @options).uniq
       end
 
-      def required_arguments
-        arguments.select(&:required?)
-      end
-
-      def default_params
-        params.inject({}) do |list, param|
-          list[param.name] = param.default unless param.default.nil?
-          list
+      def self.default_params
+        params.each_with_object({}) do |param, result|
+          result[param.name] = param.default unless param.default.nil?
         end
       end
 
-      def command_of_subcommand?(key)
-        name.start_with?(key.to_s)
+      def self.required_arguments
+        arguments.select(&:required?)
       end
     end
   end

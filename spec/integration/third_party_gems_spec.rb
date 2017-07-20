@@ -9,6 +9,11 @@ RSpec.describe "Third-party gems" do
     expect(output).to eq("generated configuration\n")
   end
 
+  it "allows to invoke a subcommand via an inherited subcomand aliase" do
+    output = `foo g webpack`
+    expect(output).to eq("generated configuration\n")
+  end
+
   it "allows to override a subcommand" do
     output = `foo generate action`
     expect(output).to eq("generated action\n")

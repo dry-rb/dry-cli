@@ -1,8 +1,8 @@
-require 'hanami/utils/string'
+require "hanami/utils/string"
 
 module Hanami
   class Cli
-    class Param
+    class Option
       attr_reader :name, :options
 
       def initialize(name, options = {})
@@ -35,7 +35,7 @@ module Hanami
       end
 
       def argument?
-        options[:argument] || false
+        false
       end
 
       def parser_options
@@ -50,6 +50,12 @@ module Hanami
         parser_options.unshift(alias_name) if alias_name
         parser_options << desc if desc
         parser_options
+      end
+    end
+
+    class Argument < Option
+      def argument?
+        true
       end
     end
   end

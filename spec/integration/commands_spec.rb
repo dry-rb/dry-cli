@@ -4,12 +4,20 @@ RSpec.describe "Commands" do
     expect(output).to eq("v1.0.0\n")
   end
 
-  skip "calls basic command with alias" do
+  it "calls basic command with alias" do
+    output = `foo v`
+    expect(output).to eq("v1.0.0\n")
+
     output = `foo -v`
     expect(output).to eq("v1.0.0\n")
 
     output = `foo --version`
     expect(output).to eq("v1.0.0\n")
+  end
+
+  it "calls subcommand via intermediate alias" do
+    output = `foo g secret web`
+    expect(output).to eq("generate secret: - app: web\n")
   end
 
   context "works with params" do

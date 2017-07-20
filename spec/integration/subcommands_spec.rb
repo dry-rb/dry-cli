@@ -1,21 +1,23 @@
 RSpec.describe "Subcommands" do
   it "calls subcommand" do
     output = `foo generate model`
-    expected_output = <<-DESC
+    expected = <<-DESC
 ERROR: "foo generate model" was called with no arguments
 Usage: "foo generate model MODEL_NAME"
 DESC
-    expect(output).to eq(expected_output)
+
+    expect(output).to eq(expected)
   end
 
   context "works with params" do
     it "without params" do
       output = `foo generate model`
-    expected_output = <<-DESC
+      expected = <<-DESC
 ERROR: "foo generate model" was called with no arguments
 Usage: "foo generate model MODEL_NAME"
 DESC
-    expect(output).to eq(expected_output)
+
+      expect(output).to eq(expected)
     end
 
     it "a param using space" do
@@ -36,7 +38,7 @@ DESC
     it "with help param" do
       output = `foo generate model --help`
 
-command_options_help = <<-DESC
+      command_options_help = <<-DESC
 Usage:
   foo generate model
 
@@ -47,6 +49,7 @@ Options:
     -n, --name name                  use the name for generating the model
     -h, --help                       Show this message
 DESC
+
       expect(output).to eq(command_options_help)
     end
 
@@ -78,20 +81,22 @@ DESC
 
       it "an error is displayed if there aren't required params" do
         output = `foo destroy action`
-        expected_output = <<-DESC
+        expected = <<-DESC
 ERROR: "foo destroy action" was called with no arguments
 Usage: "foo destroy action APPLICATION_NAME CONTROLLER_NAME#ACTION_NAME"
 DESC
-        expect(output).to eq(expected_output)
+
+        expect(output).to eq(expected)
       end
 
       it "an error is displayed if there are some required params" do
         output = `foo destroy action web`
-        expected_output = <<-DESC
+        expected = <<-DESC
 ERROR: "foo destroy action" was called with arguments [\"web\"]
 Usage: "foo destroy action APPLICATION_NAME CONTROLLER_NAME#ACTION_NAME"
 DESC
-        expect(output).to eq(expected_output)
+
+        expect(output).to eq(expected)
       end
     end
   end
