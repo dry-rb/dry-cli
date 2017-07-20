@@ -5,9 +5,8 @@ module Hanami
   class Cli
     module Parser
       def self.call(command, arguments, names, out)
-        return Result.success if command.params.empty?
-
         parsed_options = {}
+
         OptionParser.new do |opts|
           opts.banner = "Usage:"
           opts.separator("  #{full_command_name(names)}")
@@ -36,7 +35,7 @@ module Hanami
 
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, names, parsed_options)
-      rescue ::OptionParser::InvalidOption
+      rescue ::OptionParser::ParseError
         return Result.failure
       end
 
