@@ -2,118 +2,346 @@
 $:.unshift __dir__ + '/../../lib'
 require 'hanami/cli'
 
-module MyCLI
-  class Commands
-    extend Hanami::Cli::Registry
-  end
-end
-
 module Foo
-  class Cli
-    class Hello < Hanami::Cli::Command
-      def call(*)
+  module CLI
+    module Commands
+      extend Hanami::Cli::Registry
+
+      class Command < Hanami::Cli::Command
       end
-    end
 
-    class Version < Hanami::Cli::Command
-      def call(*)
-        puts "v1.0.0"
-      end
-    end
+      module Assets
+        class Precompile < Hanami::Cli::Command
+          desc "Precompile assets for deployment"
 
-    class Server < Hanami::Cli::Command
-      desc 'Starts a hanami server'
+          example [
+            "FOO_ENV=production # Precompile assets for production environment"
+          ]
 
-      option :port, alias: '-p', desc: 'The port to run the server on'
-      option :server
-      option :host
-      option :code_reloading, type: :boolean, default: true
-
-      def call(options)
-        puts "Server: #{options}"
-      end
-    end
-
-    class New < Hanami::Cli::Command
-      desc 'Creates a new hanami project'
-
-      argument :project_name, required: true
-
-      def call(project_name:, **options)
-        puts "New: #{options} - project_name: #{project_name}"
-      end
-    end
-
-    module Destroy
-      class Action < Hanami::Cli::Command
-        argument :application_name, required: true
-        argument :controller_name__action_name, required: true, label: "CONTROLLER_NAME#ACTION_NAME"
-        option :url
-        option :skip_view, type: :boolean, default: false
-
-        def call(application_name:, controller_name__action_name:, **options)
-          puts "destroy action: #{options} - application_name: #{application_name} - controller_name__action_name: #{controller_name__action_name}"
-        end
-      end
-    end
-
-    module Generate
-      class Model < Hanami::Cli::Command
-        desc 'Generate an entity'
-
-        argument :model_name, required: true
-        option :database, alias: '-d', desc: 'The target database'
-
-        def call(model_name:, **options)
-          puts "generated model: #{options} - model_name: #{model_name}"
+          def call(*)
+          end
         end
       end
 
-      class Secret < Hanami::Cli::Command
-        argument :app
+      class Console < Hanami::Cli::Command
+        desc "Starts Foo console"
+        option :engine, desc: "Force a console engine: (irb/pry/ripl)"
 
-        def call(app:, **)
-          puts "generate secret: - app: #{app}"
+        example [
+          "             # Uses the bundled engine",
+          "--engine=pry # Force to use Pry"
+        ]
+
+        def call(engine: nil, **)
+          puts "console - engine: #{engine}"
         end
       end
 
-      class Action < Hanami::Cli::Command
+      module DB
+        class Apply < Hanami::Cli::Command
+          desc "Migrate, dump the SQL schema, and delete the migrations (experimental)"
+
+          def call(*)
+          end
+        end
+
+        class Console < Hanami::Cli::Command
+          desc "Starts a database console"
+
+          def call(*)
+          end
+        end
+
+        class Create < Hanami::Cli::Command
+          desc "Create the database (only for development/test)"
+
+          def call(*)
+          end
+        end
+
+        class Drop < Hanami::Cli::Command
+          desc "Drop the database (only for development/test)"
+
+          def call(*)
+          end
+        end
+
+        class Migrate < Hanami::Cli::Command
+          desc "Migrate the database"
+          argument :version, desc: "The target version of the migration (see `foo db version`)"
+
+          example [
+            "               # Migrate to the last version",
+            "20170721120747 # Migrate to a specific version"
+          ]
+
+          def call(*)
+          end
+        end
+
+        class Prepare < Hanami::Cli::Command
+          desc "Drop, create, and migrate the database (only for development/test)"
+
+          def call(*)
+          end
+        end
+
+        class Version < Hanami::Cli::Command
+          desc "Print the current migrated version"
+
+          def call(*)
+          end
+        end
+      end
+
+      module Destroy
+        class Action < Hanami::Cli::Command
+          desc "Destroy an action from app"
+
+          example [
+            "web home#index    # Basic usage",
+            "admin users#index # Destroy from `admin` app"
+          ]
+
+          argument :app,    required: true, desc: "The application name (eg. `web`)"
+          argument :action, required: true, desc: "The action name (eg. `home#index`)"
+
+          def call(app:, action:, **)
+            puts "destroy action - app: #{app}, action: #{action}"
+          end
+        end
+
+        class App < Hanami::Cli::Command
+          desc "Destroy an app"
+
+          argument :app, required: true, desc: "The application name (eg. `web`)"
+
+          example [
+            "admin # Destroy `admin` app"
+          ]
+
+          def call(*)
+          end
+        end
+
+        class Mailer < Hanami::Cli::Command
+          desc "Destroy a mailer"
+
+          argument :mailer, required: true, desc: "The mailer name (eg. `welcome`)"
+
+          example [
+            "welcome # Destroy `WelcomeMailer` mailer"
+          ]
+
+          def call(*)
+          end
+        end
+
+        class Migration < Hanami::Cli::Command
+          desc "Destroy a migration"
+
+          argument :migration, required: true, desc: "The migration name (eg. `create_users`)"
+
+          example [
+            "create_users # Destroy `db/migrations/20170721120747_create_users.rb`"
+          ]
+
+          def call(*)
+          end
+        end
+
+        class Model < Hanami::Cli::Command
+          desc "Destroy a model"
+
+          argument :model, required: true, desc: "The model name (eg. `user`)"
+
+          example [
+            "user # Destroy `User` entity and `UserRepository` repository"
+          ]
+
+          def call(*)
+          end
+        end
+      end
+
+      module Generate
+        class Action < Hanami::Cli::Command
+          desc "Generate an action for app"
+
+          example [
+            "web home#index                    # Basic usage",
+            "admin home#index                  # Generate for `admin` app",
+            "web home#index --url=/            # Specify URL",
+            "web sessions#destroy --method=GET # Specify HTTP method",
+            "web books#create --skip-view      # Skip view and template"
+          ]
+
+          argument :app,    required: true, desc: "The application name (eg. `web`)"
+          argument :action, required: true, desc: "The action name (eg. `home#index`)"
+
+          option :url, desc: "The action URL"
+          option :method, desc: "The action HTTP method"
+          option :skip_view, type: :boolean, default: false, desc: "Skip view and template"
+
+          def call(app:, action:, **options)
+            puts "generate action - app: #{app}, action: #{action}, options: #{options.inspect}"
+          end
+        end
+
+        class App < Hanami::Cli::Command
+          desc "Generate an app"
+
+          argument :app, required: true, desc: "The application name (eg. `web`)"
+          option :application_base_url, desc: "The app base URL (eg. `/api/v1`)"
+
+          example [
+            "admin                              # Generate `admin` app",
+            "api --application-base-url=/api/v1 # Generate `api` app and mount at `/api/v1`"
+          ]
+
+          def call(*)
+          end
+        end
+
+        class Mailer < Hanami::Cli::Command
+          desc "Generate a mailer"
+
+          argument :mailer, required: true, desc: "The mailer name (eg. `welcome`)"
+
+          option :from,    desc: "The default `from` field of the mail"
+          option :to,      desc: "The default `to` field of the mail"
+          option :subject, desc: "The mail subject"
+
+          example [
+            "welcome                                         # Basic usage",
+            'welcome --from="noreply@example.com"            # Generate with default `from` value',
+            'announcement --to="users@example.com"           # Generate with default `to` value',
+            'forgot_password --subject="Your password reset" # Generate with default `subject`'
+          ]
+
+          def call(*)
+          end
+        end
+
+        class Migration < Hanami::Cli::Command
+          desc "Generate a migration"
+
+          argument :migration, required: true, desc: "The migration name (eg. `create_users`)"
+
+          example [
+            "create_users # Generate `db/migrations/20170721120747_create_users.rb`"
+          ]
+
+          def call(*)
+          end
+        end
+
+        class Model < Hanami::Cli::Command
+          desc "Generate a model"
+
+          argument :model, required: true, desc: "Model name (eg. `user`)"
+          option :skip_migration, type: :boolean, default: false, desc: "Skip migration"
+
+          example [
+            "user                  # Generate `User` entity, `UserRepository` repository, and the migration",
+            "user --skip-migration # Generate `User` entity and `UserRepository` repository"
+          ]
+
+          def call(model:, **)
+            puts "generate model - model: #{model}"
+          end
+        end
+
+        class Secret < Hanami::Cli::Command
+          desc "Generate session secret"
+
+          argument :app, desc: "The application name (eg. `web`)"
+
+          example [
+            "    # Prints secret (eg. `6fad60e21f3f6bfcaf8e56cdb0f835d644b4892c3badc58328126812429bf073`)",
+            "web # Prints session secret (eg. `WEB_SESSIONS_SECRET=6fad60e21f3f6bfcaf8e56cdb0f835d644b4892c3badc58328126812429bf073`)"
+          ]
+
+          def call(app: nil)
+            puts "generate secret - app: #{app}"
+          end
+        end
+      end
+
+      class New < Hanami::Cli::Command
+        desc "Generate a new Foo project"
+        argument :project, required: true
+
+        option :database,             desc: "Database (sqlite/postgres/mysql)", default: "sqlite", aliases: ["-d", "--db"]
+        option :application_name,     desc: "App name", default: "web"
+        option :application_base_url, desc: "App base URL", default: "/"
+        option :template,             desc: "Template engine (erb/haml/slim)", default: "erb"
+        option :test,                 desc: "Project testing framework (minitest/rspec)", default: "minitest"
+        option :foo_head,             desc: "Use Foo HEAD (true/false)", type: :boolean, default: false
+
+        example [
+          "bookshelf                     # Basic usage",
+          "bookshelf --test=rspec        # Setup RSpec testing framework",
+          "bookshelf --database=postgres # Setup Postgres database",
+          "bookshelf --template=slim     # Setup Slim template engine",
+          "bookshelf --foo-head          # Use Foo HEAD"
+        ]
+
+        def call(project:, **)
+          puts "new - project: #{project}"
+        end
+      end
+
+      class Routes < Hanami::Cli::Command
+        desc "Print routes"
+
         def call(*)
         end
       end
-    end
-  end
-end
 
-module Webpack
-  module Commands
-    class Hi < Hanami::Cli::Command
-      def call(*)
-        puts "world"
-      end
-    end
+      class Server < Hanami::Cli::Command
+        desc "Start Foo server (only for development)"
 
-    module Generate
-      class Configuration < Hanami::Cli::Command
-        def call(*)
-          puts "generated configuration"
+        option :server,         desc: "Force a server engine (eg, webrick, puma, thin, etc..)"
+        option :host,           desc: "The host address to bind to"
+        option :port,           desc: "The port to run the server on", aliases: ["-p"]
+        option :debug,          desc: "Turn on debug output"
+        option :warn,           desc: "Turn on warnings"
+        option :daemonize,      desc: "Daemonize the server"
+        option :pid,            desc: "Path to write a pid file after daemonize"
+        option :code_reloading, desc: "Code reloading", type: :boolean, default: true
+
+        example [
+          "                    # Basic usage (it uses the bundled server engine)",
+          "--server=webrick    # Force `webrick` server engine",
+          "--host=0.0.0.0      # Bind to a host",
+          "--port=2306         # Bind to a port",
+          "--no-code-reloading # Disable code reloading"
+        ]
+
+        def call(options)
+          puts "server - #{options.inspect}"
         end
       end
 
-      class Action < Hanami::Cli::Command
-        desc 'Generate an action'
+      class Version < Hanami::Cli::Command
+        desc "Print Foo version"
 
         def call(*)
-          puts "generated action"
+          puts "v1.0.0"
         end
       end
 
-      module Application
-        class New < Hanami::Cli::Command
-          desc 'Generate an application'
+      class Hello < Hanami::Cli::Command
+        def call(*)
+          raise NotImplementedError
+        end
+      end
 
-          def call(options)
-            puts "generated application new: #{options}"
+      module Sub
+        class Command < Hanami::Cli::Command
+          def call(*)
+            raise NotImplementedError
           end
         end
       end
@@ -121,22 +349,73 @@ module Webpack
   end
 end
 
-MyCLI::Commands.register "hello",          Foo::Cli::Hello
-MyCLI::Commands.register "version",        Foo::Cli::Version, aliases: ["--version", "-v", "v"]
-MyCLI::Commands.register "server",         Foo::Cli::Server
-MyCLI::Commands.register "new",            Foo::Cli::New
-MyCLI::Commands.register "destroy action", Foo::Cli::Destroy::Action
+Foo::CLI::Commands.register "assets precompile", Foo::CLI::Commands::Assets::Precompile
+Foo::CLI::Commands.register "console",           Foo::CLI::Commands::Console
+Foo::CLI::Commands.register "db" do |prefix|
+  prefix.register "apply",   Foo::CLI::Commands::DB::Apply
+  prefix.register "console", Foo::CLI::Commands::DB::Console
+  prefix.register "create",  Foo::CLI::Commands::DB::Create
+  prefix.register "drop",    Foo::CLI::Commands::DB::Drop
+  prefix.register "migrate", Foo::CLI::Commands::DB::Migrate
+  prefix.register "prepare", Foo::CLI::Commands::DB::Prepare
+  prefix.register "version", Foo::CLI::Commands::DB::Version
+end
+Foo::CLI::Commands.register "destroy", aliases: ["d"] do |prefix|
+  prefix.register "action",    Foo::CLI::Commands::Destroy::Action
+  prefix.register "app",       Foo::CLI::Commands::Destroy::App
+  prefix.register "mailer",    Foo::CLI::Commands::Destroy::Mailer
+  prefix.register "migration", Foo::CLI::Commands::Destroy::Migration
+  prefix.register "model",     Foo::CLI::Commands::Destroy::Model
+end
+Foo::CLI::Commands.register "generate", aliases: ["g"] do |prefix|
+  prefix.register "action",    Foo::CLI::Commands::Generate::Action
+  prefix.register "app",       Foo::CLI::Commands::Generate::App
+  prefix.register "mailer",    Foo::CLI::Commands::Generate::Mailer
+  prefix.register "migration", Foo::CLI::Commands::Generate::Migration
+  prefix.register "model",     Foo::CLI::Commands::Generate::Model
+  prefix.register "secret",    Foo::CLI::Commands::Generate::Secret
+end
+Foo::CLI::Commands.register "new",     Foo::CLI::Commands::New
+Foo::CLI::Commands.register "routes",  Foo::CLI::Commands::Routes
+Foo::CLI::Commands.register "server",  Foo::CLI::Commands::Server,  aliases: ["s"]
+Foo::CLI::Commands.register "version", Foo::CLI::Commands::Version, aliases: ["v", "-v", "--version"]
 
-MyCLI::Commands.register "generate", aliases: ["g"] do |prefix|
-  prefix.register "model",  Foo::Cli::Generate::Model
-  prefix.register "secret", Foo::Cli::Generate::Secret
-  prefix.register "action", Foo::Cli::Generate::Action
+Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
+Foo::CLI::Commands.register "sub command", Foo::CLI::Commands::Sub::Command
+
+module Foo
+  module Webpack
+    module CLI
+      class Generate < Hanami::Cli::Command
+        desc "Generate webpack configuration"
+
+        def call(*)
+          puts "generate webpack"
+        end
+      end
+
+      class Hello < Hanami::Cli::Command
+        desc "Print a greeting"
+
+        def call(*)
+          puts "hello from webpack"
+        end
+      end
+
+      class SubCommand < Hanami::Cli::Command
+        desc "Override a subcommand"
+
+        def call(*)
+          puts "override from webpack"
+        end
+      end
+    end
+  end
 end
 
-MyCLI::Commands.register "hello",                    Webpack::Commands::Hi
-MyCLI::Commands.register "generate webpack",         Webpack::Commands::Generate::Configuration
-MyCLI::Commands.register "generate action",          Webpack::Commands::Generate::Action
-MyCLI::Commands.register "generate application new", Webpack::Commands::Generate::Application::New
+Foo::CLI::Commands.register "generate webpack", Foo::Webpack::CLI::Generate
+Foo::CLI::Commands.register "hello",            Foo::Webpack::CLI::Hello
+Foo::CLI::Commands.register "sub command",      Foo::Webpack::CLI::SubCommand
 
-cli = Hanami::Cli.new(MyCLI::Commands)
+cli = Hanami::Cli.new(Foo::CLI::Commands)
 cli.call

@@ -1,34 +1,20 @@
 require "optparse"
 require "hanami/cli/program_name"
-require "hanami/cli/banner"
 
 module Hanami
   class Cli
     module Parser
-      def self.call(command, arguments, names, out)
+      def self.call(command, arguments, names)
         parsed_options = {}
 
         OptionParser.new do |opts|
-          opts.banner = "Usage:"
-          opts.separator("  #{full_command_name(names)}#{arguments(command)}")
-          opts.separator("")
-
-          if command.description
-            opts.separator("Description:")
-            opts.separator("  #{command.description}")
-            opts.separator("")
-          end
-
-          opts.separator("Options:")
-
           command.options.each do |option|
             opts.on(*option.parser_options) do |value|
               parsed_options[option.name.to_sym] = value
             end
           end
 
-          opts.on_tail("-h", "--help", "Show this message") do
-            out.puts opts
+          opts.on_tail("-h", "--help") do
             return Result.help
           end
         end.parse!(arguments.dup)
@@ -41,10 +27,6 @@ module Hanami
 
       def self.full_command_name(names)
         ProgramName.call(names)
-      end
-
-      def self.arguments(command)
-        Banner.arguments(command)
       end
 
       def self.parse_required_params(command, arguments, names, parsed_options)

@@ -3,45 +3,63 @@ require "hanami/cli/program_name"
 module Hanami
   class Cli
     module Banner
-      SUBCOMMAND_BANNER = " [SUBCOMMAND]".freeze
+      def self.call(command, out)
 
-      def self.call(result, out)
-        out.puts "Commands:"
-        max_length, commands = commands_and_arguments(result)
+# Usage:
+#   hanami db migrate [VERSION]
 
-        commands.each do |banner, node|
-          usage = description(node.command) if node.leaf?
-          out.puts "#{justify(banner, max_length, usage)}#{usage}"
-        end
+# Description:
+#   Migrate the database
+
+# Options:
+#     -h, --help                       Show this message
+        output = [
+          command_name(command),
+          command_name_and_arguments(command),
+          command_description(command),
+          command_arguments(command),
+          command_options(command),
+          command_examples(command)
+        ].compact.join("\n")
+
+        out.puts output
       end
 
-      def self.commands_and_arguments(result)
-        max_length = 0
-        ret        = commands(result).each_with_object({}) do |(name, node), memo|
-          args = if node.leaf?
-                   arguments(node.command)
-                 else
-                   SUBCOMMAND_BANNER
-                 end
+      def self.command_name(command)
+        "Command:\n  #{full_command_name(command)}"
+      end
 
-          partial       = "  #{command_name(result, name)}#{args}"
-          max_length    = partial.bytesize if max_length < partial.bytesize
-          memo[partial] = node
-        end
+      def self.command_name_and_arguments(command)
+        "\nUsage:\n  #{full_command_name(command)}#{arguments(command)}"
+      end
 
-        [max_length, ret]
+      def self.command_examples(command)
+        return if command.examples.empty?
+
+        "\nExamples:\n#{command.examples.map { |example| "  #{full_command_name(command)} #{example}" }.join("\n")}"
+      end
+
+      def self.command_description(command)
+        return if command.description.nil?
+
+        "\nDescription:\n  #{command.description}"
+      end
+
+      def self.command_arguments(command)
+        return if command.arguments.empty?
+        "\nArguments:\n#{extended_command_arguments(command)}"
+      end
+
+      def self.command_options(command)
+        return if command.options.empty?
+        "\nOptions:\n#{extended_command_options(command)}"
+      end
+
+      def self.full_command_name(command)
+        ProgramName.call(command.command_name)
       end
 
       def self.arguments(command)
-        return unless Cli.command?(command)
-
-        command = case command
-                  when Class
-                    command
-                  else
-                    command.class
-                  end
-
         required_arguments = command.required_arguments
         optional_arguments = command.optional_arguments
 
@@ -52,23 +70,26 @@ module Hanami
         " #{result.join(' ')}" unless result.empty?
       end
 
-      def self.description(command)
-        return unless Cli.command?(command)
-
-        " # #{command.class.description}" unless command.class.description.nil?
+      def self.extended_command_arguments(command)
+        command.arguments.map do |argument|
+          "  #{argument.name.to_s.upcase.ljust(20)}\t# #{'REQUIRED ' if argument.required?}#{argument.desc}"
+        end.join("\n")
       end
 
-      def self.justify(string, padding, usage)
-        return string.chomp(" ") if usage.nil?
-        string.ljust(padding + padding / 2)
-      end
-
-      def self.commands(result)
-        result.children.sort_by { |name, _| name }
-      end
-
-      def self.command_name(result, name)
-        ProgramName.call([result.names, name])
+      def self.extended_command_options(command)
+        command.options.map do |option|
+          name = Utils::String.new(option.name).dasherize
+          name = if option.boolean?
+                   "[no-]#{name}"
+                 else
+                   "#{name}=VALUE"
+                 end
+          name = "  --#{name.ljust(30)}"
+          name = "#{name}\t# #{option.desc}"
+          name = "#{name}, default: #{option.default.inspect}" unless option.default.nil?
+          name = "#{name}, aliases: #{option.aliases.map(&:inspect).join(', ')}" unless option.aliases.empty?
+          name
+        end.join("\n")
       end
     end
   end

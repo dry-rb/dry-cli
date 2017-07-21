@@ -17,28 +17,28 @@ RSpec.describe "Commands" do
 
   it "calls subcommand via intermediate alias" do
     output = `foo g secret web`
-    expect(output).to eq("generate secret: - app: web\n")
+    expect(output).to eq("generate secret - app: web\n")
   end
 
   context "works with params" do
     it "without params" do
       output = `foo server`
-      expect(output).to eq("Server: {:code_reloading=>true}\n")
+      expect(output).to eq("server - {:code_reloading=>true}\n")
     end
 
     it "a param using space" do
       output = `foo server --server thin`
-      expect(output).to eq("Server: {:code_reloading=>true, :server=>\"thin\"}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :server=>\"thin\"}\n")
     end
 
     it "a param using equal sign" do
       output = `foo server --host=localhost`
-      expect(output).to eq("Server: {:code_reloading=>true, :host=>\"localhost\"}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :host=>\"localhost\"}\n")
     end
 
     it "a param using alias" do
       output = `foo server -p 1234`
-      expect(output).to eq("Server: {:code_reloading=>true, :port=>\"1234\"}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :port=>\"1234\"}\n")
     end
 
     it "a param with unknown param" do
@@ -48,56 +48,70 @@ RSpec.describe "Commands" do
 
     it "with boolean param" do
       output = `foo server`
-      expect(output).to eq("Server: {:code_reloading=>true}\n")
+      expect(output).to eq("server - {:code_reloading=>true}\n")
 
       output = `foo server --no-code-reloading`
-      expect(output).to eq("Server: {:code_reloading=>false}\n")
+      expect(output).to eq("server - {:code_reloading=>false}\n")
     end
 
     it "with help param" do
       output = `foo server --help`
 
-command_options_help = <<-DESC
+      expected = <<-DESC
+Command:
+  foo server
+
 Usage:
   foo server
 
 Description:
-  Starts a hanami server
+  Start Foo server (only for development)
 
 Options:
-    -p, --port port                  The port to run the server on
-        --server server
-        --host host
-        --[no-]code-reloading
-    -h, --help                       Show this message
+  --server=VALUE                  	# Force a server engine (eg, webrick, puma, thin, etc..)
+  --host=VALUE                    	# The host address to bind to
+  --port=VALUE                    	# The port to run the server on, aliases: "-p"
+  --debug=VALUE                   	# Turn on debug output
+  --warn=VALUE                    	# Turn on warnings
+  --daemonize=VALUE               	# Daemonize the server
+  --pid=VALUE                     	# Path to write a pid file after daemonize
+  --[no-]code-reloading           	# Code reloading, default: true
+
+Examples:
+  foo server                     # Basic usage (it uses the bundled server engine)
+  foo server --server=webrick    # Force `webrick` server engine
+  foo server --host=0.0.0.0      # Bind to a host
+  foo server --port=2306         # Bind to a port
+  foo server --no-code-reloading # Disable code reloading
 DESC
-      expect(output).to eq(command_options_help)
+
+      expect(output).to eq(expected)
     end
 
     context "with required params" do
       it "can be used" do
-        output = `foo new hanami_app`
-        expect(output).to eq("New: {} - project_name: hanami_app\n")
+        output = `foo new bookshelf`
+        expect(output).to eq("new - project: bookshelf\n")
       end
 
       it "with unknown param" do
-        output = `foo new hanami_app --unknown 1234`
+        output = `foo new bookshelf --unknown 1234`
         expect(output).to eq("Error: Invalid param provided\n")
       end
 
       it "no required" do
         output = `foo generate secret web`
-        expect(output).to eq("generate secret: - app: web\n")
+        expect(output).to eq("generate secret - app: web\n")
 
         output = `foo generate secret`
-        expect(output).to eq("generate secret: - app: \n")
+        expect(output).to eq("generate secret - app: \n")
       end
 
       it "an error is displayed if there aren't required params" do
         output = `foo new`
         expected_output = <<-DESC
 ERROR: "foo new" was called with no arguments
-Usage: "foo new PROJECT_NAME"
+Usage: "foo new PROJECT"
 DESC
         expect(output).to eq(expected_output)
       end

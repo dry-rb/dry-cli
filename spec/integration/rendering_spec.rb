@@ -4,12 +4,17 @@ RSpec.describe "Rendering" do
 
     expected = <<-DESC
 Commands:
+  foo assets [SUBCOMMAND]
+  foo console                            # Starts Foo console
+  foo db [SUBCOMMAND]
   foo destroy [SUBCOMMAND]
   foo generate [SUBCOMMAND]
-  foo hello
-  foo new PROJECT_NAME                   # Creates a new hanami project
-  foo server                             # Starts a hanami server
-  foo version
+  foo hello                              # Print a greeting
+  foo new PROJECT                        # Generate a new Foo project
+  foo routes                             # Print routes
+  foo server                             # Start Foo server (only for development)
+  foo sub [SUBCOMMAND]
+  foo version                            # Print Foo version
 DESC
 
     expect(output).to eq(expected)
@@ -20,7 +25,11 @@ DESC
 
     expected = <<-DESC
 Commands:
-  foo destroy action APPLICATION_NAME CONTROLLER_NAME__ACTION_NAME
+  foo destroy action APP ACTION                   # Destroy an action from app
+  foo destroy app APP                             # Destroy an app
+  foo destroy mailer MAILER                       # Destroy a mailer
+  foo destroy migration MIGRATION                 # Destroy a migration
+  foo destroy model MODEL                         # Destroy a model
 DESC
 
     expect(output).to eq(expected)
@@ -31,27 +40,34 @@ DESC
 
     expected = <<-DESC
 Commands:
-  foo generate action                                      # Generate an action
-  foo generate application [SUBCOMMAND]
-  foo generate model MODEL_NAME                            # Generate an entity
-  foo generate secret [APP]
-  foo generate webpack
+  foo generate action APP ACTION                    # Generate an action for app
+  foo generate app APP                              # Generate an app
+  foo generate mailer MAILER                        # Generate a mailer
+  foo generate migration MIGRATION                  # Generate a migration
+  foo generate model MODEL                          # Generate a model
+  foo generate secret [APP]                         # Generate session secret
+  foo generate webpack                              # Generate webpack configuration
 DESC
 
     expect(output).to eq(expected)
   end
 
-it "prints available commands for unknown command" do
+  it "prints available commands for unknown command" do
     output = `foo unknown`
 
     expected = <<-DESC
 Commands:
+  foo assets [SUBCOMMAND]
+  foo console                            # Starts Foo console
+  foo db [SUBCOMMAND]
   foo destroy [SUBCOMMAND]
   foo generate [SUBCOMMAND]
-  foo hello
-  foo new PROJECT_NAME                   # Creates a new hanami project
-  foo server                             # Starts a hanami server
-  foo version
+  foo hello                              # Print a greeting
+  foo new PROJECT                        # Generate a new Foo project
+  foo routes                             # Print routes
+  foo server                             # Start Foo server (only for development)
+  foo sub [SUBCOMMAND]
+  foo version                            # Print Foo version
 DESC
 
     expect(output).to eq(expected)
@@ -62,12 +78,17 @@ DESC
 
     expected = <<-DESC
 Commands:
+  foo assets [SUBCOMMAND]
+  foo console                            # Starts Foo console
+  foo db [SUBCOMMAND]
   foo destroy [SUBCOMMAND]
   foo generate [SUBCOMMAND]
-  foo hello
-  foo new PROJECT_NAME                   # Creates a new hanami project
-  foo server                             # Starts a hanami server
-  foo version
+  foo hello                              # Print a greeting
+  foo new PROJECT                        # Generate a new Foo project
+  foo routes                             # Print routes
+  foo server                             # Start Foo server (only for development)
+  foo sub [SUBCOMMAND]
+  foo version                            # Print Foo version
 DESC
 
     expect(output).to eq(expected)
@@ -78,11 +99,13 @@ DESC
 
     expected = <<-DESC
 Commands:
-  foo generate action                                      # Generate an action
-  foo generate application [SUBCOMMAND]
-  foo generate model MODEL_NAME                            # Generate an entity
-  foo generate secret [APP]
-  foo generate webpack
+  foo generate action APP ACTION                    # Generate an action for app
+  foo generate app APP                              # Generate an app
+  foo generate mailer MAILER                        # Generate a mailer
+  foo generate migration MIGRATION                  # Generate a migration
+  foo generate model MODEL                          # Generate a model
+  foo generate secret [APP]                         # Generate session secret
+  foo generate webpack                              # Generate webpack configuration
 DESC
 
     expect(output).to eq(expected)
@@ -93,7 +116,13 @@ DESC
 
     expected = <<-DESC
 Commands:
-  foo generate application new                # Generate an application
+  foo generate action APP ACTION                    # Generate an action for app
+  foo generate app APP                              # Generate an app
+  foo generate mailer MAILER                        # Generate a mailer
+  foo generate migration MIGRATION                  # Generate a migration
+  foo generate model MODEL                          # Generate a model
+  foo generate secret [APP]                         # Generate session secret
+  foo generate webpack                              # Generate webpack configuration
 DESC
     expect(output).to eq(expected)
   end

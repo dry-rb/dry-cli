@@ -4,6 +4,7 @@ module Hanami
     require "hanami/cli/command"
     require "hanami/cli/registry"
     require "hanami/cli/parser"
+    require "hanami/cli/usage"
     require "hanami/cli/banner"
 
     def self.command?(command)
@@ -26,7 +27,7 @@ module Hanami
         command, args = parse(result, out)
         command.call(args)
       else
-        banner(result, out)
+        usage(result, out)
       end
     end
 
@@ -38,8 +39,12 @@ module Hanami
       command = result.command
       return [command, result.arguments] unless command?(command)
 
-      result = Parser.call(command.class, result.arguments, result.names, out)
-      exit(0) if result.help?
+      result = Parser.call(command.class, result.arguments, result.names)
+
+      if result.help?
+        Banner.call(command.class, out)
+        exit(0)
+      end
 
       if result.error?
         out.puts(result.error)
@@ -49,8 +54,8 @@ module Hanami
       [command, result.arguments]
     end
 
-    def banner(result, out)
-      Banner.call(result, out)
+    def usage(result, out)
+      Usage.call(result, out)
       exit(1)
     end
 

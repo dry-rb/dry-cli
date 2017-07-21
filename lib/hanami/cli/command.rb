@@ -13,12 +13,14 @@ module Hanami
           base.class_eval do
             @command_name = nil
             @description  = nil
+            @examples     = Concurrent::Array.new
             @arguments    = Concurrent::Array.new
             @options      = Concurrent::Array.new
           end
         end
 
         attr_reader :description
+        attr_reader :examples
         attr_reader :arguments
         attr_reader :options
         attr_accessor :command_name
@@ -26,6 +28,10 @@ module Hanami
 
       def self.desc(description)
         @description = description
+      end
+
+      def self.example(*examples)
+        @examples += examples.flatten
       end
 
       def self.argument(name, options = {})

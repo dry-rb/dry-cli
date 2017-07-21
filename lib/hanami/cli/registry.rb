@@ -13,6 +13,7 @@ module Hanami
         if block_given?
           yield Prefix.new(@commands, name, aliases)
         else
+          command.command_name = name if Cli.command?(command)
           @commands.set(name, command, aliases)
         end
       end
@@ -30,7 +31,10 @@ module Hanami
         end
 
         def register(name, command, aliases: [])
-          registry.set("#{prefix} #{name}", command, aliases)
+          command_name         = "#{prefix} #{name}"
+          command.command_name = command_name if Cli.command?(command)
+
+          registry.set(command_name, command, aliases)
         end
 
         private

@@ -10,8 +10,8 @@ module Hanami
         @options = options
       end
 
-      def alias_name
-        options[:alias]
+      def aliases
+        options[:aliases] || []
       end
 
       def desc
@@ -24,6 +24,10 @@ module Hanami
 
       def type
         options[:type]
+      end
+
+      def boolean?
+        type == :boolean
       end
 
       def default
@@ -47,9 +51,15 @@ module Hanami
           parser_options << "--#{dasherized_name}=#{name}"
           parser_options << "--#{dasherized_name} #{name}"
         end
-        parser_options.unshift(alias_name) if alias_name
+        parser_options.unshift(alias_name) unless alias_name.nil?
         parser_options << desc if desc
         parser_options
+      end
+
+      private
+
+      def alias_name
+        aliases.join(" ") if aliases.any?
       end
     end
 
