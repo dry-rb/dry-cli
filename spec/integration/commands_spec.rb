@@ -70,12 +70,13 @@ Description:
 Options:
   --server=VALUE                  	# Force a server engine (eg, webrick, puma, thin, etc..)
   --host=VALUE                    	# The host address to bind to
-  --port=VALUE                    	# The port to run the server on, aliases: "-p"
+  --port=VALUE, -p VALUE          	# The port to run the server on
   --debug=VALUE                   	# Turn on debug output
   --warn=VALUE                    	# Turn on warnings
   --daemonize=VALUE               	# Daemonize the server
   --pid=VALUE                     	# Path to write a pid file after daemonize
   --[no-]code-reloading           	# Code reloading, default: true
+  --help, -h                      	# Print this help
 
 Examples:
   foo server                     # Basic usage (it uses the bundled server engine)

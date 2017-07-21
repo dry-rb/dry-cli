@@ -53,6 +53,7 @@ Arguments:
 
 Options:
   --[no-]skip-migration           	# Skip migration, default: false
+  --help, -h                      	# Print this help
 
 Examples:
   foo generate model user                  # Generate `User` entity, `UserRepository` repository, and the migration

@@ -51,7 +51,6 @@ module Hanami
       end
 
       def self.command_options(command)
-        return if command.options.empty?
         "\nOptions:\n#{extended_command_options(command)}"
       end
 
@@ -77,19 +76,23 @@ module Hanami
       end
 
       def self.extended_command_options(command)
-        command.options.map do |option|
+        result = command.options.map do |option|
           name = Utils::String.new(option.name).dasherize
           name = if option.boolean?
                    "[no-]#{name}"
                  else
                    "#{name}=VALUE"
                  end
+
+          name = "#{name}, #{option.aliases.map { |a| a.start_with?("--") ? "#{a}=VALUE" : "#{a} VALUE" }.join(', ')}" unless option.aliases.empty?
           name = "  --#{name.ljust(30)}"
           name = "#{name}\t# #{option.desc}"
           name = "#{name}, default: #{option.default.inspect}" unless option.default.nil?
-          name = "#{name}, aliases: #{option.aliases.map(&:inspect).join(', ')}" unless option.aliases.empty?
           name
-        end.join("\n")
+        end
+
+        result << "  --#{'help, -h'.ljust(30)}\t# Print this help"
+        result.join("\n")
       end
     end
   end
