@@ -48,6 +48,10 @@ module Hanami
       def self.required_arguments
         arguments.select(&:required?)
       end
+
+      def self.optional_arguments
+        arguments.reject(&:required?)
+      end
     end
   end
 end

@@ -35,7 +35,14 @@ module Hanami
       def self.arguments(command)
         return unless Cli.command?(command)
 
-        " #{command.class.required_arguments.map { |arg| arg.name.upcase }.join(' ')}"
+        required_arguments = command.class.required_arguments
+        optional_arguments = command.class.optional_arguments
+
+        required = required_arguments.map { |arg| arg.name.upcase }.join(' ') if required_arguments.any?
+        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(' ') if optional_arguments.any?
+        result = [required, optional].compact
+
+        " #{result.join(' ')}" unless result.empty?
       end
 
       def self.description(command)

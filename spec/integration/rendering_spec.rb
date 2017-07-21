@@ -34,7 +34,7 @@ Commands:
   foo generate action                                      # Generate an action
   foo generate application [SUBCOMMAND]
   foo generate model MODEL_NAME                            # Generate an entity
-  foo generate secret
+  foo generate secret [APP]
   foo generate webpack
 DESC
 
@@ -81,7 +81,7 @@ Commands:
   foo generate action                                      # Generate an action
   foo generate application [SUBCOMMAND]
   foo generate model MODEL_NAME                            # Generate an entity
-  foo generate secret
+  foo generate secret [APP]
   foo generate webpack
 DESC
 
@@ -93,7 +93,7 @@ DESC
 
     expected = <<-DESC
 Commands:
-  foo generate application new                 # Generate an application
+  foo generate application new                # Generate an application
 DESC
     expect(output).to eq(expected)
   end
