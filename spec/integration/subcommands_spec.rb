@@ -21,18 +21,18 @@ DESC
     end
 
     it "a param using space" do
-      output = `foo generate model user --name user`
-      expect(output).to eq("generated model: {:name=>\"user\"} - model_name: user\n")
+      output = `foo generate model user --database development`
+      expect(output).to eq("generated model: {:database=>\"development\"} - model_name: user\n")
     end
 
     it "a param using equal sign" do
-      output = `foo generate model user --name=user`
-      expect(output).to eq("generated model: {:name=>\"user\"} - model_name: user\n")
+      output = `foo generate model user --database=development`
+      expect(output).to eq("generated model: {:database=>\"development\"} - model_name: user\n")
     end
 
     it "a param using alias" do
-      output = `foo generate model user -n user`
-      expect(output).to eq("generated model: {:name=>\"user\"} - model_name: user\n")
+      output = `foo generate model user -d development`
+      expect(output).to eq("generated model: {:database=>\"development\"} - model_name: user\n")
     end
 
     it "with help param" do
@@ -40,13 +40,13 @@ DESC
 
       command_options_help = <<-DESC
 Usage:
-  foo generate model
+  foo generate model MODEL_NAME
 
 Description:
   Generate an entity
 
 Options:
-    -n, --name name                  use the name for generating the model
+    -d, --database database          The target database
     -h, --help                       Show this message
 DESC
 

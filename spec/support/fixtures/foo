@@ -62,7 +62,7 @@ module Foo
         desc 'Generate an entity'
 
         argument :model_name, required: true
-        option :name, alias: '-n', desc: 'use the name for generating the model'
+        option :database, alias: '-d', desc: 'The target database'
 
         def call(model_name:, **options)
           puts "generated model: #{options} - model_name: #{model_name}"

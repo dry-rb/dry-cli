@@ -20,6 +20,7 @@ module Hanami
 
         attr_reader :description
         attr_reader :arguments
+        attr_reader :options
         attr_accessor :command_name
       end
 
