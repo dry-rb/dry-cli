@@ -126,4 +126,29 @@ Commands:
 DESC
     expect(output).to eq(expected)
   end
+
+  it "prints list options when calling help" do
+    output = `foo console --help`
+
+    expected = <<-DESC
+Command:
+  foo console
+
+Usage:
+  foo console
+
+Description:
+  Starts Foo console
+
+Options:
+  --engine=VALUE                  	# Force a console engine: (irb/pry/ripl)
+  --help, -h                      	# Print this help
+
+Examples:
+  foo console              # Uses the bundled engine
+  foo console --engine=pry # Force to use Pry
+DESC
+
+    expect(output).to eq(expected)
+  end
 end
