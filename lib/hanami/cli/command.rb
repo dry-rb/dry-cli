@@ -1,3 +1,4 @@
+require "forwardable"
 require "hanami/cli/option"
 require "concurrent/array"
 
@@ -11,7 +12,6 @@ module Hanami
       module ClassMethods
         def self.extended(base)
           base.class_eval do
-            @command_name = nil
             @description  = nil
             @examples     = Concurrent::Array.new
             @arguments    = Concurrent::Array.new
@@ -23,7 +23,6 @@ module Hanami
         attr_reader :examples
         attr_reader :arguments
         attr_reader :options
-        attr_accessor :command_name
       end
 
       def self.desc(description)
@@ -58,6 +57,25 @@ module Hanami
 
       def self.optional_arguments
         arguments.reject(&:required?)
+      end
+
+      extend Forwardable
+
+      delegate [
+        :description,
+        :examples,
+        :arguments,
+        :options,
+        :params,
+        :default_params,
+        :required_arguments,
+        :optional_arguments,
+      ] => "self.class"
+
+      attr_reader :command_name
+
+      def initialize(command_name:, **)
+        @command_name = command_name
       end
     end
   end

@@ -39,10 +39,10 @@ module Hanami
       command = result.command
       return [command, result.arguments] unless command?(command)
 
-      result = Parser.call(command.class, result.arguments, result.names)
+      result = Parser.call(command, result.arguments, result.names)
 
       if result.help?
-        Banner.call(command.class, out)
+        Banner.call(command, out)
         exit(0)
       end
 

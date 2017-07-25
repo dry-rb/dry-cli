@@ -35,8 +35,8 @@ module Hanami
       def self.arguments(command)
         return unless Cli.command?(command)
 
-        required_arguments = command.class.required_arguments
-        optional_arguments = command.class.optional_arguments
+        required_arguments = command.required_arguments
+        optional_arguments = command.optional_arguments
 
         required = required_arguments.map { |arg| arg.name.upcase }.join(' ') if required_arguments.any?
         optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(' ') if optional_arguments.any?
@@ -48,7 +48,7 @@ module Hanami
       def self.description(command)
         return unless Cli.command?(command)
 
-        " # #{command.class.description}" unless command.class.description.nil?
+        " # #{command.description}" unless command.description.nil?
       end
 
       def self.justify(string, padding, usage)

@@ -7,9 +7,9 @@ module Hanami
         @root = Node.new
       end
 
-      def set(name, command, aliases)
+      def set(name, command, aliases, **options)
         node = @root
-        command = command_for(command)
+        command = command_for(name, command, **options)
         name.split(/[[:space:]]/).each do |token|
           node = node.put(node, token)
         end
@@ -50,14 +50,14 @@ module Hanami
 
       private
 
-      def command_for(command)
+      def command_for(name, command, **options)
         case command
         when NilClass
           command
         when ->(c) { c.respond_to?(:call) }
           command
         else
-          command.new
+          command.new(command_name: name, **options)
         end
       end
 

@@ -9,12 +9,11 @@ module Hanami
         end
       end
 
-      def register(name, command = nil, aliases: [])
+      def register(name, command = nil, aliases: [], **options)
         if block_given?
           yield Prefix.new(@commands, name, aliases)
         else
-          command.command_name = name if Cli.command?(command)
-          @commands.set(name, command, aliases)
+          @commands.set(name, command, aliases, **options)
         end
       end
 
@@ -30,11 +29,9 @@ module Hanami
           registry.set(prefix, nil, aliases)
         end
 
-        def register(name, command, aliases: [])
-          command_name         = "#{prefix} #{name}"
-          command.command_name = command_name if Cli.command?(command)
-
-          registry.set(command_name, command, aliases)
+        def register(name, command, aliases: [], **options)
+          command_name = "#{prefix} #{name}"
+          registry.set(command_name, command, aliases, **options)
         end
 
         private
