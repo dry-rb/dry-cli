@@ -1,37 +1,66 @@
-require "hanami/cli/version"
-require "hanami/cli/renderer"
-require "hanami/cli/command/params_parser"
-
 module Hanami
   class Cli
-    attr_reader :commands
-    attr_reader :renderer
+    require "hanami/cli/version"
+    require "hanami/cli/command"
+    require "hanami/cli/registry"
+    require "hanami/cli/parser"
+    require "hanami/cli/usage"
+    require "hanami/cli/banner"
 
-    def initialize(command_registry)
-      @commands = command_registry
-      @renderer = Hanami::Cli::Renderer.new(command_registry)
+    def self.command?(command)
+      case command
+      when Class
+        command.ancestors.include?(Command)
+      else
+        command.is_a?(Command)
+      end
     end
 
-    # FIXME ignore_unknown_commands is a hack to help us to migrate Hanami commands.
-    # It MUST be removed once done
-    def call(arguments: ARGV, ignore_unknown_commands: false)
-      command, arguments = commands.resolve_from_arguments(arguments)
+    def initialize(registry)
+      @commands = registry
+    end
 
-      if command.nil? || command.subcommand?
-        command_name = command.name if command
-        return nil if ignore_unknown_commands
+    def call(arguments: ARGV, out: $stdout)
+      result = commands.get(arguments)
 
-        renderer.render(command_name)
+      if result.found?
+        command, args = parse(result, out)
+        command.call(args)
+      else
+        usage(result, out)
+      end
+    end
+
+    private
+
+    attr_reader :commands
+
+    def parse(result, out)
+      command = result.command
+      return [command, result.arguments] unless command?(command)
+
+      result = Parser.call(command.class, result.arguments, result.names)
+
+      if result.help?
+        Banner.call(command.class, out)
+        exit(0)
+      end
+
+      if result.error?
+        out.puts(result.error)
         exit(1)
       end
 
-      parser = Command::ParamsParser.new(command)
-      params = parser.parse(arguments)
-      if params.any?
-        command.call(params)
-      else
-        command.call
-      end
+      [command, result.arguments]
+    end
+
+    def usage(result, out)
+      Usage.call(result, out)
+      exit(1)
+    end
+
+    def command?(command)
+      Cli.command?(command)
     end
   end
 end

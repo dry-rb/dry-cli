@@ -1,8 +1,8 @@
-require 'hanami/utils/string'
+require "hanami/utils/string"
 
 module Hanami
   class Cli
-    class Param
+    class Option
       attr_reader :name, :options
 
       def initialize(name, options = {})
@@ -10,12 +10,13 @@ module Hanami
         @options = options
       end
 
-      def alias_name
-        options[:alias]
+      def aliases
+        options[:aliases] || []
       end
 
       def desc
-        options[:desc]
+        desc = options[:desc]
+        list ? "#{desc}: (#{list.join('/')})" : desc
       end
 
       def required?
@@ -24,6 +25,14 @@ module Hanami
 
       def type
         options[:type]
+      end
+
+      def list
+        options[:list]
+      end
+
+      def boolean?
+        type == :boolean
       end
 
       def default
@@ -35,7 +44,7 @@ module Hanami
       end
 
       def argument?
-        options[:argument] || false
+        false
       end
 
       def parser_options
@@ -47,9 +56,22 @@ module Hanami
           parser_options << "--#{dasherized_name}=#{name}"
           parser_options << "--#{dasherized_name} #{name}"
         end
-        parser_options.unshift(alias_name) if alias_name
+        parser_options << list if list
+        parser_options.unshift(alias_name) unless alias_name.nil?
         parser_options << desc if desc
         parser_options
+      end
+
+      private
+
+      def alias_name
+        aliases.join(" ") if aliases.any?
+      end
+    end
+
+    class Argument < Option
+      def argument?
+        true
       end
     end
   end
