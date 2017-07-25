@@ -51,10 +51,7 @@ module Hanami
       private
 
       def command_for(name, command, **options)
-        case command
-        when NilClass
-          command
-        when ->(c) { c.respond_to?(:call) }
+        if command.nil?
           command
         else
           command.new(command_name: name, **options)
