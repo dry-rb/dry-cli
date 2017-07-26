@@ -25,7 +25,7 @@ module Foo
 
       class Console < Hanami::Cli::Command
         desc "Starts Foo console"
-        option :engine, desc: "Force a console engine", list: %w(irb pry ripl)
+        option :engine, desc: "Force a console engine", values: %w(irb pry ripl)
 
         example [
           "             # Uses the bundled engine",

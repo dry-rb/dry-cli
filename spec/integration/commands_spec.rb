@@ -54,15 +54,15 @@ RSpec.describe "Commands" do
       expect(output).to eq("server - {:code_reloading=>false}\n")
     end
 
-    context "with list param" do
-      context "and with option of the list" do
+    context "with supported values" do
+      context "and with supported value passed" do
         it "call the command with the option" do
           output = `foo console --engine=pry`
           expect(output).to eq("console - engine: pry\n")
         end
       end
 
-      context "and with unknown option of the list" do
+      context "and with an unknown value passed" do
         it "prints error" do
           output = `foo console --engine=unknown`
           expect(output).to eq("Error: Invalid param provided\n")
