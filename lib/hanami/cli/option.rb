@@ -16,7 +16,7 @@ module Hanami
 
       def desc
         desc = options[:desc]
-        list ? "#{desc}: (#{list.join('/')})" : desc
+        values ? "#{desc}: (#{values.join('/')})" : desc
       end
 
       def required?
@@ -27,8 +27,8 @@ module Hanami
         options[:type]
       end
 
-      def list
-        options[:list]
+      def values
+        options[:values]
       end
 
       def boolean?
@@ -56,7 +56,7 @@ module Hanami
           parser_options << "--#{dasherized_name}=#{name}"
           parser_options << "--#{dasherized_name} #{name}"
         end
-        parser_options << list if list
+        parser_options << values if values
         parser_options.unshift(alias_name) unless alias_name.nil?
         parser_options << desc if desc
         parser_options
