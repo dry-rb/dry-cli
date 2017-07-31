@@ -2,7 +2,7 @@ require "optparse"
 require "hanami/cli/program_name"
 
 module Hanami
-  class Cli
+  class CLI
     module Parser
       def self.call(command, arguments, names)
         parsed_options = {}

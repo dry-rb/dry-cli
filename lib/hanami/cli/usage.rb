@@ -1,7 +1,7 @@
 require "hanami/cli/program_name"
 
 module Hanami
-  class Cli
+  class CLI
     module Usage
       SUBCOMMAND_BANNER = " [SUBCOMMAND]".freeze
 
@@ -33,7 +33,7 @@ module Hanami
       end
 
       def self.arguments(command)
-        return unless Cli.command?(command)
+        return unless CLI.command?(command)
 
         required_arguments = command.required_arguments
         optional_arguments = command.optional_arguments
@@ -46,7 +46,7 @@ module Hanami
       end
 
       def self.description(command)
-        return unless Cli.command?(command)
+        return unless CLI.command?(command)
 
         " # #{command.description}" unless command.description.nil?
       end

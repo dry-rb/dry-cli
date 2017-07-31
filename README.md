@@ -38,7 +38,7 @@ end
 Foo::CLI::Commands.register "hi", Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register "v",  Version
 
-Hanami::Cli.new(Foo::CLI::Commands).call
+Hanami::CLI.new(Foo::CLI::Commands).call
 ```
 
 **Please note:** there is NOT a convention between the _command name_ and the _command object_ class.
@@ -74,7 +74,7 @@ end
 
 Foo::CLI::Commands.register "generate configuration", Foo::CLI::Commands::Generate::Configuration
 
-Hanami::Cli.new(Foo::CLI::Commands).call
+Hanami::CLI.new(Foo::CLI::Commands).call
 ```
 
 ### Arguments
@@ -203,7 +203,7 @@ Imagine to build a CLI executable `foo` for your Ruby project.
 require "bundler/setup"
 require "hanami/cli"
 
-Hanami::CLI = Hanami::Cli
+Hanami::CLI = Hanami::CLI
 
 module Foo
   module CLI
@@ -270,7 +270,7 @@ module Foo
           end
         end
 
-        class Test < Hanami::Cli::Command
+        class Test < Hanami::CLI::Command
           desc "Generate tests"
 
           option :framework, default: "minitest", values: %w[minitest rspec]
@@ -294,7 +294,7 @@ module Foo
   end
 end
 
-Hanami::Cli.new(Foo::CLI::Commands).call
+Hanami::CLI.new(Foo::CLI::Commands).call
 ```
 
 Let's have a look at the command line usage.
