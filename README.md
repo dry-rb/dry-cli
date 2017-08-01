@@ -203,8 +203,6 @@ Imagine to build a CLI executable `foo` for your Ruby project.
 require "bundler/setup"
 require "hanami/cli"
 
-Hanami::CLI = Hanami::CLI
-
 module Foo
   module CLI
     module Commands
