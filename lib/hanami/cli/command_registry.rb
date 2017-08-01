@@ -1,7 +1,7 @@
 require "concurrent/hash"
 
 module Hanami
-  class Cli
+  class CLI
     class CommandRegistry
       def initialize
         @root = Node.new
