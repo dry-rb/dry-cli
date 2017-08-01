@@ -1,7 +1,7 @@
 require "hanami/cli/program_name"
 
 module Hanami
-  class Cli
+  class CLI
     module Banner
       def self.call(command, out)
 

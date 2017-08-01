@@ -1,5 +1,5 @@
 module Hanami
-  class Cli
+  class CLI
     module ProgramName
       SEPARATOR = " ".freeze
 

@@ -3,7 +3,7 @@ require "hanami/cli/option"
 require "concurrent/array"
 
 module Hanami
-  class Cli
+  class CLI
     class Command
       def self.inherited(base)
         base.extend ClassMethods

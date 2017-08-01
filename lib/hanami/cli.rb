@@ -1,5 +1,5 @@
 module Hanami
-  class Cli
+  class CLI
     require "hanami/cli/version"
     require "hanami/cli/command"
     require "hanami/cli/registry"
@@ -60,7 +60,7 @@ module Hanami
     end
 
     def command?(command)
-      Cli.command?(command)
+      CLI.command?(command)
     end
   end
 end
