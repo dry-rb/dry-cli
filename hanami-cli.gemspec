@@ -5,7 +5,7 @@ require 'hanami/cli/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "hanami-cli"
-  spec.version       = Hanami::Cli::VERSION
+  spec.version       = Hanami::CLI::VERSION
   spec.authors       = ["Luca Guidi"]
   spec.email         = ["me@lucaguidi.com"]
   spec.licenses      = ["MIT"]

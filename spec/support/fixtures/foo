@@ -5,13 +5,13 @@ require 'hanami/cli'
 module Foo
   module CLI
     module Commands
-      extend Hanami::Cli::Registry
+      extend Hanami::CLI::Registry
 
-      class Command < Hanami::Cli::Command
+      class Command < Hanami::CLI::Command
       end
 
       module Assets
-        class Precompile < Hanami::Cli::Command
+        class Precompile < Hanami::CLI::Command
           desc "Precompile assets for deployment"
 
           example [
@@ -23,7 +23,7 @@ module Foo
         end
       end
 
-      class Console < Hanami::Cli::Command
+      class Console < Hanami::CLI::Command
         desc "Starts Foo console"
         option :engine, desc: "Force a console engine", values: %w(irb pry ripl)
 
@@ -38,35 +38,35 @@ module Foo
       end
 
       module DB
-        class Apply < Hanami::Cli::Command
+        class Apply < Hanami::CLI::Command
           desc "Migrate, dump the SQL schema, and delete the migrations (experimental)"
 
           def call(*)
           end
         end
 
-        class Console < Hanami::Cli::Command
+        class Console < Hanami::CLI::Command
           desc "Starts a database console"
 
           def call(*)
           end
         end
 
-        class Create < Hanami::Cli::Command
+        class Create < Hanami::CLI::Command
           desc "Create the database (only for development/test)"
 
           def call(*)
           end
         end
 
-        class Drop < Hanami::Cli::Command
+        class Drop < Hanami::CLI::Command
           desc "Drop the database (only for development/test)"
 
           def call(*)
           end
         end
 
-        class Migrate < Hanami::Cli::Command
+        class Migrate < Hanami::CLI::Command
           desc "Migrate the database"
           argument :version, desc: "The target version of the migration (see `foo db version`)"
 
@@ -79,14 +79,14 @@ module Foo
           end
         end
 
-        class Prepare < Hanami::Cli::Command
+        class Prepare < Hanami::CLI::Command
           desc "Drop, create, and migrate the database (only for development/test)"
 
           def call(*)
           end
         end
 
-        class Version < Hanami::Cli::Command
+        class Version < Hanami::CLI::Command
           desc "Print the current migrated version"
 
           def call(*)
@@ -95,7 +95,7 @@ module Foo
       end
 
       module Destroy
-        class Action < Hanami::Cli::Command
+        class Action < Hanami::CLI::Command
           desc "Destroy an action from app"
 
           example [
@@ -111,7 +111,7 @@ module Foo
           end
         end
 
-        class App < Hanami::Cli::Command
+        class App < Hanami::CLI::Command
           desc "Destroy an app"
 
           argument :app, required: true, desc: "The application name (eg. `web`)"
@@ -124,7 +124,7 @@ module Foo
           end
         end
 
-        class Mailer < Hanami::Cli::Command
+        class Mailer < Hanami::CLI::Command
           desc "Destroy a mailer"
 
           argument :mailer, required: true, desc: "The mailer name (eg. `welcome`)"
@@ -137,7 +137,7 @@ module Foo
           end
         end
 
-        class Migration < Hanami::Cli::Command
+        class Migration < Hanami::CLI::Command
           desc "Destroy a migration"
 
           argument :migration, required: true, desc: "The migration name (eg. `create_users`)"
@@ -150,7 +150,7 @@ module Foo
           end
         end
 
-        class Model < Hanami::Cli::Command
+        class Model < Hanami::CLI::Command
           desc "Destroy a model"
 
           argument :model, required: true, desc: "The model name (eg. `user`)"
@@ -165,7 +165,7 @@ module Foo
       end
 
       module Generate
-        class Action < Hanami::Cli::Command
+        class Action < Hanami::CLI::Command
           desc "Generate an action for app"
 
           example [
@@ -188,7 +188,7 @@ module Foo
           end
         end
 
-        class App < Hanami::Cli::Command
+        class App < Hanami::CLI::Command
           desc "Generate an app"
 
           argument :app, required: true, desc: "The application name (eg. `web`)"
@@ -203,7 +203,7 @@ module Foo
           end
         end
 
-        class Mailer < Hanami::Cli::Command
+        class Mailer < Hanami::CLI::Command
           desc "Generate a mailer"
 
           argument :mailer, required: true, desc: "The mailer name (eg. `welcome`)"
@@ -223,7 +223,7 @@ module Foo
           end
         end
 
-        class Migration < Hanami::Cli::Command
+        class Migration < Hanami::CLI::Command
           desc "Generate a migration"
 
           argument :migration, required: true, desc: "The migration name (eg. `create_users`)"
@@ -236,7 +236,7 @@ module Foo
           end
         end
 
-        class Model < Hanami::Cli::Command
+        class Model < Hanami::CLI::Command
           desc "Generate a model"
 
           argument :model, required: true, desc: "Model name (eg. `user`)"
@@ -252,7 +252,7 @@ module Foo
           end
         end
 
-        class Secret < Hanami::Cli::Command
+        class Secret < Hanami::CLI::Command
           desc "Generate session secret"
 
           argument :app, desc: "The application name (eg. `web`)"
@@ -268,7 +268,7 @@ module Foo
         end
       end
 
-      class New < Hanami::Cli::Command
+      class New < Hanami::CLI::Command
         desc "Generate a new Foo project"
         argument :project, required: true
 
@@ -292,14 +292,14 @@ module Foo
         end
       end
 
-      class Routes < Hanami::Cli::Command
+      class Routes < Hanami::CLI::Command
         desc "Print routes"
 
         def call(*)
         end
       end
 
-      class Server < Hanami::Cli::Command
+      class Server < Hanami::CLI::Command
         desc "Start Foo server (only for development)"
 
         option :server,         desc: "Force a server engine (eg, webrick, puma, thin, etc..)"
@@ -324,7 +324,7 @@ module Foo
         end
       end
 
-      class Version < Hanami::Cli::Command
+      class Version < Hanami::CLI::Command
         desc "Print Foo version"
 
         def call(*)
@@ -332,14 +332,14 @@ module Foo
         end
       end
 
-      class Hello < Hanami::Cli::Command
+      class Hello < Hanami::CLI::Command
         def call(*)
           raise NotImplementedError
         end
       end
 
       module Sub
-        class Command < Hanami::Cli::Command
+        class Command < Hanami::CLI::Command
           def call(*)
             raise NotImplementedError
           end
@@ -386,7 +386,7 @@ Foo::CLI::Commands.register "sub command", Foo::CLI::Commands::Sub::Command
 module Foo
   module Webpack
     module CLI
-      class Generate < Hanami::Cli::Command
+      class Generate < Hanami::CLI::Command
         desc "Generate webpack configuration"
 
         def call(*)
@@ -394,7 +394,7 @@ module Foo
         end
       end
 
-      class Hello < Hanami::Cli::Command
+      class Hello < Hanami::CLI::Command
         desc "Print a greeting"
 
         def call(*)
@@ -402,7 +402,7 @@ module Foo
         end
       end
 
-      class SubCommand < Hanami::Cli::Command
+      class SubCommand < Hanami::CLI::Command
         desc "Override a subcommand"
 
         def call(*)
@@ -417,5 +417,5 @@ Foo::CLI::Commands.register "generate webpack", Foo::Webpack::CLI::Generate
 Foo::CLI::Commands.register "hello",            Foo::Webpack::CLI::Hello
 Foo::CLI::Commands.register "sub command",      Foo::Webpack::CLI::SubCommand
 
-cli = Hanami::Cli.new(Foo::CLI::Commands)
+cli = Hanami::CLI.new(Foo::CLI::Commands)
 cli.call

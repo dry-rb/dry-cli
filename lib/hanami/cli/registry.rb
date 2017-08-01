@@ -1,7 +1,7 @@
 require "hanami/cli/command_registry"
 
 module Hanami
-  class Cli
+  class CLI
     module Registry
       def self.extended(base)
         base.class_eval do
