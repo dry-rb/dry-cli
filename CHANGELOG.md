@@ -1,7 +1,7 @@
 # Hanami::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
-## v0.1.0.beta1 (unreleased)
+## v0.1.0.beta1 - 2017-08-11
 ### Added
 - [Alfonso Uceda, Luca Guidi] Commands banner and usage
 - [Alfonso Uceda] Added support for subcommands
