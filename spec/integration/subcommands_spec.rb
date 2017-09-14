@@ -108,6 +108,20 @@ DESC
 
         expect(output).to eq(expected)
       end
+
+      context "and a default value" do
+        it "returns the default value if nothing is passed" do
+          output = `foo db rollback`
+
+          expect(output).to eq("1\n")
+        end
+
+        it "returns the passed value" do
+          output = `foo db rollback 3`
+
+          expect(output).to eq("3\n")
+        end
+      end
     end
   end
 end

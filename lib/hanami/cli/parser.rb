@@ -64,7 +64,8 @@ module Hanami
           end
         end
 
-        Result.success(parse_params.merge(parsed_options))
+        parse_params.reject! { |key, value| value.nil? }
+        Result.success(parsed_options.merge(parse_params))
       end
       # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/AbcSize
