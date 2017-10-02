@@ -449,8 +449,10 @@ module Foo
       class Generate < Hanami::CLI::Command
         desc "Generate webpack configuration"
 
-        def call(*)
-          puts "generate webpack"
+        option :apps, desc: "Generate webpack apps", type: :array
+
+        def call(apps: [], **)
+          puts "generate webpack. Apps: #{apps}"
         end
       end
 

@@ -19,7 +19,7 @@ module Hanami
         OptionParser.new do |opts|
           command.options.each do |option|
             opts.on(*option.parser_options) do |value|
-              parsed_options[option.name.to_sym] = value
+              parsed_options[option.name.to_sym] = option.array? ? value.split(',') : value
             end
           end
 

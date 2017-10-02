@@ -59,6 +59,12 @@ module Hanami
         type == :boolean
       end
 
+      # @since x.x.x
+      # @api private
+      def array?
+        type == :array
+      end
+
       # @since 0.1.0
       # @api private
       def default
