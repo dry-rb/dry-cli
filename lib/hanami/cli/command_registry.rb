@@ -30,6 +30,9 @@ module Hanami
 
       # @since 0.1.0
       # @api private
+      #
+      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/MethodLength
       def get(arguments)
         node   = @root
         args   = []
@@ -57,6 +60,8 @@ module Hanami
 
         result
       end
+      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/AbcSize
 
       private
 

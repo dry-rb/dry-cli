@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-$:.unshift __dir__ + '/../../lib'
+$LOAD_PATH.unshift __dir__ + '/../../lib'
 require 'hanami/cli'
 
 module Foo
@@ -25,7 +25,7 @@ module Foo
 
       class Console < Hanami::CLI::Command
         desc "Starts Foo console"
-        option :engine, desc: "Force a console engine", values: %w(irb pry ripl)
+        option :engine, desc: "Force a console engine", values: %w[irb pry ripl]
 
         example [
           "             # Uses the bundled engine",
@@ -96,10 +96,10 @@ module Foo
         class Rollback < Hanami::CLI::Command
           desc "Rollback the database"
 
-          argument :versions, desc: "Number of versions to rollback", default: 1
+          argument :steps, desc: "Number of versions to rollback", default: 1
 
-          def call(versions:, **)
-            puts versions
+          def call(steps:, **)
+            puts steps
           end
         end
       end

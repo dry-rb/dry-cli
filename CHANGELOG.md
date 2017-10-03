@@ -1,6 +1,10 @@
 # Hanami::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
+## v0.1.0.beta2 - 2017-10-03
+### Added
+- [Alfonso Uceda] Allow default value for arguments
+
 ## v0.1.0.beta1 - 2017-08-11
 ### Added
 - [Alfonso Uceda, Luca Guidi] Commands banner and usage
