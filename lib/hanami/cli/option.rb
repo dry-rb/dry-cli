@@ -92,13 +92,14 @@ module Hanami
         dasherized_name = Hanami::Utils::String.dasherize(name)
         parser_options  = []
 
-        if type == :boolean
+        if boolean?
           parser_options << "--[no-]#{dasherized_name}"
         else
           parser_options << "--#{dasherized_name}=#{name}"
           parser_options << "--#{dasherized_name} #{name}"
         end
 
+        parser_options << Array if array?
         parser_options << values if values
         parser_options.unshift(alias_name) unless alias_name.nil?
         parser_options << desc if desc
