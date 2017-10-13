@@ -15,6 +15,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "http://hanamirb.org"
 
   spec.metadata['allowed_push_host'] = "https://rubygems.org"
+  spec.metadata['source_code_uri'] = "https://github.com/hanami/cli"
 
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
