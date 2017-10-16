@@ -4,6 +4,34 @@ General purpose Command Line Interface (CLI) framework for Ruby.
 
 :warning: **This is a general framework for Ruby (aka `thor` gem replacement), NOT the implementation of the `hanami` CLI commands** :warning:
 
+<!-- Tocer[start]: Auto-generated, don't remove. -->
+
+## Table of Contents
+
+  - [Features](#features)
+    - [Registration](#registration)
+    - [Commands as objects](#commands-as-objects)
+    - [Subcommands](#subcommands)
+    - [Arguments](#arguments)
+    - [Option](#option)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Available commands](#available-commands)
+    - [Help](#help)
+    - [Optional arguments](#optional-arguments)
+    - [Required arguments](#required-arguments)
+    - [Options](#options)
+    - [Boolean options](#boolean-options)
+    - [Subcommands](#subcommands-1)
+    - [Aliases](#aliases)
+    - [Subcommand aliases](#subcommand-aliases)
+  - [Development](#development)
+  - [Contributing](#contributing)
+  - [Alternatives](#alternatives)
+  - [Copyright](#copyright)
+
+<!-- Tocer[finish]: Auto-generated, don't remove. -->
+
 ## Features
 
 ### Registration
