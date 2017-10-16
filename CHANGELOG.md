@@ -1,6 +1,8 @@
 # Hanami::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
+## v0.1.0.rc1 - 2017-10-16
+
 ## v0.1.0.beta3 - 2017-10-04
 
 ## v0.1.0.beta2 - 2017-10-03
