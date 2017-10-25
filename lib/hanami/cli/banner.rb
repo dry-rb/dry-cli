@@ -76,7 +76,7 @@ module Hanami
 
       # @since 0.1.0
       # @api private
-      def self.arguments(command)
+      def self.arguments(command) # rubocop:disable Metrics/AbcSize
         required_arguments = command.required_arguments
         optional_arguments = command.optional_arguments
 
@@ -97,6 +97,9 @@ module Hanami
 
       # @since 0.1.0
       # @api private
+      #
+      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/MethodLength
       def self.extended_command_options(command)
         result = command.options.map do |option|
           name = Utils::String.dasherize(option.name)
@@ -116,6 +119,8 @@ module Hanami
         result << "  --#{'help, -h'.ljust(30)}\t# Print this help"
         result.join("\n")
       end
+      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/AbcSize
     end
   end
 end
