@@ -9,6 +9,7 @@ RSpec.describe "Rendering" do
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
         foo generate [SUBCOMMAND]
+        foo greeting [RESPONSE]
         foo hello                              # Print a greeting
         foo new PROJECT                        # Generate a new Foo project
         foo routes                             # Print routes
@@ -62,6 +63,7 @@ DESC
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
         foo generate [SUBCOMMAND]
+        foo greeting [RESPONSE]
         foo hello                              # Print a greeting
         foo new PROJECT                        # Generate a new Foo project
         foo routes                             # Print routes
@@ -83,6 +85,7 @@ DESC
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
         foo generate [SUBCOMMAND]
+        foo greeting [RESPONSE]
         foo hello                              # Print a greeting
         foo new PROJECT                        # Generate a new Foo project
         foo routes                             # Print routes

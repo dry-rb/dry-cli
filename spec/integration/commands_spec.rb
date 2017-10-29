@@ -132,6 +132,14 @@ DESC
 DESC
         expect(output).to eq(expected_output)
       end
+
+      it "with default value and using options" do
+        output = `foo greeting --person=Alfonso`
+        expect(output).to eq("response: Hello World, person: Alfonso\n")
+
+        output = `foo greeting bye --person=Alfonso`
+        expect(output).to eq("response: bye, person: Alfonso\n")
+      end
     end
   end
 end
