@@ -11,7 +11,6 @@ module Hanami
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength
       def self.call(command, arguments, names)
         parsed_options = {}

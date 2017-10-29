@@ -16,7 +16,7 @@ RSpec.describe "Rendering" do
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
         foo version                            # Print Foo version
-DESC
+    DESC
 
     expect(output).to eq(expected)
   end
@@ -31,7 +31,7 @@ DESC
         foo destroy mailer MAILER                       # Destroy a mailer
         foo destroy migration MIGRATION                 # Destroy a migration
         foo destroy model MODEL                         # Destroy a model
-DESC
+    DESC
 
     expect(output).to eq(expected)
   end
@@ -48,7 +48,7 @@ DESC
         foo generate model MODEL                          # Generate a model
         foo generate secret [APP]                         # Generate session secret
         foo generate webpack                              # Generate webpack configuration
-DESC
+    DESC
 
     expect(output).to eq(expected)
   end
@@ -70,7 +70,7 @@ DESC
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
         foo version                            # Print Foo version
-DESC
+    DESC
 
     expect(output).to eq(expected)
   end
@@ -92,7 +92,7 @@ DESC
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
         foo version                            # Print Foo version
-DESC
+    DESC
 
     expect(output).to eq(expected)
   end
@@ -109,7 +109,7 @@ DESC
         foo generate model MODEL                          # Generate a model
         foo generate secret [APP]                         # Generate session secret
         foo generate webpack                              # Generate webpack configuration
-DESC
+    DESC
 
     expect(output).to eq(expected)
   end
@@ -126,7 +126,7 @@ DESC
         foo generate model MODEL                          # Generate a model
         foo generate secret [APP]                         # Generate session secret
         foo generate webpack                              # Generate webpack configuration
-DESC
+    DESC
     expect(output).to eq(expected)
   end
 
@@ -150,7 +150,7 @@ DESC
       Examples:
         foo console              # Uses the bundled engine
         foo console --engine=pry # Force to use Pry
-DESC
+    DESC
 
     expect(output).to eq(expected)
   end

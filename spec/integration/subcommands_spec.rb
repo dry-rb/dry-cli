@@ -4,7 +4,7 @@ RSpec.describe "Subcommands" do
     expected = <<~DESC
       ERROR: "foo generate model" was called with no arguments
       Usage: "foo generate model MODEL"
-DESC
+    DESC
 
     expect(output).to eq(expected)
   end
@@ -15,7 +15,7 @@ DESC
       expected = <<~DESC
         ERROR: "foo generate model" was called with no arguments
         Usage: "foo generate model MODEL"
-DESC
+      DESC
 
       expect(output).to eq(expected)
     end
@@ -58,7 +58,7 @@ DESC
         Examples:
           foo generate model user                  # Generate `User` entity, `UserRepository` repository, and the migration
           foo generate model user --skip-migration # Generate `User` entity and `UserRepository` repository
-DESC
+      DESC
 
       expect(output).to eq(expected)
     end
@@ -94,7 +94,7 @@ DESC
         expected = <<~DESC
           ERROR: "foo destroy action" was called with no arguments
           Usage: "foo destroy action APP ACTION"
-DESC
+        DESC
 
         expect(output).to eq(expected)
       end
@@ -104,7 +104,7 @@ DESC
         expected = <<~DESC
           ERROR: "foo destroy action" was called with arguments [\"web\"]
           Usage: "foo destroy action APP ACTION"
-DESC
+        DESC
 
         expect(output).to eq(expected)
       end
