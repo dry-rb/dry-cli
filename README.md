@@ -464,6 +464,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/hanami
 ## Alternatives
 
   * [thor](http://whatisthor.com/)
+  * [clamp](https://github.com/mdub/clamp)
 
 ## Copyright
 

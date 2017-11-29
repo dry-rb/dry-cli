@@ -100,7 +100,7 @@ RSpec.describe "Commands" do
           foo server --host=0.0.0.0      # Bind to a host
           foo server --port=2306         # Bind to a port
           foo server --no-code-reloading # Disable code reloading
-DESC
+      DESC
 
       expect(output).to eq(expected)
     end
@@ -129,8 +129,16 @@ DESC
         expected_output = <<~DESC
           ERROR: "foo new" was called with no arguments
           Usage: "foo new PROJECT"
-DESC
+        DESC
         expect(output).to eq(expected_output)
+      end
+
+      it "with default value and using options" do
+        output = `foo greeting --person=Alfonso`
+        expect(output).to eq("response: Hello World, person: Alfonso\n")
+
+        output = `foo greeting bye --person=Alfonso`
+        expect(output).to eq("response: bye, person: Alfonso\n")
       end
     end
   end

@@ -11,7 +11,6 @@ module Hanami
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength
       def self.call(command, arguments, names)
         parsed_options = {}
@@ -26,7 +25,7 @@ module Hanami
           opts.on_tail("-h", "--help") do
             return Result.help
           end
-        end.parse!(arguments.dup)
+        end.parse!(arguments)
 
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, names, parsed_options)
