@@ -73,34 +73,34 @@ RSpec.describe "Commands" do
     it "with help param" do
       output = `foo server --help`
 
-      expected = <<-DESC
-Command:
-  foo server
+      expected = <<~DESC
+        Command:
+          foo server
 
-Usage:
-  foo server
+        Usage:
+          foo server
 
-Description:
-  Start Foo server (only for development)
+        Description:
+          Start Foo server (only for development)
 
-Options:
-  --server=VALUE                  	# Force a server engine (eg, webrick, puma, thin, etc..)
-  --host=VALUE                    	# The host address to bind to
-  --port=VALUE, -p VALUE          	# The port to run the server on
-  --debug=VALUE                   	# Turn on debug output
-  --warn=VALUE                    	# Turn on warnings
-  --daemonize=VALUE               	# Daemonize the server
-  --pid=VALUE                     	# Path to write a pid file after daemonize
-  --[no-]code-reloading           	# Code reloading, default: true
-  --help, -h                      	# Print this help
+        Options:
+          --server=VALUE                  	# Force a server engine (eg, webrick, puma, thin, etc..)
+          --host=VALUE                    	# The host address to bind to
+          --port=VALUE, -p VALUE          	# The port to run the server on
+          --debug=VALUE                   	# Turn on debug output
+          --warn=VALUE                    	# Turn on warnings
+          --daemonize=VALUE               	# Daemonize the server
+          --pid=VALUE                     	# Path to write a pid file after daemonize
+          --[no-]code-reloading           	# Code reloading, default: true
+          --help, -h                      	# Print this help
 
-Examples:
-  foo server                     # Basic usage (it uses the bundled server engine)
-  foo server --server=webrick    # Force `webrick` server engine
-  foo server --host=0.0.0.0      # Bind to a host
-  foo server --port=2306         # Bind to a port
-  foo server --no-code-reloading # Disable code reloading
-DESC
+        Examples:
+          foo server                     # Basic usage (it uses the bundled server engine)
+          foo server --server=webrick    # Force `webrick` server engine
+          foo server --host=0.0.0.0      # Bind to a host
+          foo server --port=2306         # Bind to a port
+          foo server --no-code-reloading # Disable code reloading
+      DESC
 
       expect(output).to eq(expected)
     end
@@ -126,11 +126,19 @@ DESC
 
       it "an error is displayed if there aren't required params" do
         output = `foo new`
-        expected_output = <<-DESC
-ERROR: "foo new" was called with no arguments
-Usage: "foo new PROJECT"
-DESC
+        expected_output = <<~DESC
+          ERROR: "foo new" was called with no arguments
+          Usage: "foo new PROJECT"
+        DESC
         expect(output).to eq(expected_output)
+      end
+
+      it "with default value and using options" do
+        output = `foo greeting --person=Alfonso`
+        expect(output).to eq("response: Hello World, person: Alfonso\n")
+
+        output = `foo greeting bye --person=Alfonso`
+        expect(output).to eq("response: bye, person: Alfonso\n")
       end
     end
   end

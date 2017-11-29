@@ -1,10 +1,10 @@
 RSpec.describe "Subcommands" do
   it "calls subcommand" do
     output = `foo generate model`
-    expected = <<-DESC
-ERROR: "foo generate model" was called with no arguments
-Usage: "foo generate model MODEL"
-DESC
+    expected = <<~DESC
+      ERROR: "foo generate model" was called with no arguments
+      Usage: "foo generate model MODEL"
+    DESC
 
     expect(output).to eq(expected)
   end
@@ -12,10 +12,10 @@ DESC
   context "works with params" do
     it "without params" do
       output = `foo generate model`
-      expected = <<-DESC
-ERROR: "foo generate model" was called with no arguments
-Usage: "foo generate model MODEL"
-DESC
+      expected = <<~DESC
+        ERROR: "foo generate model" was called with no arguments
+        Usage: "foo generate model MODEL"
+      DESC
 
       expect(output).to eq(expected)
     end
@@ -38,27 +38,27 @@ DESC
     it "with help param" do
       output = `foo generate model --help`
 
-      expected = <<-DESC
-Command:
-  foo generate model
+      expected = <<~DESC
+        Command:
+          foo generate model
 
-Usage:
-  foo generate model MODEL
+        Usage:
+          foo generate model MODEL
 
-Description:
-  Generate a model
+        Description:
+          Generate a model
 
-Arguments:
-  MODEL               	# REQUIRED Model name (eg. `user`)
+        Arguments:
+          MODEL               	# REQUIRED Model name (eg. `user`)
 
-Options:
-  --[no-]skip-migration           	# Skip migration, default: false
-  --help, -h                      	# Print this help
+        Options:
+          --[no-]skip-migration           	# Skip migration, default: false
+          --help, -h                      	# Print this help
 
-Examples:
-  foo generate model user                  # Generate `User` entity, `UserRepository` repository, and the migration
-  foo generate model user --skip-migration # Generate `User` entity and `UserRepository` repository
-DESC
+        Examples:
+          foo generate model user                  # Generate `User` entity, `UserRepository` repository, and the migration
+          foo generate model user --skip-migration # Generate `User` entity and `UserRepository` repository
+      DESC
 
       expect(output).to eq(expected)
     end
@@ -91,22 +91,36 @@ DESC
 
       it "an error is displayed if there aren't required params" do
         output = `foo destroy action`
-        expected = <<-DESC
-ERROR: "foo destroy action" was called with no arguments
-Usage: "foo destroy action APP ACTION"
-DESC
+        expected = <<~DESC
+          ERROR: "foo destroy action" was called with no arguments
+          Usage: "foo destroy action APP ACTION"
+        DESC
 
         expect(output).to eq(expected)
       end
 
       it "an error is displayed if there are some required params" do
         output = `foo destroy action web`
-        expected = <<-DESC
-ERROR: "foo destroy action" was called with arguments [\"web\"]
-Usage: "foo destroy action APP ACTION"
-DESC
+        expected = <<~DESC
+          ERROR: "foo destroy action" was called with arguments [\"web\"]
+          Usage: "foo destroy action APP ACTION"
+        DESC
 
         expect(output).to eq(expected)
+      end
+
+      context "and a default value" do
+        it "returns the default value if nothing is passed" do
+          output = `foo db rollback`
+
+          expect(output).to eq("1\n")
+        end
+
+        it "returns the passed value" do
+          output = `foo db rollback 3`
+
+          expect(output).to eq("3\n")
+        end
       end
     end
   end

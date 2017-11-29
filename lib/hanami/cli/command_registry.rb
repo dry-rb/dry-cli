@@ -2,11 +2,19 @@ require "concurrent/hash"
 
 module Hanami
   class CLI
+    # Command registry
+    #
+    # @since 0.1.0
+    # @api private
     class CommandRegistry
+      # @since 0.1.0
+      # @api private
       def initialize
         @root = Node.new
       end
 
+      # @since 0.1.0
+      # @api private
       def set(name, command, aliases, **options)
         node = @root
         command = command_for(name, command, **options)
@@ -20,6 +28,11 @@ module Hanami
         nil
       end
 
+      # @since 0.1.0
+      # @api private
+      #
+      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/MethodLength
       def get(arguments)
         node   = @root
         args   = []
@@ -47,9 +60,13 @@ module Hanami
 
         result
       end
+      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/AbcSize
 
       private
 
+      # @since 0.1.0
+      # @api private
       def command_for(name, command, **options)
         if command.nil?
           command
@@ -58,9 +75,29 @@ module Hanami
         end
       end
 
+      # Node of the registry
+      #
+      # @since 0.1.0
+      # @api private
       class Node
-        attr_reader :parent, :children, :aliases, :command
+        # @since 0.1.0
+        # @api private
+        attr_reader :parent
 
+        # @since 0.1.0
+        # @api private
+        attr_reader :children
+
+        # @since 0.1.0
+        # @api private
+        attr_reader :aliases
+
+        # @since 0.1.0
+        # @api private
+        attr_reader :command
+
+        # @since 0.1.0
+        # @api private
         def initialize(parent = nil)
           @parent   = parent
           @children = Concurrent::Hash.new
@@ -68,36 +105,60 @@ module Hanami
           @command  = nil
         end
 
+        # @since 0.1.0
+        # @api private
         def put(parent, key)
           children[key] ||= self.class.new(parent)
         end
 
+        # @since 0.1.0
+        # @api private
         def lookup(token)
           children[token] || aliases[token]
         end
 
+        # @since 0.1.0
+        # @api private
         def leaf!(command)
           @command = command
         end
 
+        # @since 0.1.0
+        # @api private
         def alias!(key, child)
           @aliases[key] = child
         end
 
+        # @since 0.1.0
+        # @api private
         def aliases!(aliases)
           aliases.each do |a|
             parent.alias!(a, self)
           end
         end
 
+        # @since 0.1.0
+        # @api private
         def leaf?
           !command.nil?
         end
       end
 
+      # Result of a registry lookup
+      #
+      # @since 0.1.0
+      # @api private
       class LookupResult
-        attr_reader :names, :arguments
+        # @since 0.1.0
+        # @api private
+        attr_reader :names
 
+        # @since 0.1.0
+        # @api private
+        attr_reader :arguments
+
+        # @since 0.1.0
+        # @api private
         def initialize(node, arguments, names, found)
           @node      = node
           @arguments = arguments
@@ -105,14 +166,20 @@ module Hanami
           @found     = found
         end
 
+        # @since 0.1.0
+        # @api private
         def found?
           @found
         end
 
+        # @since 0.1.0
+        # @api private
         def children
           @node.children
         end
 
+        # @since 0.1.0
+        # @api private
         def command
           @node.command
         end

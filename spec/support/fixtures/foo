@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-$:.unshift __dir__ + '/../../lib'
+$LOAD_PATH.unshift __dir__ + '/../../lib'
 require 'hanami/cli'
 
 module Foo
@@ -25,7 +25,7 @@ module Foo
 
       class Console < Hanami::CLI::Command
         desc "Starts Foo console"
-        option :engine, desc: "Force a console engine", values: %w(irb pry ripl)
+        option :engine, desc: "Force a console engine", values: %w[irb pry ripl]
 
         example [
           "             # Uses the bundled engine",
@@ -90,6 +90,16 @@ module Foo
           desc "Print the current migrated version"
 
           def call(*)
+          end
+        end
+
+        class Rollback < Hanami::CLI::Command
+          desc "Rollback the database"
+
+          argument :steps, desc: "Number of versions to rollback", default: 1
+
+          def call(steps:, **)
+            puts steps
           end
         end
       end
@@ -338,6 +348,16 @@ module Foo
         end
       end
 
+      class Greeting < Hanami::CLI::Command
+        argument :response, default: "Hello World"
+
+        option :person
+
+        def call(response:, **options)
+          puts "response: #{response}, person: #{options[:person]}"
+        end
+      end
+
       module Sub
         class Command < Hanami::CLI::Command
           def call(*)
@@ -359,6 +379,7 @@ Foo::CLI::Commands.register "db" do |prefix|
   prefix.register "migrate", Foo::CLI::Commands::DB::Migrate
   prefix.register "prepare", Foo::CLI::Commands::DB::Prepare
   prefix.register "version", Foo::CLI::Commands::DB::Version
+  prefix.register "rollback", Foo::CLI::Commands::DB::Rollback
 end
 Foo::CLI::Commands.register "destroy", aliases: ["d"] do |prefix|
   prefix.register "action",    Foo::CLI::Commands::Destroy::Action
@@ -381,6 +402,7 @@ Foo::CLI::Commands.register "server",  Foo::CLI::Commands::Server,  aliases: ["s
 Foo::CLI::Commands.register "version", Foo::CLI::Commands::Version, aliases: ["v", "-v", "--version"]
 
 Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
+Foo::CLI::Commands.register "greeting",    Foo::CLI::Commands::Greeting
 Foo::CLI::Commands.register "sub command", Foo::CLI::Commands::Sub::Command
 
 module Foo
