@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "optparse"
 require "hanami/cli/program_name"
 

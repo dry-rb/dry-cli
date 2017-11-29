@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/cli/command_registry"
 
 module Hanami

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Rendering" do
   it "prints required params" do
     output = `foo`
