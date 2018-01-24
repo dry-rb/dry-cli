@@ -141,5 +141,24 @@ RSpec.describe "Commands" do
         expect(output).to eq("response: bye, person: Alfonso\n")
       end
     end
+
+    context "with extra params" do
+      it "is accessible via Hanami::CLI.unused_arguments" do
+        output = `foo variadic default bar baz`
+        expect(output).to eq("Unused Arguments: bar, baz\n")
+      end
+
+      it "is an empty array by default" do
+        output = `foo variadic default`
+        expect(output).to eq("Unused Arguments: \n")
+      end
+
+      context 'when there is a required argument' do
+        it 'parses both separately' do
+          output = `foo variadic with-mandatory foo bar baz`
+          expect(output).to eq("first: foo\nUnused Arguments: bar, baz\n")
+        end
+      end
+    end
   end
 end

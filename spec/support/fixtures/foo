@@ -358,6 +358,25 @@ module Foo
         end
       end
 
+      class VariadicArguments < Hanami::CLI::Command
+        desc "accept multiple arguments at the end of the command"
+
+        def call(*)
+          puts "Unused Arguments: #{Hanami::CLI.unused_arguments.join(', ')}"
+        end
+      end
+
+      class MandatoryAndVariadicArguments < Hanami::CLI::Command
+        desc "require one command and accept multiple other arguments"
+
+        argument :first, desc: 'mandatory first argument', required: true
+
+        def call(first:, **)
+          puts "first: #{first}"
+          puts "Unused Arguments: #{Hanami::CLI.unused_arguments.join(', ')}"
+        end
+      end
+
       module Sub
         class Command < Hanami::CLI::Command
           def call(*)
@@ -404,6 +423,9 @@ Foo::CLI::Commands.register "version", Foo::CLI::Commands::Version, aliases: ["v
 Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register "greeting",    Foo::CLI::Commands::Greeting
 Foo::CLI::Commands.register "sub command", Foo::CLI::Commands::Sub::Command
+
+Foo::CLI::Commands.register "variadic default",        Foo::CLI::Commands::VariadicArguments
+Foo::CLI::Commands.register "variadic with-mandatory", Foo::CLI::Commands::MandatoryAndVariadicArguments
 
 module Foo
   module Webpack
