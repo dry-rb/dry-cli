@@ -367,12 +367,27 @@ module Foo
       end
 
       class MandatoryAndVariadicArguments < Hanami::CLI::Command
-        desc "require one command and accept multiple other arguments"
+        desc "require one command and accept multiple unused arguments"
 
         argument :first, desc: 'mandatory first argument', required: true
 
         def call(first:, **)
           puts "first: #{first}"
+          puts "Unused Arguments: #{Hanami::CLI.unused_arguments.join(', ')}"
+        end
+      end
+
+      class MandatoryOptionsAndVariadicArguments < Hanami::CLI::Command
+        desc "require one command, accept options and multiple unused arguments"
+
+        argument :first, desc: 'mandatory first argument', required: true
+        option :url, desc: "The action URL"
+        option :method, desc: "The action HTTP method"
+
+        def call(params = {})
+          puts "first: #{params[:first]}"
+          puts "url: #{params[:url]}"
+          puts "method: #{params[:method]}"
           puts "Unused Arguments: #{Hanami::CLI.unused_arguments.join(', ')}"
         end
       end
@@ -424,8 +439,9 @@ Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register "greeting",    Foo::CLI::Commands::Greeting
 Foo::CLI::Commands.register "sub command", Foo::CLI::Commands::Sub::Command
 
-Foo::CLI::Commands.register "variadic default",        Foo::CLI::Commands::VariadicArguments
-Foo::CLI::Commands.register "variadic with-mandatory", Foo::CLI::Commands::MandatoryAndVariadicArguments
+Foo::CLI::Commands.register "variadic default",                    Foo::CLI::Commands::VariadicArguments
+Foo::CLI::Commands.register "variadic with-mandatory",             Foo::CLI::Commands::MandatoryAndVariadicArguments
+Foo::CLI::Commands.register "variadic with-mandatory-and-options", Foo::CLI::Commands::MandatoryOptionsAndVariadicArguments
 
 module Foo
   module Webpack

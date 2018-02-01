@@ -153,10 +153,20 @@ RSpec.describe "Commands" do
         expect(output).to eq("Unused Arguments: \n")
       end
 
-      context 'when there is a required argument' do
-        it 'parses both separately' do
+      context "when there is a required argument" do
+        it "parses both separately" do
           output = `foo variadic with-mandatory foo bar baz`
           expect(output).to eq("first: foo\nUnused Arguments: bar, baz\n")
+        end
+
+        context "and there are options" do
+          it "parses both separately" do
+            output = `foo variadic with-mandatory-and-options foo bar baz`
+            expect(output).to eq("first: foo\nurl: \nmethod: \nUnused Arguments: bar, baz\n")
+
+            output = `foo variadic with-mandatory-and-options --url="root" --method="index" foo bar baz`
+            expect(output).to eq("first: foo\nurl: root\nmethod: index\nUnused Arguments: bar, baz\n")
+          end
         end
       end
     end
