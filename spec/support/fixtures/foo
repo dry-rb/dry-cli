@@ -463,6 +463,9 @@ module Foo
       end
 
       class SubCommand < Hanami::CLI::Command
+        before { puts 'Before sub command' }
+        after { puts 'After sub command' }
+
         desc "Override a subcommand"
 
         def call(*)
@@ -476,6 +479,10 @@ end
 Foo::CLI::Commands.register "generate webpack", Foo::Webpack::CLI::Generate
 Foo::CLI::Commands.register "hello",            Foo::Webpack::CLI::Hello
 Foo::CLI::Commands.register "sub command",      Foo::Webpack::CLI::SubCommand
+
+# we need to be sure that command will not override with nil command
+Foo::CLI::Commands.register "generate webpack", nil
+Foo::Webpack::CLI::SubCommand.after { puts 'After command defenition' }
 
 cli = Hanami::CLI.new(Foo::CLI::Commands)
 cli.call
