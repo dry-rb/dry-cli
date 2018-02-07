@@ -482,7 +482,9 @@ Foo::CLI::Commands.register "sub command",      Foo::Webpack::CLI::SubCommand
 
 # we need to be sure that command will not override with nil command
 Foo::CLI::Commands.register "generate webpack", nil
-Foo::Webpack::CLI::SubCommand.after { puts 'After command defenition' }
+
+Foo::CLI::Commands.after("sub command") { puts 'After command hook' }
+Foo::CLI::Commands.before("sub command") { puts 'before command hook' }
 
 cli = Hanami::CLI.new(Foo::CLI::Commands)
 cli.call

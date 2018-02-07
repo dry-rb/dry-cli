@@ -86,6 +86,24 @@ module Hanami
         @commands.get(arguments)
       end
 
+      # @since x.x.x
+      # @api private
+      def before(command, &callback)
+        command_class(command).before(&callback)
+      end
+
+      # @since x.x.x
+      # @api private
+      def after(command, &callback)
+        command_class(command).after(&callback)
+      end
+
+      # @since x.x.x
+      # @api private
+      def command_class(command)
+        get(command.split(' ')).command.class
+      end
+
       # Command name prefix
       #
       # @since 0.1.0
