@@ -371,7 +371,7 @@ module Foo
       class MandatoryAndVariadicArguments < Hanami::CLI::Command
         desc "require one command and accept multiple unused arguments"
 
-        argument :first, desc: 'mandatory first argument', required: true
+        argument :first, desc: "mandatory first argument", required: true
 
         def call(first:, **)
           puts "first: #{first}"
@@ -382,7 +382,7 @@ module Foo
       class MandatoryOptionsAndVariadicArguments < Hanami::CLI::Command
         desc "require one command, accept options and multiple unused arguments"
 
-        argument :first, desc: 'mandatory first argument', required: true
+        argument :first, desc: "mandatory first argument", required: true
         option :url, desc: "The action URL"
         option :method, desc: "The action HTTP method"
 
