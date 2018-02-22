@@ -1,7 +1,6 @@
 require "forwardable"
 require "concurrent/array"
 require "hanami/cli/option"
-require "hanami/cli/callbacks"
 
 module Hanami
   class CLI
@@ -14,7 +13,6 @@ module Hanami
       def self.inherited(base)
         super
         base.extend ClassMethods
-        base.include Callbacks
       end
 
       # @since 0.1.0

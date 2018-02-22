@@ -463,9 +463,6 @@ module Foo
       end
 
       class SubCommand < Hanami::CLI::Command
-        before { puts 'Before sub command' }
-        after { puts 'After sub command' }
-
         desc "Override a subcommand"
 
         def call(*)
@@ -485,6 +482,8 @@ Foo::CLI::Commands.register "generate webpack", nil
 
 Foo::CLI::Commands.after("sub command") { puts 'After command hook' }
 Foo::CLI::Commands.before("sub command") { puts 'before command hook' }
+
+# Foo::CLI::Commands.register "sub command",      Foo::Webpack::CLI::Hello
 
 cli = Hanami::CLI.new(Foo::CLI::Commands)
 cli.call

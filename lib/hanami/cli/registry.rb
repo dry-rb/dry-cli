@@ -9,6 +9,8 @@ module Hanami
       # @since 0.1.0
       # @api private
       def self.extended(base)
+        # base.include Callbacks
+
         base.class_eval do
           @commands = CommandRegistry.new
         end
@@ -89,13 +91,13 @@ module Hanami
       # @since x.x.x
       # @api private
       def before(command, &callback)
-        command_class(command).before(&callback)
+        get(command.split(' ')).before_callbacks.append(&callback)
       end
 
       # @since x.x.x
       # @api private
       def after(command, &callback)
-        command_class(command).after(&callback)
+        get(command.split(' ')).after_callbacks.append(&callback)
       end
 
       # @since x.x.x

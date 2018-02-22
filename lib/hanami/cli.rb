@@ -65,7 +65,10 @@ module Hanami
 
       if result.found?
         command, args = parse(result, out)
+
+        result.before_callbacks.run(self, args)
         command.call(args)
+        result.after_callbacks.run(self, args)
       else
         usage(result, out)
       end
