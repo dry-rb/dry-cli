@@ -7,6 +7,7 @@ module Hanami
   # @since 0.1.0
   class CLI
     require "hanami/cli/version"
+    require "hanami/cli/errors"
     require "hanami/cli/command"
     require "hanami/cli/registry"
     require "hanami/cli/parser"

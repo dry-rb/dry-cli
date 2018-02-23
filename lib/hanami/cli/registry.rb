@@ -85,6 +85,8 @@ module Hanami
       # @param command_name [String] the name used for command registration
       # @param callback [Proc] the callback
       #
+      # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
+      #
       # @since x.x.x
       #
       # @example
@@ -112,6 +114,8 @@ module Hanami
       #
       # @param command_name [String] the name used for command registration
       # @param callback [Proc] the callback
+      #
+      # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
       #
       # @since x.x.x
       #
@@ -149,7 +153,9 @@ module Hanami
       # @since x.x.x
       # @api private
       def command(command_name)
-        get(command_name.split(COMMAND_NAME_SEPARATOR))
+        get(command_name.split(COMMAND_NAME_SEPARATOR)).tap do |result|
+          raise UnkwnownCommandError.new(command_name) unless result.found?
+        end
       end
 
       # Command name prefix
