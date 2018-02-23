@@ -5,6 +5,7 @@ RSpec.describe "Rendering" do
     expected = <<~DESC
       Commands:
         foo assets [SUBCOMMAND]
+        foo callbacks DIR                      # Command with callbacks
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
@@ -60,6 +61,7 @@ RSpec.describe "Rendering" do
     expected = <<~DESC
       Commands:
         foo assets [SUBCOMMAND]
+        foo callbacks DIR                      # Command with callbacks
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
@@ -83,6 +85,7 @@ RSpec.describe "Rendering" do
     expected = <<~DESC
       Commands:
         foo assets [SUBCOMMAND]
+        foo callbacks DIR                      # Command with callbacks
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]

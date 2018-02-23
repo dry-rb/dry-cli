@@ -9,8 +9,6 @@ module Hanami
       # @since 0.1.0
       # @api private
       def self.extended(base)
-        # base.include Callbacks
-
         base.class_eval do
           @commands = CommandRegistry.new
         end
@@ -82,28 +80,76 @@ module Hanami
         end
       end
 
+      # Register a before callback.
+      #
+      # @param command_name [String] the name used for command registration
+      # @param callback [Proc] the callback
+      #
+      # @since x.x.x
+      #
+      # @example
+      #   require "hanami/cli"
+      #
+      #   module Foo
+      #     module Commands
+      #       extend Hanami::CLI::Registry
+      #
+      #       class Hello < Hanami::CLI::Command
+      #         def call(*)
+      #           puts "hello"
+      #         end
+      #       end
+      #
+      #       register "hello", Hello
+      #       before "hello", -> { puts "I'm about to say.." }
+      #     end
+      #   end
+      def before(command_name, &callback)
+        command(command_name).before_callbacks.append(&callback)
+      end
+
+      # Register an after callback.
+      #
+      # @param command_name [String] the name used for command registration
+      # @param callback [Proc] the callback
+      #
+      # @since x.x.x
+      #
+      # @example
+      #   require "hanami/cli"
+      #
+      #   module Foo
+      #     module Commands
+      #       extend Hanami::CLI::Registry
+      #
+      #       class Hello < Hanami::CLI::Command
+      #         def call(*)
+      #           puts "hello"
+      #         end
+      #       end
+      #
+      #       register "hello", Hello
+      #       after "hello", -> { puts "world" }
+      #     end
+      #   end
+      def after(command_name, &callback)
+        command(command_name).after_callbacks.append(&callback)
+      end
+
       # @since 0.1.0
       # @api private
       def get(arguments)
         @commands.get(arguments)
       end
 
-      # @since x.x.x
-      # @api private
-      def before(command, &callback)
-        get(command.split(' ')).before_callbacks.append(&callback)
-      end
+      private
+
+      COMMAND_NAME_SEPARATOR = " ".freeze
 
       # @since x.x.x
       # @api private
-      def after(command, &callback)
-        get(command.split(' ')).after_callbacks.append(&callback)
-      end
-
-      # @since x.x.x
-      # @api private
-      def command_class(command)
-        get(command.split(' ')).command.class
+      def command(command_name)
+        get(command_name.split(COMMAND_NAME_SEPARATOR))
       end
 
       # Command name prefix
