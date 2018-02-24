@@ -80,10 +80,82 @@ module Hanami
         end
       end
 
+      # Register a before callback.
+      #
+      # @param command_name [String] the name used for command registration
+      # @param callback [Proc] the callback
+      #
+      # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
+      #
+      # @since x.x.x
+      #
+      # @example
+      #   require "hanami/cli"
+      #
+      #   module Foo
+      #     module Commands
+      #       extend Hanami::CLI::Registry
+      #
+      #       class Hello < Hanami::CLI::Command
+      #         def call(*)
+      #           puts "hello"
+      #         end
+      #       end
+      #
+      #       register "hello", Hello
+      #       before "hello", -> { puts "I'm about to say.." }
+      #     end
+      #   end
+      def before(command_name, &callback)
+        command(command_name).before_callbacks.append(&callback)
+      end
+
+      # Register an after callback.
+      #
+      # @param command_name [String] the name used for command registration
+      # @param callback [Proc] the callback
+      #
+      # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
+      #
+      # @since x.x.x
+      #
+      # @example
+      #   require "hanami/cli"
+      #
+      #   module Foo
+      #     module Commands
+      #       extend Hanami::CLI::Registry
+      #
+      #       class Hello < Hanami::CLI::Command
+      #         def call(*)
+      #           puts "hello"
+      #         end
+      #       end
+      #
+      #       register "hello", Hello
+      #       after "hello", -> { puts "world" }
+      #     end
+      #   end
+      def after(command_name, &callback)
+        command(command_name).after_callbacks.append(&callback)
+      end
+
       # @since 0.1.0
       # @api private
       def get(arguments)
         @commands.get(arguments)
+      end
+
+      private
+
+      COMMAND_NAME_SEPARATOR = " ".freeze
+
+      # @since x.x.x
+      # @api private
+      def command(command_name)
+        get(command_name.split(COMMAND_NAME_SEPARATOR)).tap do |result|
+          raise UnkwnownCommandError.new(command_name) unless result.found?
+        end
       end
 
       # Command name prefix
