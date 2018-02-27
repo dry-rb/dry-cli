@@ -1,6 +1,10 @@
 # Hanami::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
+## v0.2.0.beta1 - 2018-02-28
+### Added
+- [Anton Davydov] Register `before`/`after` callbacks for commands
+
 ## v0.1.1 - 2018-02-27
 ### Added
 - [Luca Guidi] Official support for Ruby: MRI 2.5

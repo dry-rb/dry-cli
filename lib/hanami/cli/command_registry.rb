@@ -196,13 +196,13 @@ module Hanami
           @node.command
         end
 
-        # @since x.x.x
+        # @since 0.2.0
         # @api private
         def before_callbacks
           @node.before_callbacks
         end
 
-        # @since x.x.x
+        # @since 0.2.0
         # @api private
         def after_callbacks
           @node.after_callbacks

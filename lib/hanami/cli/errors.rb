@@ -1,12 +1,12 @@
 module Hanami
   class CLI
-    # @since x.x.x
+    # @since 0.2.0
     class Error < StandardError
     end
 
-    # @since x.x.x
+    # @since 0.2.0
     class UnkwnownCommandError < Error
-      # @since x.x.x
+      # @since 0.2.0
       # @api private
       def initialize(command_name)
         super("unknown command: `#{command_name}'")

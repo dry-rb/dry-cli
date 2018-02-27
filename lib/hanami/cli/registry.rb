@@ -87,7 +87,7 @@ module Hanami
       #
       # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
       #
-      # @since x.x.x
+      # @since 0.2.0
       #
       # @example
       #   require "hanami/cli"
@@ -117,7 +117,7 @@ module Hanami
       #
       # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
       #
-      # @since x.x.x
+      # @since 0.2.0
       #
       # @example
       #   require "hanami/cli"
@@ -150,7 +150,7 @@ module Hanami
 
       COMMAND_NAME_SEPARATOR = " ".freeze
 
-      # @since x.x.x
+      # @since 0.2.0
       # @api private
       def command(command_name)
         get(command_name.split(COMMAND_NAME_SEPARATOR)).tap do |result|
