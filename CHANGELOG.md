@@ -1,6 +1,14 @@
 # Hanami::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
+## v0.1.1 - 2018-02-27
+### Added
+- [Luca Guidi] Official support for Ruby: MRI 2.5
+
+### Fixed
+- [Alfonso Uceda] Ensure default values for arguments to be sent to commands
+- [Alfonso Uceda] Ensure to fail when a missing required argument isn't provider, but an option is provided instead
+
 ## v0.1.0 - 2017-10-25
 
 ## v0.1.0.rc1 - 2017-10-16
