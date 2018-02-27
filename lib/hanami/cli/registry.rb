@@ -83,6 +83,7 @@ module Hanami
       # Register a before callback.
       #
       # @param command_name [String] the name used for command registration
+      # @param callback_class [NilClass,Class] the callback class
       # @param callback [Proc] the callback
       #
       # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
@@ -106,13 +107,42 @@ module Hanami
       #       before "hello", -> { puts "I'm about to say.." }
       #     end
       #   end
-      def before(command_name, &callback)
+      #
+      # @example Register a class as callback
+      #   require "hanami/cli"
+      #
+      #   module Callbacks
+      #     class Hello
+      #       def call(*)
+      #         puts "world"
+      #       end
+      #     end
+      #   end
+      #
+      #   module Foo
+      #     module Commands
+      #       extend Hanami::CLI::Registry
+      #
+      #       class Hello < Hanami::CLI::Command
+      #         def call(*)
+      #           puts "I'm about to say.."
+      #         end
+      #       end
+      #
+      #       register "hello", Hello
+      #       before "hello", Callbacks::Hello
+      #     end
+      #   end
+      def before(command_name, callback_class = nil, &callback)
+        append_callback_class!(command(command_name).before_callbacks, callback_class)
+
         command(command_name).before_callbacks.append(&callback)
       end
 
       # Register an after callback.
       #
       # @param command_name [String] the name used for command registration
+      # @param callback_class [NilClass,Class] the callback class
       # @param callback [Proc] the callback
       #
       # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
@@ -136,7 +166,35 @@ module Hanami
       #       after "hello", -> { puts "world" }
       #     end
       #   end
-      def after(command_name, &callback)
+      #
+      # @example Register a class as callback
+      #   require "hanami/cli"
+      #
+      #   module Callbacks
+      #     class World
+      #       def call(*)
+      #         puts "world"
+      #       end
+      #     end
+      #   end
+      #
+      #   module Foo
+      #     module Commands
+      #       extend Hanami::CLI::Registry
+      #
+      #       class Hello < Hanami::CLI::Command
+      #         def call(*)
+      #           puts "hello"
+      #         end
+      #       end
+      #
+      #       register "hello", Hello
+      #       after "hello", Callbacks::World
+      #     end
+      #   end
+      def after(command_name, callback_class = nil, &callback)
+        append_callback_class!(command(command_name).after_callbacks, callback_class)
+
         command(command_name).after_callbacks.append(&callback)
       end
 
@@ -156,6 +214,15 @@ module Hanami
         get(command_name.split(COMMAND_NAME_SEPARATOR)).tap do |result|
           raise UnkwnownCommandError.new(command_name) unless result.found?
         end
+      end
+
+      # @since x.x.x
+      # @api private
+      def append_callback_class!(chain, klass)
+        return unless klass
+
+        class_callback = ->(*args) { klass.new.call(*args) }
+        chain.append(&class_callback)
       end
 
       # Command name prefix
