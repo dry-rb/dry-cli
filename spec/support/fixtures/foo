@@ -348,6 +348,16 @@ module Foo
         end
       end
 
+      class Greeting < Hanami::CLI::Command
+        argument :response, default: "Hello World"
+
+        option :person
+
+        def call(response:, **options)
+          puts "response: #{response}, person: #{options[:person]}"
+        end
+      end
+
       module Sub
         class Command < Hanami::CLI::Command
           def call(*)
@@ -392,6 +402,7 @@ Foo::CLI::Commands.register "server",  Foo::CLI::Commands::Server,  aliases: ["s
 Foo::CLI::Commands.register "version", Foo::CLI::Commands::Version, aliases: ["v", "-v", "--version"]
 
 Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
+Foo::CLI::Commands.register "greeting",    Foo::CLI::Commands::Greeting
 Foo::CLI::Commands.register "sub command", Foo::CLI::Commands::Sub::Command
 
 module Foo
