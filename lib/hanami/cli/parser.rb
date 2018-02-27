@@ -51,8 +51,6 @@ module Hanami
         parse_required_params = Hash[command.required_arguments.map(&:name).zip(arguments)]
         all_required_params_satisfied = command.required_arguments.all? { |param| !parse_required_params[param.name].nil? }
 
-        Hanami::CLI.unused_arguments = arguments.drop(command.required_arguments.length).freeze
-
         unless all_required_params_satisfied
           parse_required_params_values = parse_required_params.values.compact
 

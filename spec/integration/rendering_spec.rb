@@ -15,7 +15,6 @@ RSpec.describe "Rendering" do
         foo routes                             # Print routes
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
-        foo variadic [SUBCOMMAND]
         foo version                            # Print Foo version
     DESC
 
@@ -70,7 +69,6 @@ RSpec.describe "Rendering" do
         foo routes                             # Print routes
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
-        foo variadic [SUBCOMMAND]
         foo version                            # Print Foo version
     DESC
 
@@ -93,7 +91,6 @@ RSpec.describe "Rendering" do
         foo routes                             # Print routes
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
-        foo variadic [SUBCOMMAND]
         foo version                            # Print Foo version
     DESC
 

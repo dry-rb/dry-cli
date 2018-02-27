@@ -358,6 +358,7 @@ module Foo
         end
       end
 
+<<<<<<< HEAD
       class VariadicArguments < Hanami::CLI::Command
         desc "accept multiple arguments at the end of the command"
 
@@ -392,6 +393,8 @@ module Foo
         end
       end
 
+=======
+>>>>>>> parent of 2ab7871... Make unused arguments available to the end user
       module Sub
         class Command < Hanami::CLI::Command
           def call(*)
@@ -438,10 +441,6 @@ Foo::CLI::Commands.register "version", Foo::CLI::Commands::Version, aliases: ["v
 Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register "greeting",    Foo::CLI::Commands::Greeting
 Foo::CLI::Commands.register "sub command", Foo::CLI::Commands::Sub::Command
-
-Foo::CLI::Commands.register "variadic default",                    Foo::CLI::Commands::VariadicArguments
-Foo::CLI::Commands.register "variadic with-mandatory",             Foo::CLI::Commands::MandatoryAndVariadicArguments
-Foo::CLI::Commands.register "variadic with-mandatory-and-options", Foo::CLI::Commands::MandatoryOptionsAndVariadicArguments
 
 module Foo
   module Webpack
