@@ -453,8 +453,13 @@ Foo::CLI::Commands.register "callbacks",        Foo::Webpack::CLI::CallbacksComm
 # we need to be sure that command will not override with nil command
 Foo::CLI::Commands.register "generate webpack", nil
 
-Foo::CLI::Commands.before("callbacks") { |args| puts "before command callback, #{args.inspect}" }
-Foo::CLI::Commands.after("callbacks")  { |args| puts "after command callback, #{args.inspect}" }
+Foo::CLI::Commands.before("callbacks") do |args|
+  puts "before command callback #{self.class.name} #{args.inspect}"
+end
+
+Foo::CLI::Commands.after("callbacks") do |args|
+  puts "after command callback #{self.class.name} #{args.inspect}"
+end
 
 cli = Hanami::CLI.new(Foo::CLI::Commands)
 cli.call
