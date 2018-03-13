@@ -22,9 +22,9 @@ RSpec.describe "Third-party gems" do
   context "callbacks" do
     it "allows to add callbacks as a block" do
       expected = <<~OUTPUT
-        before command callback, {:url=>"https://hanamirb.test", :dir=>"."}
+        before command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
         dir: ., url: "https://hanamirb.test"
-        after command callback, {:url=>"https://hanamirb.test", :dir=>"."}
+        after command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
       OUTPUT
 
       output = `foo callbacks . --url=https://hanamirb.test`
