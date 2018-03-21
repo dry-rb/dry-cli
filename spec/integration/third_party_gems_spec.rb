@@ -24,9 +24,11 @@ RSpec.describe "Third-party gems" do
       expected = <<~OUTPUT
         before command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
         before command callback, in class callback, {:url=>"https://hanamirb.test", :dir=>"."}
+        before command callback, in object callback, {:url=>"https://hanamirb.test", :dir=>"."}
         dir: ., url: "https://hanamirb.test"
         after command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
         after command callback, in class callback, {:url=>"https://hanamirb.test", :dir=>"."}
+        after command callback, in object callback, {:url=>"https://hanamirb.test", :dir=>"."}
       OUTPUT
 
       output = `foo callbacks . --url=https://hanamirb.test`

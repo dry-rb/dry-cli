@@ -473,10 +473,24 @@ module Callbacks
       puts "after command callback, in class callback, #{args.inspect}"
     end
   end
+
+  class Before
+    def call(args)
+      puts "before command callback, in object callback, #{args.inspect}"
+    end
+  end
+
+  class After
+    def call(args)
+      puts "after command callback, in object callback, #{args.inspect}"
+    end
+  end
 end
 
 Foo::CLI::Commands.before("callbacks", Callbacks::BeforeClass)
 Foo::CLI::Commands.after("callbacks",  Callbacks::AfterClass)
+Foo::CLI::Commands.before("callbacks", Callbacks::Before.new)
+Foo::CLI::Commands.after("callbacks",  Callbacks::After.new)
 
 cli = Hanami::CLI.new(Foo::CLI::Commands)
 cli.call
