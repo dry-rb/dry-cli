@@ -461,5 +461,60 @@ Foo::CLI::Commands.after("callbacks") do |args|
   puts "after command callback #{self.class.name} #{args.inspect}"
 end
 
+module Callbacks
+  class BeforeClass
+    def call(args)
+      puts "before callback (class), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
+    end
+  end
+
+  class AfterClass
+    def call(args)
+      puts "after callback (class), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
+    end
+  end
+
+  class Before
+    def call(args)
+      puts "before callback (object), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
+    end
+  end
+
+  class After
+    def call(args)
+      puts "after callback (object), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
+    end
+  end
+end
+
+Foo::CLI::Commands.before("callbacks", Callbacks::BeforeClass)
+Foo::CLI::Commands.after("callbacks",  Callbacks::AfterClass)
+Foo::CLI::Commands.before("callbacks", Callbacks::Before.new)
+Foo::CLI::Commands.after("callbacks",  Callbacks::After.new)
+
 cli = Hanami::CLI.new(Foo::CLI::Commands)
 cli.call
