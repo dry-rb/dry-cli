@@ -83,10 +83,13 @@ module Hanami
       # Register a before callback.
       #
       # @param command_name [String] the name used for command registration
-      # @param callback_class [NilClass,Class] the callback class
-      # @param callback [Proc] the callback
+      # @param callback [Class, #call] the callback object. If a class is given,
+      #   it MUST respond to `#call`.
+      # @param blk [Proc] the callback espressed as a block
       #
       # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
+      # @raise [Hanami::CLI::InvalidCallbackError] if the given callback doesn't
+      #   implement the required interface
       #
       # @since 0.2.0
       #
@@ -105,6 +108,32 @@ module Hanami
       #
       #       register "hello", Hello
       #       before "hello", -> { puts "I'm about to say.." }
+      #     end
+      #   end
+      #
+      # @example Register an object as callback
+      #   require "hanami/cli"
+      #
+      #   module Callbacks
+      #     class Hello
+      #       def call(*)
+      #         puts "world"
+      #       end
+      #     end
+      #   end
+      #
+      #   module Foo
+      #     module Commands
+      #       extend Hanami::CLI::Registry
+      #
+      #       class Hello < Hanami::CLI::Command
+      #         def call(*)
+      #           puts "I'm about to say.."
+      #         end
+      #       end
+      #
+      #       register "hello", Hello
+      #       before "hello", Callbacks::Hello.new
       #     end
       #   end
       #
@@ -133,19 +162,20 @@ module Hanami
       #       before "hello", Callbacks::Hello
       #     end
       #   end
-      def before(command_name, callback_class = nil, &callback)
-        append_callback_class!(command(command_name).before_callbacks, callback_class)
-
-        command(command_name).before_callbacks.append(&callback)
+      def before(command_name, callback = nil, &blk)
+        command(command_name).before_callbacks.append(&_callback(callback, blk))
       end
 
       # Register an after callback.
       #
       # @param command_name [String] the name used for command registration
-      # @param callback_class [NilClass,Class] the callback class
-      # @param callback [Proc] the callback
+      # @param callback [Class, #call] the callback object. If a class is given,
+      #   it MUST respond to `#call`.
+      # @param blk [Proc] the callback espressed as a block
       #
       # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
+      # @raise [Hanami::CLI::InvalidCallbackError] if the given callback doesn't
+      #   implement the required interface
       #
       # @since 0.2.0
       #
@@ -164,6 +194,32 @@ module Hanami
       #
       #       register "hello", Hello
       #       after "hello", -> { puts "world" }
+      #     end
+      #   end
+      #
+      # @example Register an object as callback
+      #   require "hanami/cli"
+      #
+      #   module Callbacks
+      #     class World
+      #       def call(*)
+      #         puts "world"
+      #       end
+      #     end
+      #   end
+      #
+      #   module Foo
+      #     module Commands
+      #       extend Hanami::CLI::Registry
+      #
+      #       class Hello < Hanami::CLI::Command
+      #         def call(*)
+      #           puts "hello"
+      #         end
+      #       end
+      #
+      #       register "hello", Hello
+      #       after "hello", Callbacks::World.new
       #     end
       #   end
       #
@@ -192,10 +248,8 @@ module Hanami
       #       after "hello", Callbacks::World
       #     end
       #   end
-      def after(command_name, callback_class = nil, &callback)
-        append_callback_class!(command(command_name).after_callbacks, callback_class)
-
-        command(command_name).after_callbacks.append(&callback)
+      def after(command_name, callback = nil, &blk)
+        command(command_name).after_callbacks.append(&_callback(callback, blk))
       end
 
       # @since 0.1.0
@@ -216,14 +270,27 @@ module Hanami
         end
       end
 
-      # @since x.x.x
+      # @since 0.2.0
       # @api private
-      def append_callback_class!(chain, klass)
-        return unless klass
+      #
+      # rubocop:disable Metrics/MethodLength
+      def _callback(callback, blk)
+        return blk if blk.respond_to?(:to_proc)
 
-        class_callback = ->(*args) { klass.new.call(*args) }
-        chain.append(&class_callback)
+        case callback
+        when ->(c) { c.respond_to?(:call) }
+          callback.method(:call)
+        when Class
+          begin
+            _callback(callback.new, blk)
+          rescue ArgumentError
+            raise InvalidCallbackError.new(callback)
+          end
+        else
+          raise InvalidCallbackError.new(callback)
+        end
       end
+      # rubocop:enable Metrics/MethodLength
 
       # Command name prefix
       #
