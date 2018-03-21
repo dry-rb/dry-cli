@@ -464,25 +464,49 @@ end
 module Callbacks
   class BeforeClass
     def call(args)
-      puts "before command callback, in class callback, #{args.inspect}"
+      puts "before callback (class), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
     end
   end
 
   class AfterClass
     def call(args)
-      puts "after command callback, in class callback, #{args.inspect}"
+      puts "after callback (class), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
     end
   end
 
   class Before
     def call(args)
-      puts "before command callback, in object callback, #{args.inspect}"
+      puts "before callback (object), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
     end
   end
 
   class After
     def call(args)
-      puts "after command callback, in object callback, #{args.inspect}"
+      puts "after callback (object), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
     end
   end
 end
