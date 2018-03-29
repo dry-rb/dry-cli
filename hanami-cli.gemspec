@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
     f.match(%r{^(test|spec|features)/})
   end
 
-  spec.add_dependency "hanami-utils",    "1.2.0.beta2"
+  spec.add_dependency "hanami-utils",    "1.2.0.rc1"
   spec.add_dependency "concurrent-ruby", "~> 1.0"
 
   spec.add_development_dependency "bundler"

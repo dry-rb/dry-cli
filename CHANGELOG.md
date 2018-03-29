@@ -1,6 +1,8 @@
 # Hanami::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
+## v0.2.0.rc1 - 2018-03-30
+
 ## v0.2.0.beta2 - 2018-03-23
 ### Added
 - [Anton Davydov & Luca Guidi] Support objects as callbacks
