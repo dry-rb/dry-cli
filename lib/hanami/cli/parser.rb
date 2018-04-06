@@ -30,10 +30,9 @@ module Hanami
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, names, parsed_options)
       rescue ::OptionParser::ParseError
-        return Result.failure
+        Result.failure
       end
       # rubocop:enable Metrics/MethodLength
-      # rubocop:enable Metrics/AbcSize
 
       # @since 0.1.0
       # @api private
