@@ -18,4 +18,21 @@ RSpec.describe "Third-party gems" do
     output = `foo sub command`
     expect(output).to eq("override from webpack\n")
   end
+
+  context "callbacks" do
+    it "allows to add callbacks as a block" do
+      expected = <<~OUTPUT
+        before command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
+        before callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+        before callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+        dir: ., url: "https://hanamirb.test"
+        after command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
+        after callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+        after callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+      OUTPUT
+
+      output = `foo callbacks . --url=https://hanamirb.test`
+      expect(output).to eq(expected)
+    end
+  end
 end

@@ -7,6 +7,7 @@ module Hanami
   # @since 0.1.0
   class CLI
     require "hanami/cli/version"
+    require "hanami/cli/errors"
     require "hanami/cli/command"
     require "hanami/cli/registry"
     require "hanami/cli/parser"
@@ -51,7 +52,10 @@ module Hanami
 
       if result.found?
         command, args = parse(result, out)
+
+        result.before_callbacks.run(command, args)
         command.call(args)
+        result.after_callbacks.run(command, args)
       else
         usage(result, out)
       end

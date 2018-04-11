@@ -1,6 +1,23 @@
 # Hanami::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
+## v0.2.0 - 2018-04-11
+
+## v0.2.0.rc2 - 2018-04-06
+
+## v0.2.0.rc1 - 2018-03-30
+
+## v0.2.0.beta2 - 2018-03-23
+### Added
+- [Anton Davydov & Luca Guidi] Support objects as callbacks
+
+### Fixed
+- [Anton Davydov & Luca Guidi] Ensure callbacks' context of execution (aka `self`) to be the command that is being executed
+
+## v0.2.0.beta1 - 2018-02-28
+### Added
+- [Anton Davydov] Register `before`/`after` callbacks for commands
+
 ## v0.1.1 - 2018-02-27
 ### Added
 - [Luca Guidi] Official support for Ruby: MRI 2.5

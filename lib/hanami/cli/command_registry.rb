@@ -1,4 +1,5 @@
 require "concurrent/hash"
+require 'hanami/utils/callbacks'
 
 module Hanami
   class CLI
@@ -98,11 +99,22 @@ module Hanami
 
         # @since 0.1.0
         # @api private
+        attr_reader :before_callbacks
+
+        # @since 0.1.0
+        # @api private
+        attr_reader :after_callbacks
+
+        # @since 0.1.0
+        # @api private
         def initialize(parent = nil)
           @parent   = parent
           @children = Concurrent::Hash.new
           @aliases  = Concurrent::Hash.new
           @command  = nil
+
+          @before_callbacks = Utils::Callbacks::Chain.new
+          @after_callbacks = Utils::Callbacks::Chain.new
         end
 
         # @since 0.1.0
@@ -182,6 +194,18 @@ module Hanami
         # @api private
         def command
           @node.command
+        end
+
+        # @since 0.2.0
+        # @api private
+        def before_callbacks
+          @node.before_callbacks
+        end
+
+        # @since 0.2.0
+        # @api private
+        def after_callbacks
+          @node.after_callbacks
         end
       end
     end

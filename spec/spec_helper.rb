@@ -24,4 +24,5 @@ RSpec.configure do |config|
 end
 
 require 'hanami-utils'
+require 'hanami/cli'
 Hanami::Utils.require!("spec/support/**/*.rb")
