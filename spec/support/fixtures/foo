@@ -441,10 +441,6 @@ Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register "greeting",    Foo::CLI::Commands::Greeting
 Foo::CLI::Commands.register "sub command", Foo::CLI::Commands::Sub::Command
 
-Foo::CLI::Commands.register "variadic default",                    Foo::CLI::Commands::VariadicArguments
-Foo::CLI::Commands.register "variadic with-mandatory",             Foo::CLI::Commands::MandatoryAndVariadicArguments
-Foo::CLI::Commands.register "variadic with-mandatory-and-options", Foo::CLI::Commands::MandatoryOptionsAndVariadicArguments
-
 module Foo
   module Webpack
     module CLI
@@ -471,6 +467,16 @@ module Foo
           puts "override from webpack"
         end
       end
+
+      class CallbacksCommand < Hanami::CLI::Command
+        desc "Command with callbacks"
+        argument :dir, required: true
+        option :url
+
+        def call(dir:, url: nil, **)
+          puts "dir: #{dir}, url: #{url.inspect}"
+        end
+      end
     end
   end
 end
@@ -478,6 +484,73 @@ end
 Foo::CLI::Commands.register "generate webpack", Foo::Webpack::CLI::Generate
 Foo::CLI::Commands.register "hello",            Foo::Webpack::CLI::Hello
 Foo::CLI::Commands.register "sub command",      Foo::Webpack::CLI::SubCommand
+Foo::CLI::Commands.register "callbacks",        Foo::Webpack::CLI::CallbacksCommand
+
+# we need to be sure that command will not override with nil command
+Foo::CLI::Commands.register "generate webpack", nil
+
+Foo::CLI::Commands.before("callbacks") do |args|
+  puts "before command callback #{self.class.name} #{args.inspect}"
+end
+
+Foo::CLI::Commands.after("callbacks") do |args|
+  puts "after command callback #{self.class.name} #{args.inspect}"
+end
+
+module Callbacks
+  class BeforeClass
+    def call(args)
+      puts "before callback (class), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
+    end
+  end
+
+  class AfterClass
+    def call(args)
+      puts "after callback (class), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
+    end
+  end
+
+  class Before
+    def call(args)
+      puts "before callback (object), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
+    end
+  end
+
+  class After
+    def call(args)
+      puts "after callback (object), #{count(args)} arg(s): #{args.inspect}"
+    end
+
+    private
+
+    def count(args)
+      args.count
+    end
+  end
+end
+
+Foo::CLI::Commands.before("callbacks", Callbacks::BeforeClass)
+Foo::CLI::Commands.after("callbacks",  Callbacks::AfterClass)
+Foo::CLI::Commands.before("callbacks", Callbacks::Before.new)
+Foo::CLI::Commands.after("callbacks",  Callbacks::After.new)
 
 cli = Hanami::CLI.new(Foo::CLI::Commands)
 cli.call

@@ -25,6 +25,7 @@ General purpose Command Line Interface (CLI) framework for Ruby.
     - [Subcommands](#subcommands-1)
     - [Aliases](#aliases)
     - [Subcommand aliases](#subcommand-aliases)
+    - [Callbacks](#callbacks)
   - [Development](#development)
   - [Contributing](#contributing)
   - [Alternatives](#alternatives)
@@ -449,6 +450,52 @@ Commands:
 ```shell
 % foo g config
 generated configuration
+```
+
+### Callbacks
+
+Third party gems can register _before_ and _after_ callbacks to enhance a command.
+
+From the `foo` gem we have a command `hello`.
+
+```ruby
+#!/usr/bin/env ruby
+require "hanami/cli"
+
+module Foo
+  module CLI
+    module Commands
+      extend Hanami::CLI::Registry
+
+      class Hello < Hanami::CLI::Command
+        argument :name, required: true
+
+        def call(name:, **)
+          puts "hello #{name}"
+        end
+      end
+    end
+  end
+end
+
+Foo::CLI::Commands.register "hello", Foo::CLI::Commands::Hello
+
+cli = Hanami::CLI.new(Foo::CLI::Commands)
+cli.call
+```
+
+The `foo-bar` gem enhances `hello` command with callbacks:
+
+```
+Foo::CLI::Commands.before("hello") { |args| puts "debug: #{args.inspect}" } # syntax 1
+Foo::CLI::Commands.after "hello", &->(args) { puts "bye, #{args.fetch(:name)}" } # syntax 2
+```
+
+```shell
+% foo hello Anton
+debug: {:name=>"Anton"}
+hello Anton
+bye, Anton
 ```
 
 ## Development

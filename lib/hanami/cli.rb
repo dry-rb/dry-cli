@@ -9,25 +9,12 @@ module Hanami
   # @since 0.1.0
   class CLI
     require "hanami/cli/version"
+    require "hanami/cli/errors"
     require "hanami/cli/command"
     require "hanami/cli/registry"
     require "hanami/cli/parser"
     require "hanami/cli/usage"
     require "hanami/cli/banner"
-
-    class << self
-      # Returns a list of arguments have not been defined for the subcommand.
-      #
-      # @return [Array] list of unused arguments
-      # @since 0.2.0
-      attr_reader :unused_arguments
-
-      # Assigns the unused arguments from the parser.
-      #
-      # @since 0.2.0
-      # @api private
-      attr_writer :unused_arguments
-    end
 
     # Check if command
     #
@@ -67,7 +54,10 @@ module Hanami
 
       if result.found?
         command, args = parse(result, out)
+
+        result.before_callbacks.run(command, args)
         command.call(args)
+        result.after_callbacks.run(command, args)
       else
         usage(result, out)
       end

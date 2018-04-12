@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require "forwardable"
-require "hanami/cli/option"
 require "concurrent/array"
+require "hanami/cli/option"
 
 module Hanami
   class CLI

@@ -7,6 +7,7 @@ RSpec.describe "Rendering" do
     expected = <<~DESC
       Commands:
         foo assets [SUBCOMMAND]
+        foo callbacks DIR                      # Command with callbacks
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
@@ -17,7 +18,6 @@ RSpec.describe "Rendering" do
         foo routes                             # Print routes
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
-        foo variadic [SUBCOMMAND]
         foo version                            # Print Foo version
     DESC
 
@@ -62,6 +62,7 @@ RSpec.describe "Rendering" do
     expected = <<~DESC
       Commands:
         foo assets [SUBCOMMAND]
+        foo callbacks DIR                      # Command with callbacks
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
@@ -72,7 +73,6 @@ RSpec.describe "Rendering" do
         foo routes                             # Print routes
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
-        foo variadic [SUBCOMMAND]
         foo version                            # Print Foo version
     DESC
 
@@ -85,6 +85,7 @@ RSpec.describe "Rendering" do
     expected = <<~DESC
       Commands:
         foo assets [SUBCOMMAND]
+        foo callbacks DIR                      # Command with callbacks
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
@@ -95,7 +96,6 @@ RSpec.describe "Rendering" do
         foo routes                             # Print routes
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
-        foo variadic [SUBCOMMAND]
         foo version                            # Print Foo version
     DESC
 

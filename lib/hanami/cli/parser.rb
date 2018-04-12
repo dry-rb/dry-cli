@@ -32,10 +32,9 @@ module Hanami
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, names, parsed_options)
       rescue ::OptionParser::ParseError
-        return Result.failure
+        Result.failure
       end
       # rubocop:enable Metrics/MethodLength
-      # rubocop:enable Metrics/AbcSize
 
       # @since 0.1.0
       # @api private
@@ -52,8 +51,6 @@ module Hanami
         parse_params = Hash[command.arguments.map(&:name).zip(arguments)]
         parse_required_params = Hash[command.required_arguments.map(&:name).zip(arguments)]
         all_required_params_satisfied = command.required_arguments.all? { |param| !parse_required_params[param.name].nil? }
-
-        Hanami::CLI.unused_arguments = arguments.drop(command.required_arguments.length).freeze
 
         unless all_required_params_satisfied
           parse_required_params_values = parse_required_params.values.compact
