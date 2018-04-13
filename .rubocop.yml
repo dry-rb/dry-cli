@@ -1,4 +1,6 @@
 # Please keep AllCops, Bundler, Style, Metrics groups and then order cops
 # alphabetically
+AllCops:
+  TargetRubyVersion: 2.4.0
 inherit_from:
   - https://raw.githubusercontent.com/hanami/devtools/master/.rubocop-unstable.yml

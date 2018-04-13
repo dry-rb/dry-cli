@@ -27,6 +27,8 @@ Gem::Specification.new do |spec|
     f.match(%r{^(test|spec|features)/})
   end
 
+  spec.required_ruby_version = ">= 2.4.0"
+
   spec.add_dependency "hanami-utils",    "~> 2.0.alpha"
   spec.add_dependency "concurrent-ruby", "~> 1.0"
 
