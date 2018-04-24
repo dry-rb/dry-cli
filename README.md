@@ -204,7 +204,7 @@ Performing a request (mode: http2)
 
 ```shell
 % foo request --mode=unknown
-Error: Invalid param provided
+Error: "request" was called with arguments "--mode=unknown"
 ```
 
 ## Installation
@@ -399,7 +399,7 @@ generated tests - framework: rspec
 
 ```shell
 % foo generate test --framework=unknown
-Error: Invalid param provided
+Error: "test" was called with arguments "--framework=unknown"
 ```
 
 ### Boolean options
