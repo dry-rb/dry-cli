@@ -11,8 +11,9 @@ module Hanami
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       def self.call(command, arguments, names)
+        original_arguments = arguments.dup
         parsed_options = {}
 
         OptionParser.new do |opts|
@@ -30,9 +31,9 @@ module Hanami
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, names, parsed_options)
       rescue ::OptionParser::ParseError
-        Result.failure
+        Result.failure("Error: \"#{command.command_name}\" was called with arguments \"#{original_arguments.join(' ')}\"")
       end
-      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
       # @since 0.1.0
       # @api private
