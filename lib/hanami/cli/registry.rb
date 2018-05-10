@@ -6,11 +6,17 @@ module Hanami
     #
     # @since 0.1.0
     module Registry
+
+      # @since 0.2.1
+      # @api private
+      attr_reader :usage_descriptions
+
       # @since 0.1.0
       # @api private
       def self.extended(base)
         base.class_eval do
           @commands = CommandRegistry.new
+          @usage_descriptions = {}
         end
       end
 
@@ -250,6 +256,29 @@ module Hanami
       #   end
       def after(command_name, callback = nil, &blk)
         command(command_name).after_callbacks.append(&_callback(callback, blk))
+      end
+
+      # Add usage description
+      #
+      # @param before [String] the description at the beginning of usage 
+      # @param after [String] the description at the end of usage
+      #
+      # @since 0.2.1
+      #
+      # @example
+      #   require "hanami/cli"
+      #
+      #   module Foo
+      #     module Commands
+      #       extend Hanami::CLI::Registry
+      #       usage_description before: 'This will be visible before usage.', 
+      #         after: 'This will be visible after usage.'
+      #
+      #     end
+      #   end
+      #
+      def usage_description(options)
+        @usage_descriptions = options
       end
 
       # @since 0.1.0

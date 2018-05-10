@@ -106,7 +106,7 @@ module Hanami
     # @since 0.1.0
     # @api private
     def usage(result, out)
-      Usage.call(result, out)
+      Usage.call(result, out, commands.usage_descriptions)
       exit(1)
     end
 
