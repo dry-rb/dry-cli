@@ -74,6 +74,13 @@ module Hanami
         say(:append, path)
       end
 
+      # @since x.x.x
+      # @api public
+      def execute(command, **opts)
+        system(command, opts)
+        say(:run, command)
+      end
+
       private
 
       # @since x.x.x
