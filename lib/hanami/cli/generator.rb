@@ -21,7 +21,7 @@ module Hanami
         say(:create, destination)
       end
 
-      # Should we replace this method with `create` and passing in
+      # Q: Should we replace this method with `create` and passing in
       # `source` as `nil`? (and `context` too)
       # @since x.x.x
       # @api public
@@ -35,6 +35,22 @@ module Hanami
       def copy(source, destination)
         files.cp(source, destination)
         say(:create, destination)
+      end
+
+      # @since x.x.x
+      # @api public
+      def delete(path, allow_missing: false)
+        return if allow_missing && !files.exist?(path)
+        files.delete(path)
+        say(:remove, destination)
+      end
+
+      # TODO: add allow_missing?
+      # @since x.x.x
+      # @api public
+      def delete_directory(path)
+        files.delete_directory(path)
+        say(:remove, destination)
       end
 
       private
