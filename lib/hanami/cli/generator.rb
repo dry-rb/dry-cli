@@ -30,6 +30,13 @@ module Hanami
         say(:create, destination)
       end
 
+      # @since x.x.x
+      # @api public
+      def copy(source, destination)
+        files.cp(source, destination)
+        say(:create, destination)
+      end
+
       private
 
       # @since x.x.x
