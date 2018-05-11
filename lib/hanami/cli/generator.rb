@@ -53,6 +53,13 @@ module Hanami
         say(:remove, destination)
       end
 
+      # @since x.x.x
+      # @api public
+      def remove_line(path, content)
+        files.remove_line(path, content)
+        say(:subtract, path)
+      end
+
       private
 
       # @since x.x.x
