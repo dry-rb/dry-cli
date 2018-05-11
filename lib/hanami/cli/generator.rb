@@ -14,13 +14,19 @@ module Hanami
         @out       = out
       end
 
-      # @since 1.1.0
-      # @api private
-      def generate_file(source, destination, context)
-        files.write(
-          destination,
-          render(source, context)
-        )
+      # @since x.x.x
+      # @api public
+      def create(source, destination, context)
+        files.write(destination, render(source, context))
+        say(:create, destination)
+      end
+
+      # Should we replace this method with `create` and passing in
+      # `source` as `nil`? (and `context` too)
+      # @since x.x.x
+      # @api public
+      def touch(destination)
+        files.touch(destination)
         say(:create, destination)
       end
 
