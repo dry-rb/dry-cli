@@ -25,9 +25,9 @@ module Hanami
       # `source` as `nil`? (and `context` too)
       # @since x.x.x
       # @api public
-      def touch(destination)
-        files.touch(destination)
-        say(:create, destination)
+      def touch(path)
+        files.touch(path)
+        say(:create, path)
       end
 
       # @since x.x.x
@@ -42,7 +42,7 @@ module Hanami
       def delete(path, allow_missing: false)
         return if allow_missing && !files.exist?(path)
         files.delete(path)
-        say(:remove, destination)
+        say(:remove, path)
       end
 
       # TODO: add allow_missing?
@@ -50,7 +50,7 @@ module Hanami
       # @api public
       def delete_directory(path)
         files.delete_directory(path)
-        say(:remove, destination)
+        say(:remove, path)
       end
 
       # @since x.x.x
