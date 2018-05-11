@@ -6,7 +6,6 @@ module Hanami
     #
     # @since 0.1.0
     module Registry
-
       # @since 0.2.1
       # @api private
       attr_reader :usage_descriptions
@@ -260,7 +259,7 @@ module Hanami
 
       # Add usage description
       #
-      # @param before [String] the description at the beginning of usage 
+      # @param before [String] the description at the beginning of usage
       # @param after [String] the description at the end of usage
       #
       # @since 0.2.1
@@ -271,7 +270,7 @@ module Hanami
       #   module Foo
       #     module Commands
       #       extend Hanami::CLI::Registry
-      #       usage_description before: 'This will be visible before usage.', 
+      #       usage_description before: 'This will be visible before usage.',
       #         after: 'This will be visible after usage.'
       #
       #     end

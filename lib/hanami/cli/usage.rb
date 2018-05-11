@@ -14,7 +14,7 @@ module Hanami
       # @since 0.1.0
       # @api private
       def self.call(result, out, descriptions)
-        out.puts descriptions[:before] + "\n\n" if show_description?(:before, result, descriptions)
+        show_description :before, result, out, descriptions
 
         out.puts "Commands:"
         max_length, commands = commands_and_arguments(result)
@@ -24,7 +24,7 @@ module Hanami
           out.puts "#{justify(banner, max_length, usage)}#{usage}"
         end
 
-        out.puts "\n" + descriptions[:after] if show_description?(:after, result, descriptions)
+        show_description :after, result, out, descriptions
       end
 
       # @since 0.1.0
@@ -90,9 +90,10 @@ module Hanami
 
       # @since 0.2.1
       # @api private
-      def self.show_description?(name, result, descriptions)
-        descriptions.key?(name) && result.names.none?
-      end 
+      def self.show_description(name, result, out, descriptions)
+        return unless descriptions.key?(name) && result.names.none?
+        out.puts name == :before ? descriptions[name] + "\n\n" : "\n" + descriptions[name]
+      end
     end
   end
 end
