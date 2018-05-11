@@ -67,6 +67,13 @@ module Hanami
         say(:insert, path)
       end
 
+      # @since x.x.x
+      # @api public
+      def append(path, content)
+        files.append(path, content)
+        say(:append, path)
+      end
+
       private
 
       # @since x.x.x
