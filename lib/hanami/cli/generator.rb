@@ -60,6 +60,13 @@ module Hanami
         say(:subtract, path)
       end
 
+      # @since x.x.x
+      # @api public
+      def insert(path, content, after:)
+        files.inject_line_after(path, after, content)
+        say(:insert, path)
+      end
+
       private
 
       # @since x.x.x
