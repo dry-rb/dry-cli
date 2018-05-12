@@ -15,7 +15,7 @@ module Hanami
       def self.extended(base)
         base.class_eval do
           @commands = CommandRegistry.new
-          @usage_descriptions = {}
+          @usage_descriptions = Concurrent::Hash.new
         end
       end
 
@@ -277,7 +277,7 @@ module Hanami
       #   end
       #
       def usage_description(options)
-        @usage_descriptions = options
+        @usage_descriptions.merge!(options)
       end
 
       # @since 0.1.0
