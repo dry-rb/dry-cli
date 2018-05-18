@@ -1,6 +1,6 @@
 RSpec.describe "Rendering" do
   it "prints required params and banners" do
-    output = `foo 2>&1`
+    output = `foo`
 
     expected = <<~DESC
       This is before description.
