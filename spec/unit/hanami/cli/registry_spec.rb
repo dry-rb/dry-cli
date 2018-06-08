@@ -6,7 +6,7 @@ RSpec.describe Hanami::CLI::Registry do
       it "raises error" do
         expect do
           Bar::CLI::Commands.before("pixel") { puts "hello" }
-        end.to raise_error(Hanami::CLI::UnkwnownCommandError, "unknown command: `pixel'")
+        end.to raise_error(Hanami::CLI::UnknownCommandError, "unknown command: `pixel'")
       end
     end
 
@@ -36,7 +36,7 @@ RSpec.describe Hanami::CLI::Registry do
       it "raises error" do
         expect do
           Bar::CLI::Commands.after("peta") { puts "hello" }
-        end.to raise_error(Hanami::CLI::UnkwnownCommandError, "unknown command: `peta'")
+        end.to raise_error(Hanami::CLI::UnknownCommandError, "unknown command: `peta'")
       end
     end
 

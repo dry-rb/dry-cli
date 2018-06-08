@@ -45,7 +45,7 @@ RSpec.describe "Commands" do
 
     it "a param with unknown param" do
       output = `foo server --unknown 1234`
-      expect(output).to eq("Error: Invalid param provided\n")
+      expect(output).to eq("Error: \"server\" was called with arguments \"--unknown 1234\"\n")
     end
 
     it "with boolean param" do
@@ -67,7 +67,7 @@ RSpec.describe "Commands" do
       context "and with an unknown value passed" do
         it "prints error" do
           output = `foo console --engine=unknown`
-          expect(output).to eq("Error: Invalid param provided\n")
+          expect(output).to eq("Error: \"console\" was called with arguments \"--engine=unknown\"\n")
         end
       end
     end
@@ -115,7 +115,7 @@ RSpec.describe "Commands" do
 
       it "with unknown param" do
         output = `foo new bookshelf --unknown 1234`
-        expect(output).to eq("Error: Invalid param provided\n")
+        expect(output).to eq("Error: \"new\" was called with arguments \"bookshelf --unknown 1234\"\n")
       end
 
       it "no required" do
