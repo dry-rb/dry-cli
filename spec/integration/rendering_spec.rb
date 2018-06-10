@@ -1,8 +1,10 @@
 RSpec.describe "Rendering" do
-  it "prints required params" do
+  it "prints required params and banners" do
     output = `foo`
 
     expected = <<~DESC
+      This is before description.
+
       Commands:
         foo assets [SUBCOMMAND]
         foo callbacks DIR                      # Command with callbacks
@@ -17,6 +19,8 @@ RSpec.describe "Rendering" do
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
         foo version                            # Print Foo version
+
+      This is after description.
     DESC
 
     expect(output).to eq(expected)
@@ -58,6 +62,8 @@ RSpec.describe "Rendering" do
     output = `foo unknown`
 
     expected = <<~DESC
+      This is before description.
+
       Commands:
         foo assets [SUBCOMMAND]
         foo callbacks DIR                      # Command with callbacks
@@ -72,6 +78,8 @@ RSpec.describe "Rendering" do
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
         foo version                            # Print Foo version
+
+      This is after description.
     DESC
 
     expect(output).to eq(expected)
@@ -81,6 +89,8 @@ RSpec.describe "Rendering" do
     output = `foo`
 
     expected = <<~DESC
+      This is before description.
+
       Commands:
         foo assets [SUBCOMMAND]
         foo callbacks DIR                      # Command with callbacks
@@ -95,6 +105,8 @@ RSpec.describe "Rendering" do
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
         foo version                            # Print Foo version
+
+      This is after description.
     DESC
 
     expect(output).to eq(expected)

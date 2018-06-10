@@ -237,6 +237,9 @@ module Foo
     module Commands
       extend Hanami::CLI::Registry
 
+      usage_description before: 'This is Usage header.',
+        after: 'This is additional comment.'
+
       class Version < Hanami::CLI::Command
         desc "Print version"
 
@@ -330,12 +333,16 @@ Let's have a look at the command line usage.
 
 ```shell
 % foo
+This is usage header.
+
 Commands:
   foo echo [INPUT]                       # Print input
   foo generate [SUBCOMMAND]
   foo start ROOT                         # Start Foo machinery
   foo stop                               # Stop Foo machinery
   foo version                            # Print version
+
+This is additional comment.
 ```
 
 ### Help

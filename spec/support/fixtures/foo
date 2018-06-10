@@ -7,6 +7,9 @@ module Foo
     module Commands
       extend Hanami::CLI::Registry
 
+      usage_description before: 'This is before description.',
+                        after: 'This is after description.'
+
       class Command < Hanami::CLI::Command
       end
 
