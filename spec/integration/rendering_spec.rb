@@ -5,6 +5,7 @@ RSpec.describe "Rendering" do
     expected = <<~DESC
       Commands:
         foo assets [SUBCOMMAND]
+        foo bar APPS                           # Generate webpack configuration
         foo callbacks DIR                      # Command with callbacks
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]
@@ -61,6 +62,7 @@ RSpec.describe "Rendering" do
     expected = <<~DESC
       Commands:
         foo assets [SUBCOMMAND]
+        foo bar APPS                           # Generate webpack configuration
         foo callbacks DIR                      # Command with callbacks
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]
@@ -85,6 +87,7 @@ RSpec.describe "Rendering" do
     expected = <<~DESC
       Commands:
         foo assets [SUBCOMMAND]
+        foo bar APPS                           # Generate webpack configuration
         foo callbacks DIR                      # Command with callbacks
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]

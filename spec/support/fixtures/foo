@@ -481,6 +481,16 @@ module Foo
           puts "dir: #{dir}, url: #{url.inspect}"
         end
       end
+
+      class Bar < Hanami::CLI::Command
+        desc "Generate webpack configuration"
+
+        argument :apps, desc: "Generate webpack apps", type: :array, required: true
+
+        def call(apps:, **)
+          puts "bar. Apps: #{apps}"
+        end
+      end
     end
   end
 end
@@ -489,6 +499,7 @@ Foo::CLI::Commands.register "generate webpack", Foo::Webpack::CLI::Generate
 Foo::CLI::Commands.register "hello",            Foo::Webpack::CLI::Hello
 Foo::CLI::Commands.register "sub command",      Foo::Webpack::CLI::SubCommand
 Foo::CLI::Commands.register "callbacks",        Foo::Webpack::CLI::CallbacksCommand
+Foo::CLI::Commands.register "bar",              Foo::Webpack::CLI::Bar
 
 # we need to be sure that command will not override with nil command
 Foo::CLI::Commands.register "generate webpack", nil
