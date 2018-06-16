@@ -23,22 +23,22 @@ RSpec.describe "Commands" do
   context "works with params" do
     it "without params" do
       output = `foo server`
-      expect(output).to eq("server - {:code_reloading=>true}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :unused_arguments=>[]}\n")
     end
 
     it "a param using space" do
       output = `foo server --server thin`
-      expect(output).to eq("server - {:code_reloading=>true, :server=>\"thin\"}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :server=>\"thin\", :unused_arguments=>[]}\n")
     end
 
     it "a param using equal sign" do
       output = `foo server --host=localhost`
-      expect(output).to eq("server - {:code_reloading=>true, :host=>\"localhost\"}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :host=>\"localhost\", :unused_arguments=>[]}\n")
     end
 
     it "a param using alias" do
       output = `foo server -p 1234`
-      expect(output).to eq("server - {:code_reloading=>true, :port=>\"1234\"}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :port=>\"1234\", :unused_arguments=>[]}\n")
     end
 
     it "a param with unknown param" do
@@ -48,10 +48,10 @@ RSpec.describe "Commands" do
 
     it "with boolean param" do
       output = `foo server`
-      expect(output).to eq("server - {:code_reloading=>true}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :unused_arguments=>[]}\n")
 
       output = `foo server --no-code-reloading`
-      expect(output).to eq("server - {:code_reloading=>false}\n")
+      expect(output).to eq("server - {:code_reloading=>false, :unused_arguments=>[]}\n")
     end
 
     context "with supported values" do
@@ -139,6 +139,35 @@ RSpec.describe "Commands" do
 
         output = `foo greeting bye --person=Alfonso`
         expect(output).to eq("response: bye, person: Alfonso\n")
+      end
+    end
+
+    context "with extra params" do
+      it "is accessible via Hanami::CLI.unused_arguments" do
+        output = `foo variadic default bar baz`
+        expect(output).to eq("Unused Arguments: bar, baz\n")
+      end
+
+      it "is an empty array by default" do
+        output = `foo variadic default`
+        expect(output).to eq("Unused Arguments: \n")
+      end
+
+      context "when there is a required argument" do
+        it "parses both separately" do
+          output = `foo variadic with-mandatory foo bar baz`
+          expect(output).to eq("first: foo\nUnused Arguments: bar, baz\n")
+        end
+
+        context "and there are options" do
+          it "parses both separately" do
+            output = `foo variadic with-mandatory-and-options foo bar baz`
+            expect(output).to eq("first: foo\nurl: \nmethod: \nUnused Arguments: bar, baz\n")
+
+            output = `foo variadic with-mandatory-and-options --url="root" --method="index" foo bar baz`
+            expect(output).to eq("first: foo\nurl: root\nmethod: index\nUnused Arguments: bar, baz\n")
+          end
+        end
       end
     end
   end

@@ -22,13 +22,13 @@ RSpec.describe "Third-party gems" do
   context "callbacks" do
     it "allows to add callbacks as a block" do
       expected = <<~OUTPUT
-        before command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
-        before callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
-        before callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+        before command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>".", :unused_arguments=>[]}
+        before callback (class), 3 arg(s): {:url=>"https://hanamirb.test", :dir=>".", :unused_arguments=>[]}
+        before callback (object), 3 arg(s): {:url=>"https://hanamirb.test", :dir=>".", :unused_arguments=>[]}
         dir: ., url: "https://hanamirb.test"
-        after command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
-        after callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
-        after callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+        after command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>".", :unused_arguments=>[]}
+        after callback (class), 3 arg(s): {:url=>"https://hanamirb.test", :dir=>".", :unused_arguments=>[]}
+        after callback (object), 3 arg(s): {:url=>"https://hanamirb.test", :dir=>".", :unused_arguments=>[]}
       OUTPUT
 
       output = `foo callbacks . --url=https://hanamirb.test`
