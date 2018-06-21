@@ -14,6 +14,7 @@ General purpose Command Line Interface (CLI) framework for Ruby.
     - [Subcommands](#subcommands)
     - [Arguments](#arguments)
     - [Option](#option)
+    - [Variadic arguments](#variadic-arguments)
   - [Installation](#installation)
   - [Usage](#usage)
     - [Available commands](#available-commands)
@@ -205,6 +206,69 @@ Performing a request (mode: http2)
 ```shell
 % foo request --mode=unknown
 Error: "request" was called with arguments "--mode=unknown"
+```
+
+### Variadic arguments
+
+Sometimes we need extra arguments because those will be passed to a new command, for instance
+`ssh`, `docker` or `cat` or even you have another hanami command that is in charge of other logic and it needs commands
+from the parent one.
+
+```ruby
+#!/usr/bin/env ruby
+require "bundler/setup"
+require "hanami/cli"
+
+module Foo
+  module CLI
+    module Commands
+      extend Hanami::CLI::Registry
+
+      argument :login, required: true
+      argument :email, required: true
+      argument :company_name, required: true
+      
+      class CreateUser < Hanami::CLI::Command
+        def call(login:, email:, company_name:, **)
+          `foo runner create_user #{host} #{login} #{email} #{company_name}}`
+        end
+      end
+
+      register "create_user", Request
+            
+      private
+      
+      def host
+        "hanami@hanami-app.com"
+      end
+    end
+  end
+end
+
+
+module Foo
+  module CLI
+    module Commands
+      extend Hanami::CLI::Registry
+
+      class Runner < Hanami::CLI::Command
+        def call(host:, **options)
+          `ssh -t #{host} cd "app/current"; bundle exec hanami runner create_user #{options[:unused_arguments].join(' ')}`
+        end
+      end
+
+      register "runner", Request
+    end
+  end
+end
+
+Hanami::CLI.new(Foo::CLI::Commands).call
+```
+
+```shell
+% foo create_user alfonso hanami@hanamirb.org HANAMI
+## then create_user command will call runner command and it will connect
+## to the machine for creating the new user
 ```
 
 ## Installation
