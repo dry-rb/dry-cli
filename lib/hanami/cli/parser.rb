@@ -66,6 +66,9 @@ module Hanami
         end
 
         parsed_params.reject! { |_key, value| value.nil? }
+        parsed_params = parsed_params.each_with_object({}) do |(k, v), result|
+          result[k] = v.include?(",") ? v.split(",") : v
+        end
         parsed_options = parsed_options.merge(parsed_params)
         parsed_options = parsed_options.merge(args: unused_arguments) if unused_arguments.any?
         Result.success(parsed_options)

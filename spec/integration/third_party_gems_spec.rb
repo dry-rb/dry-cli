@@ -43,6 +43,6 @@ RSpec.describe "Third-party gems" do
 
   it "allows to call array argument" do
     output = `foo bar test,api,admin`
-    expect(output).to eq("bar. Apps: test,api,admin\n")
+    expect(output).to eq("bar. Apps: [\"test\", \"api\", \"admin\"]\n")
   end
 end
