@@ -51,6 +51,8 @@ module Hanami
         parse_required_params = Hash[command.required_arguments.map(&:name).zip(arguments)]
         all_required_params_satisfied = command.required_arguments.all? { |param| !parse_required_params[param.name].nil? }
 
+        unused_arguments = arguments.drop(command.required_arguments.length)
+
         unless all_required_params_satisfied
           parse_required_params_values = parse_required_params.values.compact
 
@@ -64,7 +66,9 @@ module Hanami
         end
 
         parse_params.reject! { |_key, value| value.nil? }
-        Result.success(parsed_options.merge(parse_params))
+        parsed_options = parsed_options.merge(parse_params)
+        parsed_options = parsed_options.merge(args: unused_arguments) if unused_arguments.any?
+        Result.success(parsed_options)
       end
       # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/AbcSize

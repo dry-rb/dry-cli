@@ -272,7 +272,7 @@ module Foo
             "web # Prints session secret (eg. `WEB_SESSIONS_SECRET=6fad60e21f3f6bfcaf8e56cdb0f835d644b4892c3badc58328126812429bf073`)"
           ]
 
-          def call(app: nil)
+          def call(app: nil, **)
             puts "generate secret - app: #{app}"
           end
         end
@@ -358,6 +358,40 @@ module Foo
         end
       end
 
+      class VariadicArguments < Hanami::CLI::Command
+        desc "accept multiple arguments at the end of the command"
+
+        def call(**options)
+          puts "Unused Arguments: #{options[:args].join(', ')}"
+        end
+      end
+
+      class MandatoryAndVariadicArguments < Hanami::CLI::Command
+        desc "require one command and accept multiple unused arguments"
+
+        argument :first, desc: 'mandatory first argument', required: true
+
+        def call(first:, **options)
+          puts "first: #{first}"
+          puts "Unused Arguments: #{options[:args].join(', ')}"
+        end
+      end
+
+      class MandatoryOptionsAndVariadicArguments < Hanami::CLI::Command
+        desc "require one command, accept options and multiple unused arguments"
+
+        argument :first, desc: 'mandatory first argument', required: true
+        option :url, desc: "The action URL"
+        option :method, desc: "The action HTTP method"
+
+        def call(first:, **options)
+          puts "first: #{first}"
+          puts "url: #{options[:url]}"
+          puts "method: #{options[:method]}"
+          puts "Unused Arguments: #{options[:args].join(', ')}"
+        end
+      end
+
       module Sub
         class Command < Hanami::CLI::Command
           def call(*)
@@ -405,6 +439,10 @@ Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register "greeting",    Foo::CLI::Commands::Greeting
 Foo::CLI::Commands.register "sub command", Foo::CLI::Commands::Sub::Command
 
+Foo::CLI::Commands.register "variadic default",                    Foo::CLI::Commands::VariadicArguments
+Foo::CLI::Commands.register "variadic with-mandatory",             Foo::CLI::Commands::MandatoryAndVariadicArguments
+Foo::CLI::Commands.register "variadic with-mandatory-and-options", Foo::CLI::Commands::MandatoryOptionsAndVariadicArguments
+
 module Foo
   module Webpack
     module CLI
@@ -427,7 +465,7 @@ module Foo
       class SubCommand < Hanami::CLI::Command
         desc "Override a subcommand"
 
-        def call(*)
+        def call(**)
           puts "override from webpack"
         end
       end
