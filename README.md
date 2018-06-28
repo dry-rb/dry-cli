@@ -228,7 +228,7 @@ module Foo
       class Runner < Hanami::CLI::Command
         argument :image, required: true, desc: "Docker image"
 
-        def call(image:, args:, **)
+        def call(image:, args: [], **)
           puts `docker run -it --rm #{image} #{args.join(" ")}`
         end
       end
