@@ -22,17 +22,17 @@ RSpec.describe "Subcommands" do
 
     it "a param using space" do
       output = `foo server --port 2306`
-      expect(output).to eq("server - {:code_reloading=>true, :port=>\"2306\", :unused_arguments=>[]}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :port=>\"2306\"}\n")
     end
 
     it "a param using equal sign" do
       output = `foo server --port=2306`
-      expect(output).to eq("server - {:code_reloading=>true, :port=>\"2306\", :unused_arguments=>[]}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :port=>\"2306\"}\n")
     end
 
     it "a param using alias" do
       output = `foo server -p 2306`
-      expect(output).to eq("server - {:code_reloading=>true, :port=>\"2306\", :unused_arguments=>[]}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :port=>\"2306\"}\n")
     end
 
     it "with help param" do
@@ -76,12 +76,12 @@ RSpec.describe "Subcommands" do
 
       it "more than one param and with optional params" do
         output = `foo generate action web users#index --url=/signin`
-        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>false, :url=>\"/signin\", :unused_arguments=>[]}\n")
+        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>false, :url=>\"/signin\"}\n")
       end
 
       it "more than one param and with boolean params" do
         output = `foo generate action web users#index --skip-view --url=/signin`
-        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>true, :url=>\"/signin\", :unused_arguments=>[]}\n")
+        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>true, :url=>\"/signin\"}\n")
       end
 
       it "more than required params" do

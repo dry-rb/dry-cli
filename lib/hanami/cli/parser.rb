@@ -66,7 +66,9 @@ module Hanami
         end
 
         parse_params.reject! { |_key, value| value.nil? }
-        Result.success(parsed_options.merge(parse_params).merge(unused_arguments: unused_arguments))
+        parsed_options = parsed_options.merge(parse_params)
+        parsed_options = parsed_options.merge(args: unused_arguments) if unused_arguments.any?
+        Result.success(parsed_options)
       end
       # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/AbcSize

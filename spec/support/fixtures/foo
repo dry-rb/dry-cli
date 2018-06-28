@@ -362,7 +362,7 @@ module Foo
         desc "accept multiple arguments at the end of the command"
 
         def call(**options)
-          puts "Unused Arguments: #{options[:unused_arguments].join(', ')}"
+          puts "Unused Arguments: #{options[:args].join(', ')}"
         end
       end
 
@@ -373,7 +373,7 @@ module Foo
 
         def call(first:, **options)
           puts "first: #{first}"
-          puts "Unused Arguments: #{options[:unused_arguments].join(', ')}"
+          puts "Unused Arguments: #{options[:args].join(', ')}"
         end
       end
 
@@ -388,7 +388,7 @@ module Foo
           puts "first: #{first}"
           puts "url: #{options[:url]}"
           puts "method: #{options[:method]}"
-          puts "Unused Arguments: #{options[:unused_arguments].join(', ')}"
+          puts "Unused Arguments: #{options[:args].join(', ')}"
         end
       end
 
