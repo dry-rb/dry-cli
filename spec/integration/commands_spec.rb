@@ -161,6 +161,9 @@ RSpec.describe "Commands" do
 
             output = `foo variadic with-mandatory-and-options --url="root" --method="index" foo bar baz`
             expect(output).to eq("first: foo\nurl: root\nmethod: index\nUnused Arguments: bar, baz\n")
+
+            output = `foo variadic with-mandatory-and-options uno -- due tre --blah`
+            expect(output).to eq("first: uno\nurl: \nmethod: \nUnused Arguments: due, tre, --blah\n")
           end
         end
       end

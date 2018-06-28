@@ -234,7 +234,7 @@ module Foo
         end
       end
 
-      register "create_user", Request
+      register "create_user", CreateUser
             
       private
       
@@ -253,11 +253,11 @@ module Foo
 
       class Runner < Hanami::CLI::Command
         def call(host:, **options)
-          `ssh -t #{host} cd "app/current"; bundle exec hanami runner create_user #{options[:unused_arguments].join(' ')}`
+          `ssh -t #{host} cd "app/current"; bundle exec hanami runner create_user #{options[:args].join(' ')}`
         end
       end
 
-      register "runner", Request
+      register "runner", Runner
     end
   end
 end
@@ -266,10 +266,18 @@ Hanami::CLI.new(Foo::CLI::Commands).call
 ```
 
 ```shell
+# create_user command will call runner command and it will connect to the machine for creating the new user
 % foo create_user alfonso hanami@hanamirb.org HANAMI
-## then create_user command will call runner command and it will connect
-## to the machine for creating the new user
 ```
+
+Sometimes, you need to pass options for the delegated command and in the UNIX world we use `--`
+
+```shell
+# create_user command will call runner command and it will connect to the machine for creating the new user
+% foo my_argument -- /bin/bash -c "echo '127.0.0.1 myapp.com' > /etc/hosts"
+```
+
+> `/bin/bash -c "echo '127.0.0.1 myapp.com' > /etc/hosts"` will be `ac`cesible` from `options[:args]
 
 ## Installation
 
