@@ -243,6 +243,7 @@ Hanami::CLI.new(Foo::CLI::Commands).call
 
 ```shell
 % foo run ruby:latest -- ruby -v
+ruby 2.5.1p57 (2018-03-29 revision 63029) [x86_64-linux]
 ```
 
 The user separates the arguments for the `foo` command and which command has to be run by the Docker container.
