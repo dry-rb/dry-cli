@@ -210,9 +210,10 @@ Error: "request" was called with arguments "--mode=unknown"
 
 ### Variadic arguments
 
-Sometimes we need extra arguments because those will be passed to a new command, for instance
-`ssh`, `docker` or `cat` or even you have another hanami command that is in charge of other logic and it needs commands
-from the parent one.
+Sometimes we need extra arguments because those will be forwarded to a sub-command like `ssh`, `docker` or `cat`.
+
+By using `--` (double dash, aka hypen), the user indicates the end of the arguments and options belonging to the main command, and the beginning of the variadic arguments that can be forwarded to the sub-command.
+These extra arguments are included as `:args` in the keyword arguments available for each command.
 
 ```ruby
 #!/usr/bin/env ruby
@@ -224,40 +225,15 @@ module Foo
     module Commands
       extend Hanami::CLI::Registry
 
-      argument :login, required: true
-      argument :email, required: true
-      argument :company_name, required: true
-      
-      class CreateUser < Hanami::CLI::Command
-        def call(login:, email:, company_name:, **)
-          `foo runner create_user #{host} #{login} #{email} #{company_name}}`
-        end
-      end
-
-      register "create_user", CreateUser
-            
-      private
-      
-      def host
-        "hanami@hanami-app.com"
-      end
-    end
-  end
-end
-
-
-module Foo
-  module CLI
-    module Commands
-      extend Hanami::CLI::Registry
-
       class Runner < Hanami::CLI::Command
-        def call(host:, **options)
-          `ssh -t #{host} cd "app/current"; bundle exec hanami runner create_user #{options[:args].join(' ')}`
+        argument :image, required: true, desc: "Docker image"
+
+        def call(image:, **options)
+          puts `docker run -it --rm #{image} #{options[:args].join(" ")}`
         end
       end
 
-      register "runner", Runner
+      register "run", Runner
     end
   end
 end
@@ -266,18 +242,10 @@ Hanami::CLI.new(Foo::CLI::Commands).call
 ```
 
 ```shell
-# create_user command will call runner command and it will connect to the machine for creating the new user
-% foo create_user alfonso hanami@hanamirb.org HANAMI
+% foo run ruby:latest -- ruby -v
 ```
 
-Sometimes, you need to pass options for the delegated command and in the UNIX world we use `--`
-
-```shell
-# create_user command will call runner command and it will connect to the machine for creating the new user
-% foo my_argument -- /bin/bash -c "echo '127.0.0.1 myapp.com' > /etc/hosts"
-```
-
-> `/bin/bash -c "echo '127.0.0.1 myapp.com' > /etc/hosts"` will be `ac`cesible` from `options[:args]
+The user separates the arguments for the `foo` command and which command has to be run by the Docker container.
 
 ## Installation
 
