@@ -331,6 +331,17 @@ module Foo
         end
       end
 
+      class Exec < Hanami::CLI::Command
+        desc "Execute a task"
+
+        argument :task, type: :string, required: true,  desc: "Task to be executed"
+        argument :dirs, type: :array,  required: false, desc: "Optional directories"
+
+        def call(task:, dirs: [], **)
+          puts "exec - task: #{task}, dirs: #{dirs.inspect}"
+        end
+      end
+
       module Generate
         class Configuration < Hanami::CLI::Command
           desc "Generate configuration"
@@ -357,6 +368,7 @@ module Foo
       register "echo",    Echo
       register "start",   Start
       register "stop",    Stop
+      register "exec",    Exec
 
       register "generate", aliases: ["g"] do |prefix|
         prefix.register "config", Generate::Configuration
@@ -377,6 +389,7 @@ Let's have a look at the command line usage.
 % foo
 Commands:
   foo echo [INPUT]                       # Print input
+  foo exec TASK [DIRS]                   # Execute a task
   foo generate [SUBCOMMAND]
   foo start ROOT                         # Start Foo machinery
   foo stop                               # Stop Foo machinery
@@ -428,6 +441,21 @@ started - root: .
 % foo start
 ERROR: "foo start" was called with no arguments
 Usage: "foo start ROOT"
+```
+
+### Array arguments
+
+Captures all the remaining arguments in a single array.
+Please note that `array` argument must be used as last argument as it works as a _"catch-all"_.
+
+```shell
+% foo exec test
+exec - task: test, dirs: []
+```
+
+```shell
+% foo exec test spec/bookshelf/entities spec/bookshelf/repositories
+exec - task: test, dirs: ["spec/bookshelf/entities", "spec/bookshelf/repositories"]
 ```
 
 ### Options
