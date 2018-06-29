@@ -47,8 +47,8 @@ module Hanami
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength
       def self.parse_required_params(command, arguments, names, parsed_options)
-        parsed_params = Hash[command.arguments.map(&:name).zip(arguments)]
-        parsed_required_params = Hash[command.required_arguments.map(&:name).zip(arguments)]
+        parsed_params          = match_arguments(command.arguments, arguments)
+        parsed_required_params = match_arguments(command.required_arguments, arguments)
         all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? }
 
         unused_arguments = arguments.drop(command.required_arguments.length)
@@ -66,15 +66,27 @@ module Hanami
         end
 
         parsed_params.reject! { |_key, value| value.nil? }
-        parsed_params = parsed_params.each_with_object({}) do |(k, v), result|
-          result[k] = v.include?(",") ? v.split(",") : v
-        end
         parsed_options = parsed_options.merge(parsed_params)
         parsed_options = parsed_options.merge(args: unused_arguments) if unused_arguments.any?
         Result.success(parsed_options)
       end
       # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/AbcSize
+
+      def self.match_arguments(command_arguments, arguments)
+        result = {}
+
+        command_arguments.each_with_index do |cmd_arg, index|
+          if cmd_arg.array?
+            result[cmd_arg.name] = arguments[index..-1]
+            break
+          else
+            result[cmd_arg.name] = arguments.at(index)
+          end
+        end
+
+        result
+      end
 
       # @since 0.1.0
       # @api private

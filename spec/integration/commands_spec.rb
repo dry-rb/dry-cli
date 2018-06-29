@@ -54,6 +54,18 @@ RSpec.describe "Commands" do
       expect(output).to eq("server - {:code_reloading=>false}\n")
     end
 
+    context "with array param" do
+      it "allows to omit optional array argument" do
+        output = `foo exec test`
+        expect(output).to eq("exec - Task: test - Directories: []\n")
+      end
+
+      it "capture all the remaining arguments" do
+        output = `foo exec test api admin`
+        expect(output).to eq("exec - Task: test - Directories: [\"api\", \"admin\"]\n")
+      end
+    end
+
     context "with supported values" do
       context "and with supported value passed" do
         it "call the command with the option" do

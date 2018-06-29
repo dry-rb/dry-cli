@@ -40,9 +40,4 @@ RSpec.describe "Third-party gems" do
     output = `foo generate webpack --apps=test,api,admin`
     expect(output).to eq("generate webpack. Apps: [\"test\", \"api\", \"admin\"]\n")
   end
-
-  it "allows to call array argument" do
-    output = `foo bar test,api,admin`
-    expect(output).to eq("bar. Apps: [\"test\", \"api\", \"admin\"]\n")
-  end
 end
