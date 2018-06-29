@@ -348,8 +348,8 @@ module Foo
 
           option :apps, type: :array, default: [], desc: "Generate configuration for specific apps"
 
-          def call(**options)
-            puts "generated configuration for apps: #{options.fetch(:apps)}"
+          def call(apps:, **)
+            puts "generated configuration for apps: #{apps.inspect}"
           end
         end
 
