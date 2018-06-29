@@ -342,6 +342,17 @@ module Foo
         end
       end
 
+      class Exec < Hanami::CLI::Command
+        desc "Execute a task"
+
+        argument :task, desc: "Task to execute", type: :string, required: true
+        argument :dirs, desc: "Directories",     type: :array,  required: false
+
+        def call(task:, dirs: [], **)
+          puts "exec - Task: #{task} - Directories: #{dirs.inspect}"
+        end
+      end
+
       class Hello < Hanami::CLI::Command
         def call(*)
           raise NotImplementedError
@@ -434,6 +445,7 @@ Foo::CLI::Commands.register "new",     Foo::CLI::Commands::New
 Foo::CLI::Commands.register "routes",  Foo::CLI::Commands::Routes
 Foo::CLI::Commands.register "server",  Foo::CLI::Commands::Server,  aliases: ["s"]
 Foo::CLI::Commands.register "version", Foo::CLI::Commands::Version, aliases: ["v", "-v", "--version"]
+Foo::CLI::Commands.register "exec",    Foo::CLI::Commands::Exec
 
 Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register "greeting",    Foo::CLI::Commands::Greeting
@@ -449,8 +461,10 @@ module Foo
       class Generate < Hanami::CLI::Command
         desc "Generate webpack configuration"
 
-        def call(*)
-          puts "generate webpack"
+        option :apps, desc: "Generate webpack apps", type: :array
+
+        def call(apps: [], **)
+          puts "generate webpack. Apps: #{apps}"
         end
       end
 
