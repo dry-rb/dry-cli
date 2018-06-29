@@ -23,6 +23,7 @@ General purpose Command Line Interface (CLI) framework for Ruby.
     - [Required arguments](#required-arguments)
     - [Options](#options)
     - [Boolean options](#boolean-options)
+    - [Array options](#array-options)
     - [Subcommands](#subcommands-1)
     - [Aliases](#aliases)
     - [Subcommand aliases](#subcommand-aliases)
