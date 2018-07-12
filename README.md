@@ -4,6 +4,44 @@ General purpose Command Line Interface (CLI) framework for Ruby.
 
 :warning: **This is a general framework for Ruby (aka `thor` gem replacement), NOT the implementation of the `hanami` CLI commands** :warning:
 
+## Status
+
+[![Gem Version](https://badge.fury.io/rb/hanami-cli.svg)](https://badge.fury.io/rb/hanami-cli)
+[![TravisCI](https://travis-ci.org/hanami/cli.svg?branch=master)](https://travis-ci.org/hanami/cli)
+[![CircleCI](https://circleci.com/gh/hanami/cli/tree/master.svg?style=svg)](https://circleci.com/gh/hanami/cli/tree/master)
+[![Test Coverage](https://codecov.io/gh/hanami/cli/branch/master/graph/badge.svg)](https://codecov.io/gh/hanami/cli)
+[![Depfu](https://badges.depfu.com/badges/2c1bc076f16c6b5508334c44b5800362/overview.svg)](https://depfu.com/github/hanami/cli?project=Bundler)
+[![Inline Docs](http://inch-ci.org/github/hanami/cli.svg)](http://inch-ci.org/github/hanami/cli)
+
+## Contact
+
+* Home page: http://hanamirb.org
+* Mailing List: http://hanamirb.org/mailing-list
+* API Doc: http://rdoc.info/gems/hanami-utils
+* Bugs/Issues: https://github.com/hanami/utils/issues
+* Support: http://stackoverflow.com/questions/tagged/hanami
+* Chat: http://chat.hanamirb.org
+
+## Rubies
+
+__Hanami::Utils__ supports Ruby (MRI) 2.3+, JRuby 9.1.5.0+
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'hanami-utils'
+```
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install hanami-utils
+
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
 ## Table of Contents
