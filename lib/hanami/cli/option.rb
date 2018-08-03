@@ -61,7 +61,7 @@ module Hanami
         type == :boolean
       end
 
-      # @since x.x.x
+      # @since 0.3.0
       # @api private
       def array?
         type == :array

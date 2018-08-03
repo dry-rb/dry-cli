@@ -157,7 +157,7 @@ RSpec.describe "Commands" do
     end
 
     context "with extra params" do
-      it "is accessible via Hanami::CLI.unused_arguments" do
+      it "is accessible via options[:args]" do
         output = `foo variadic default bar baz`
         expect(output).to eq("Unused Arguments: bar, baz\n")
       end
