@@ -274,7 +274,7 @@ module Foo
             "web # Prints session secret (eg. `WEB_SESSIONS_SECRET=6fad60e21f3f6bfcaf8e56cdb0f835d644b4892c3badc58328126812429bf073`)"
           ]
 
-          def call(app: nil)
+          def call(app: nil, **)
             puts "generate secret - app: #{app}"
           end
         end
@@ -344,6 +344,17 @@ module Foo
         end
       end
 
+      class Exec < Hanami::CLI::Command
+        desc "Execute a task"
+
+        argument :task, desc: "Task to execute", type: :string, required: true
+        argument :dirs, desc: "Directories",     type: :array,  required: false
+
+        def call(task:, dirs: [], **)
+          puts "exec - Task: #{task} - Directories: #{dirs.inspect}"
+        end
+      end
+
       class Hello < Hanami::CLI::Command
         def call(*)
           raise NotImplementedError
@@ -363,8 +374,8 @@ module Foo
       class VariadicArguments < Hanami::CLI::Command
         desc "accept multiple arguments at the end of the command"
 
-        def call(*)
-          puts "Unused Arguments: #{Hanami::CLI.unused_arguments.join(', ')}"
+        def call(**options)
+          puts "Unused Arguments: #{options[:args].join(', ')}"
         end
       end
 
@@ -373,9 +384,9 @@ module Foo
 
         argument :first, desc: "mandatory first argument", required: true
 
-        def call(first:, **)
+        def call(first:, **options)
           puts "first: #{first}"
-          puts "Unused Arguments: #{Hanami::CLI.unused_arguments.join(', ')}"
+          puts "Unused Arguments: #{options[:args].join(', ')}"
         end
       end
 
@@ -386,11 +397,11 @@ module Foo
         option :url, desc: "The action URL"
         option :method, desc: "The action HTTP method"
 
-        def call(params = {})
-          puts "first: #{params[:first]}"
-          puts "url: #{params[:url]}"
-          puts "method: #{params[:method]}"
-          puts "Unused Arguments: #{Hanami::CLI.unused_arguments.join(', ')}"
+        def call(first:, **options)
+          puts "first: #{first}"
+          puts "url: #{options[:url]}"
+          puts "method: #{options[:method]}"
+          puts "Unused Arguments: #{options[:args].join(', ')}"
         end
       end
 
@@ -436,10 +447,15 @@ Foo::CLI::Commands.register "new",     Foo::CLI::Commands::New
 Foo::CLI::Commands.register "routes",  Foo::CLI::Commands::Routes
 Foo::CLI::Commands.register "server",  Foo::CLI::Commands::Server,  aliases: ["s"]
 Foo::CLI::Commands.register "version", Foo::CLI::Commands::Version, aliases: ["v", "-v", "--version"]
+Foo::CLI::Commands.register "exec",    Foo::CLI::Commands::Exec
 
 Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register "greeting",    Foo::CLI::Commands::Greeting
 Foo::CLI::Commands.register "sub command", Foo::CLI::Commands::Sub::Command
+
+Foo::CLI::Commands.register "variadic default",                    Foo::CLI::Commands::VariadicArguments
+Foo::CLI::Commands.register "variadic with-mandatory",             Foo::CLI::Commands::MandatoryAndVariadicArguments
+Foo::CLI::Commands.register "variadic with-mandatory-and-options", Foo::CLI::Commands::MandatoryOptionsAndVariadicArguments
 
 module Foo
   module Webpack
@@ -447,8 +463,10 @@ module Foo
       class Generate < Hanami::CLI::Command
         desc "Generate webpack configuration"
 
-        def call(*)
-          puts "generate webpack"
+        option :apps, desc: "Generate webpack apps", type: :array
+
+        def call(apps: [], **)
+          puts "generate webpack. Apps: #{apps}"
         end
       end
 
@@ -463,7 +481,7 @@ module Foo
       class SubCommand < Hanami::CLI::Command
         desc "Override a subcommand"
 
-        def call(*)
+        def call(**)
           puts "override from webpack"
         end
       end

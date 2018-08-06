@@ -13,8 +13,9 @@ module Hanami
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       def self.call(command, arguments, names)
+        original_arguments = arguments.dup
         parsed_options = {}
 
         OptionParser.new do |opts|
@@ -32,9 +33,9 @@ module Hanami
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, names, parsed_options)
       rescue ::OptionParser::ParseError
-        Result.failure
+        Result.failure("Error: \"#{command.command_name}\" was called with arguments \"#{original_arguments.join(' ')}\"")
       end
-      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
       # @since 0.1.0
       # @api private
@@ -48,27 +49,46 @@ module Hanami
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength
       def self.parse_required_params(command, arguments, names, parsed_options)
-        parse_params = Hash[command.arguments.map(&:name).zip(arguments)]
-        parse_required_params = Hash[command.required_arguments.map(&:name).zip(arguments)]
-        all_required_params_satisfied = command.required_arguments.all? { |param| !parse_required_params[param.name].nil? }
+        parsed_params          = match_arguments(command.arguments, arguments)
+        parsed_required_params = match_arguments(command.required_arguments, arguments)
+        all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? }
+
+        unused_arguments = arguments.drop(command.required_arguments.length)
 
         unless all_required_params_satisfied
-          parse_required_params_values = parse_required_params.values.compact
+          parsed_required_params_values = parsed_required_params.values.compact
 
           usage = "\nUsage: \"#{full_command_name(names)} #{command.required_arguments.map(&:description_name).join(' ')}\""
 
-          if parse_required_params_values.empty? # rubocop:disable Style/GuardClause
+          if parsed_required_params_values.empty? # rubocop:disable Style/GuardClause
             return Result.failure("ERROR: \"#{full_command_name(names)}\" was called with no arguments#{usage}")
           else
-            return Result.failure("ERROR: \"#{full_command_name(names)}\" was called with arguments #{parse_required_params_values}#{usage}")
+            return Result.failure("ERROR: \"#{full_command_name(names)}\" was called with arguments #{parsed_required_params_values}#{usage}")
           end
         end
 
-        parse_params.reject! { |_key, value| value.nil? }
-        Result.success(parsed_options.merge(parse_params))
+        parsed_params.reject! { |_key, value| value.nil? }
+        parsed_options = parsed_options.merge(parsed_params)
+        parsed_options = parsed_options.merge(args: unused_arguments) if unused_arguments.any?
+        Result.success(parsed_options)
       end
       # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/AbcSize
+
+      def self.match_arguments(command_arguments, arguments)
+        result = {}
+
+        command_arguments.each_with_index do |cmd_arg, index|
+          if cmd_arg.array?
+            result[cmd_arg.name] = arguments[index..-1]
+            break
+          else
+            result[cmd_arg.name] = arguments.at(index)
+          end
+        end
+
+        result
+      end
 
       # @since 0.1.0
       # @api private

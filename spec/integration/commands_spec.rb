@@ -45,7 +45,7 @@ RSpec.describe "Commands" do
 
     it "a param with unknown param" do
       output = `foo server --unknown 1234`
-      expect(output).to eq("Error: Invalid param provided\n")
+      expect(output).to eq("Error: \"server\" was called with arguments \"--unknown 1234\"\n")
     end
 
     it "with boolean param" do
@@ -54,6 +54,18 @@ RSpec.describe "Commands" do
 
       output = `foo server --no-code-reloading`
       expect(output).to eq("server - {:code_reloading=>false}\n")
+    end
+
+    context "with array param" do
+      it "allows to omit optional array argument" do
+        output = `foo exec test`
+        expect(output).to eq("exec - Task: test - Directories: []\n")
+      end
+
+      it "capture all the remaining arguments" do
+        output = `foo exec test api admin`
+        expect(output).to eq("exec - Task: test - Directories: [\"api\", \"admin\"]\n")
+      end
     end
 
     context "with supported values" do
@@ -67,7 +79,7 @@ RSpec.describe "Commands" do
       context "and with an unknown value passed" do
         it "prints error" do
           output = `foo console --engine=unknown`
-          expect(output).to eq("Error: Invalid param provided\n")
+          expect(output).to eq("Error: \"console\" was called with arguments \"--engine=unknown\"\n")
         end
       end
     end
@@ -115,7 +127,7 @@ RSpec.describe "Commands" do
 
       it "with unknown param" do
         output = `foo new bookshelf --unknown 1234`
-        expect(output).to eq("Error: Invalid param provided\n")
+        expect(output).to eq("Error: \"new\" was called with arguments \"bookshelf --unknown 1234\"\n")
       end
 
       it "no required" do
@@ -141,6 +153,33 @@ RSpec.describe "Commands" do
 
         output = `foo greeting bye --person=Alfonso`
         expect(output).to eq("response: bye, person: Alfonso\n")
+      end
+    end
+
+    context "with extra params" do
+      it "is accessible via options[:args]" do
+        output = `foo variadic default bar baz`
+        expect(output).to eq("Unused Arguments: bar, baz\n")
+      end
+
+      context "when there is a required argument" do
+        it "parses both separately" do
+          output = `foo variadic with-mandatory foo bar baz`
+          expect(output).to eq("first: foo\nUnused Arguments: bar, baz\n")
+        end
+
+        context "and there are options" do
+          it "parses both separately" do
+            output = `foo variadic with-mandatory-and-options foo bar baz`
+            expect(output).to eq("first: foo\nurl: \nmethod: \nUnused Arguments: bar, baz\n")
+
+            output = `foo variadic with-mandatory-and-options --url="root" --method="index" foo bar baz`
+            expect(output).to eq("first: foo\nurl: root\nmethod: index\nUnused Arguments: bar, baz\n")
+
+            output = `foo variadic with-mandatory-and-options uno -- due tre --blah`
+            expect(output).to eq("first: uno\nurl: \nmethod: \nUnused Arguments: due, tre, --blah\n")
+          end
+        end
       end
     end
   end

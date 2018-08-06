@@ -1,14 +1,19 @@
 # frozen_string_literal: true
 
+require "hanami/utils/deprecation"
+
 module Hanami
+  # General purpose Command Line Interface (CLI) framework for Ruby
+  #
+  # @since 0.1.0
   class CLI
     # @since 0.2.0
     class Error < StandardError
     end
 
-    # @since 0.2.0
-    class UnkwnownCommandError < Error
-      # @since 0.2.0
+    # @since 0.2.1
+    class UnknownCommandError < Error
+      # @since 0.2.1
       # @api private
       def initialize(command_name)
         super("unknown command: `#{command_name}'")
@@ -29,6 +34,13 @@ module Hanami
 
         super(message)
       end
+    end
+
+    # @since 0.2.1
+    def self.const_missing(name)
+      super unless name == :UnkwnownCommandError
+      Hanami::Utils::Deprecation.new("UnkwnownCommandError is deprecated, please use UnknownCommandError")
+      UnknownCommandError
     end
   end
 end
