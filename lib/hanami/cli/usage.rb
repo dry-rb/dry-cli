@@ -71,6 +71,7 @@ module Hanami
       # @api private
       def self.justify(string, padding, usage)
         return string.chomp(" ") if usage.nil?
+
         string.ljust(padding + padding / 2)
       end
 

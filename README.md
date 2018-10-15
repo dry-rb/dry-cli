@@ -17,21 +17,21 @@ General purpose Command Line Interface (CLI) framework for Ruby.
 
 * Home page: http://hanamirb.org
 * Mailing List: http://hanamirb.org/mailing-list
-* API Doc: http://rdoc.info/gems/hanami-utils
-* Bugs/Issues: https://github.com/hanami/utils/issues
+* API Doc: http://rdoc.info/gems/hanami-cli
+* Bugs/Issues: https://github.com/hanami/cli/issues
 * Support: http://stackoverflow.com/questions/tagged/hanami
 * Chat: http://chat.hanamirb.org
 
 ## Rubies
 
-__Hanami::Utils__ supports Ruby (MRI) 2.3+, JRuby 9.1.5.0+
+__Hanami::CLI__ supports Ruby (MRI) 2.3+, JRuby 9.1.5.0+
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'hanami-utils'
+gem 'hanami-cli'
 ```
 
 And then execute:
@@ -40,7 +40,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install hanami-utils
+    $ gem install hanami-cli
 
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 

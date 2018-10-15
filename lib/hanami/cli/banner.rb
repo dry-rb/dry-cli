@@ -61,6 +61,7 @@ module Hanami
       # @api private
       def self.command_arguments(command)
         return if command.arguments.empty?
+
         "\nArguments:\n#{extended_command_arguments(command)}"
       end
 
