@@ -87,7 +87,7 @@ module Hanami
       #   it MUST respond to `#call`.
       # @param blk [Proc] the callback espressed as a block
       #
-      # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
+      # @raise [Hanami::CLI::UnknownCommandError] if the command isn't registered
       # @raise [Hanami::CLI::InvalidCallbackError] if the given callback doesn't
       #   implement the required interface
       #
@@ -173,7 +173,7 @@ module Hanami
       #   it MUST respond to `#call`.
       # @param blk [Proc] the callback espressed as a block
       #
-      # @raise [Hanami::CLI::UnkwnownCommandError] if the command isn't registered
+      # @raise [Hanami::CLI::UnknownCommandError] if the command isn't registered
       # @raise [Hanami::CLI::InvalidCallbackError] if the given callback doesn't
       #   implement the required interface
       #
@@ -266,7 +266,7 @@ module Hanami
       # @api private
       def command(command_name)
         get(command_name.split(COMMAND_NAME_SEPARATOR)).tap do |result|
-          raise UnkwnownCommandError.new(command_name) unless result.found?
+          raise UnknownCommandError.new(command_name) unless result.found?
         end
       end
 

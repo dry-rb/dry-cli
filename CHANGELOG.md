@@ -1,6 +1,16 @@
 # Hanami::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
+## v0.3.0.beta1 - 2018-08-08
+### Added
+- [Anton Davydov & Alfonso Uceda] Introduce array type for arguments (`foo exec test spec/bookshelf/entities spec/bookshelf/repositories`)
+- [Anton Davydov & Alfonso Uceda] Introduce array type for options (`foo generate config --apps=web,api`)
+- [Alfonso Uceda] Introduce variadic arguments (`foo run ruby:latest -- ruby -v`)
+- [Luca Guidi] Official support for JRuby 9.2.0.0
+
+### Fixed
+- [Anton Davydov] Print informative message when unknown or wrong option is passed (`"test" was called with arguments "--framework=unknown"`)
+
 ## v0.2.0 - 2018-04-11
 
 ## v0.2.0.rc2 - 2018-04-06
