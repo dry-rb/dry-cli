@@ -10,6 +10,7 @@ RSpec.describe "Rendering" do
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
         foo exec TASK [DIRS]                   # Execute a task
+        foo exit_code PERFORM                  # Return specific exit error code
         foo generate [SUBCOMMAND]
         foo greeting [RESPONSE]
         foo hello                              # Print a greeting
@@ -67,6 +68,7 @@ RSpec.describe "Rendering" do
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
         foo exec TASK [DIRS]                   # Execute a task
+        foo exit_code PERFORM                  # Return specific exit error code
         foo generate [SUBCOMMAND]
         foo greeting [RESPONSE]
         foo hello                              # Print a greeting
@@ -92,6 +94,7 @@ RSpec.describe "Rendering" do
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
         foo exec TASK [DIRS]                   # Execute a task
+        foo exit_code PERFORM                  # Return specific exit error code
         foo generate [SUBCOMMAND]
         foo greeting [RESPONSE]
         foo hello                              # Print a greeting

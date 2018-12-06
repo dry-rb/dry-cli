@@ -468,6 +468,19 @@ module Foo
         end
       end
 
+      class ExitCode < Hanami::CLI::Command
+        desc "Return specific exit error code"
+
+        argument :perform, desc: "Perform what exit code?", type: :string, required: true
+        def call(perform:, **)
+          if perform == "valid"
+            return 0
+          elsif perform == "invalid"
+            return 1
+          end
+        end
+      end
+
       class Hello < Hanami::CLI::Command
         desc "Print a greeting"
 
@@ -499,6 +512,7 @@ end
 
 Foo::CLI::Commands.register "generate webpack", Foo::Webpack::CLI::Generate
 Foo::CLI::Commands.register "hello",            Foo::Webpack::CLI::Hello
+Foo::CLI::Commands.register "exit_code",        Foo::Webpack::CLI::ExitCode
 Foo::CLI::Commands.register "sub command",      Foo::Webpack::CLI::SubCommand
 Foo::CLI::Commands.register "callbacks",        Foo::Webpack::CLI::CallbacksCommand
 
