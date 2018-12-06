@@ -473,11 +473,9 @@ module Foo
 
         argument :perform, desc: "Perform what exit code?", type: :string, required: true
         def call(perform:, **)
-          if perform == "valid"
-            return 0
-          elsif perform == "invalid"
-            return 1
-          end
+          return 0 if perform == "valid"
+
+          1
         end
       end
 
