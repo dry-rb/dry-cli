@@ -1,6 +1,8 @@
 # Hanami::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
+## v0.3.0 - 2018-10-24
+
 ## v0.3.0.beta1 - 2018-08-08
 ### Added
 - [Anton Davydov & Alfonso Uceda] Introduce array type for arguments (`foo exec test spec/bookshelf/entities spec/bookshelf/repositories`)
