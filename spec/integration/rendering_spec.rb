@@ -9,6 +9,7 @@ RSpec.describe "Rendering" do
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
+        foo exec TASK [DIRS]                   # Execute a task
         foo generate [SUBCOMMAND]
         foo greeting [RESPONSE]
         foo hello                              # Print a greeting
@@ -16,6 +17,7 @@ RSpec.describe "Rendering" do
         foo routes                             # Print routes
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
+        foo variadic [SUBCOMMAND]
         foo version                            # Print Foo version
     DESC
 
@@ -64,6 +66,7 @@ RSpec.describe "Rendering" do
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
+        foo exec TASK [DIRS]                   # Execute a task
         foo generate [SUBCOMMAND]
         foo greeting [RESPONSE]
         foo hello                              # Print a greeting
@@ -71,6 +74,7 @@ RSpec.describe "Rendering" do
         foo routes                             # Print routes
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
+        foo variadic [SUBCOMMAND]
         foo version                            # Print Foo version
     DESC
 
@@ -87,6 +91,7 @@ RSpec.describe "Rendering" do
         foo console                            # Starts Foo console
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
+        foo exec TASK [DIRS]                   # Execute a task
         foo generate [SUBCOMMAND]
         foo greeting [RESPONSE]
         foo hello                              # Print a greeting
@@ -94,6 +99,7 @@ RSpec.describe "Rendering" do
         foo routes                             # Print routes
         foo server                             # Start Foo server (only for development)
         foo sub [SUBCOMMAND]
+        foo variadic [SUBCOMMAND]
         foo version                            # Print Foo version
     DESC
 

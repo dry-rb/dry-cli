@@ -4,6 +4,44 @@ General purpose Command Line Interface (CLI) framework for Ruby.
 
 :warning: **This is a general framework for Ruby (aka `thor` gem replacement), NOT the implementation of the `hanami` CLI commands** :warning:
 
+## Status
+
+[![Gem Version](https://badge.fury.io/rb/hanami-cli.svg)](https://badge.fury.io/rb/hanami-cli)
+[![TravisCI](https://travis-ci.org/hanami/cli.svg?branch=master)](https://travis-ci.org/hanami/cli)
+[![CircleCI](https://circleci.com/gh/hanami/cli/tree/master.svg?style=svg)](https://circleci.com/gh/hanami/cli/tree/master)
+[![Test Coverage](https://codecov.io/gh/hanami/cli/branch/master/graph/badge.svg)](https://codecov.io/gh/hanami/cli)
+[![Depfu](https://badges.depfu.com/badges/2c1bc076f16c6b5508334c44b5800362/overview.svg)](https://depfu.com/github/hanami/cli?project=Bundler)
+[![Inline Docs](http://inch-ci.org/github/hanami/cli.svg)](http://inch-ci.org/github/hanami/cli)
+
+## Contact
+
+* Home page: http://hanamirb.org
+* Mailing List: http://hanamirb.org/mailing-list
+* API Doc: http://rdoc.info/gems/hanami-cli
+* Bugs/Issues: https://github.com/hanami/cli/issues
+* Support: http://stackoverflow.com/questions/tagged/hanami
+* Chat: http://chat.hanamirb.org
+
+## Rubies
+
+__Hanami::CLI__ supports Ruby (MRI) 2.3+, JRuby 9.1.5.0+
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'hanami-cli'
+```
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install hanami-cli
+
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
 ## Table of Contents
@@ -14,6 +52,7 @@ General purpose Command Line Interface (CLI) framework for Ruby.
     - [Subcommands](#subcommands)
     - [Arguments](#arguments)
     - [Option](#option)
+    - [Variadic arguments](#variadic-arguments)
   - [Installation](#installation)
   - [Usage](#usage)
     - [Available commands](#available-commands)
@@ -22,6 +61,7 @@ General purpose Command Line Interface (CLI) framework for Ruby.
     - [Required arguments](#required-arguments)
     - [Options](#options)
     - [Boolean options](#boolean-options)
+    - [Array options](#array-options)
     - [Subcommands](#subcommands-1)
     - [Aliases](#aliases)
     - [Subcommand aliases](#subcommand-aliases)
@@ -207,6 +247,47 @@ Performing a request (mode: http2)
 Error: "request" was called with arguments "--mode=unknown"
 ```
 
+### Variadic arguments
+
+Sometimes we need extra arguments because those will be forwarded to a sub-command like `ssh`, `docker` or `cat`.
+
+By using `--` (double dash, aka hypen), the user indicates the end of the arguments and options belonging to the main command, and the beginning of the variadic arguments that can be forwarded to the sub-command.
+These extra arguments are included as `:args` in the keyword arguments available for each command.
+
+```ruby
+#!/usr/bin/env ruby
+require "bundler/setup"
+require "hanami/cli"
+
+module Foo
+  module CLI
+    module Commands
+      extend Hanami::CLI::Registry
+
+      class Runner < Hanami::CLI::Command
+        argument :image, required: true, desc: "Docker image"
+
+        def call(image:, args: [], **)
+          puts `docker run -it --rm #{image} #{args.join(" ")}`
+        end
+      end
+
+      register "run", Runner
+    end
+  end
+end
+
+Hanami::CLI.new(Foo::CLI::Commands).call
+```
+
+```shell
+% foo run ruby:latest -- ruby -v
+ruby 2.5.1p57 (2018-03-29 revision 63029) [x86_64-linux]
+```
+
+The user separates via `--` the arguments for `foo` and the command has to be run by the Docker container.
+In this specific case, `ruby:latest` corresponds to the `image` mandatory argument for `foo`, whereas `ruby -v` is the variadic argument that is passed to Docker via `args`.
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -288,12 +369,25 @@ module Foo
         end
       end
 
+      class Exec < Hanami::CLI::Command
+        desc "Execute a task"
+
+        argument :task, type: :string, required: true,  desc: "Task to be executed"
+        argument :dirs, type: :array,  required: false, desc: "Optional directories"
+
+        def call(task:, dirs: [], **)
+          puts "exec - task: #{task}, dirs: #{dirs.inspect}"
+        end
+      end
+
       module Generate
         class Configuration < Hanami::CLI::Command
           desc "Generate configuration"
 
-          def call(*)
-            puts "generated configuration"
+          option :apps, type: :array, default: [], desc: "Generate configuration for specific apps"
+
+          def call(apps:, **)
+            puts "generated configuration for apps: #{apps.inspect}"
           end
         end
 
@@ -312,6 +406,7 @@ module Foo
       register "echo",    Echo
       register "start",   Start
       register "stop",    Stop
+      register "exec",    Exec
 
       register "generate", aliases: ["g"] do |prefix|
         prefix.register "config", Generate::Configuration
@@ -332,6 +427,7 @@ Let's have a look at the command line usage.
 % foo
 Commands:
   foo echo [INPUT]                       # Print input
+  foo exec TASK [DIRS]                   # Execute a task
   foo generate [SUBCOMMAND]
   foo start ROOT                         # Start Foo machinery
   foo stop                               # Stop Foo machinery
@@ -385,6 +481,21 @@ ERROR: "foo start" was called with no arguments
 Usage: "foo start ROOT"
 ```
 
+### Array arguments
+
+Captures all the remaining arguments in a single array.
+Please note that `array` argument must be used as last argument as it works as a _"catch-all"_.
+
+```shell
+% foo exec test
+exec - task: test, dirs: []
+```
+
+```shell
+% foo exec test spec/bookshelf/entities spec/bookshelf/repositories
+exec - task: test, dirs: ["spec/bookshelf/entities", "spec/bookshelf/repositories"]
+```
+
 ### Options
 
 ```shell
@@ -412,6 +523,13 @@ stopped - graceful: true
 ```shell
 % foo stop --no-graceful
 stopped - graceful: false
+```
+
+### Array options
+
+```shell
+% foo generate config --apps=web,api
+generated configuration for apps: ["web", "api"]
 ```
 
 ### Subcommands
@@ -449,7 +567,7 @@ Commands:
 
 ```shell
 % foo g config
-generated configuration
+generated configuration for apps: []
 ```
 
 ### Callbacks
