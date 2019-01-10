@@ -9,9 +9,10 @@ module Hanami
     class Generator
       # @since x.x.x
       # @api public
-      def initialize(out: $stdout, files: Utils::Files)
+      def initialize(out: $stdout, files: Utils::Files, templates:)
         @files     = files
         @out       = out
+        @templates = templates
       end
 
       # @since x.x.x
@@ -33,7 +34,7 @@ module Hanami
       # @since x.x.x
       # @api public
       def copy(source, destination)
-        files.cp(source, destination)
+        files.cp(templates.find(source), destination)
         say(:create, destination)
       end
 
@@ -118,8 +119,12 @@ module Hanami
 
       # @since x.x.x
       # @api private
+      attr_reader :templates
+
+      # @since x.x.x
+      # @api private
       def render(path, context)
-        template = File.read(path)
+        template = File.read(templates.find(path))
         renderer = Renderer.new
 
         renderer.call(template, context.binding)
