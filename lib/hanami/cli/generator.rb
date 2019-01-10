@@ -40,6 +40,7 @@ module Hanami
       # @api public
       def delete(path, allow_missing: false)
         return if allow_missing && !files.exist?(path)
+
         files.delete(path)
         say(:remove, path)
       end
@@ -48,6 +49,7 @@ module Hanami
       # @api public
       def delete_directory(path, allow_missing: false)
         return if allow_missing && !files.exist?(path)
+
         files.delete_directory(path)
         say(:remove, path)
       end
