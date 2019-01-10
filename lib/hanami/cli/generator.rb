@@ -44,10 +44,10 @@ module Hanami
         say(:remove, path)
       end
 
-      # TODO: add allow_missing?
       # @since x.x.x
       # @api public
-      def delete_directory(path)
+      def delete_directory(path, allow_missing: false)
+        return if allow_missing && !files.exist?(path)
         files.delete_directory(path)
         say(:remove, path)
       end
