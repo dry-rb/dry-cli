@@ -1,5 +1,4 @@
 require 'hanami/utils/files'
-require 'hanami/cli/templates'
 require 'erb'
 
 module Hanami
@@ -10,10 +9,10 @@ module Hanami
     class Generator
       # @since x.x.x
       # @api public
-      def initialize(out: $stdout, files: Utils::Files, root_dir: nil)
-        @files     = files
-        @out       = out
-        @templates = Templates.new(root_dir)
+      def initialize(out: $stdout, files: Utils::Files, templates_dir: __dir__)
+        @files         = files
+        @out           = out
+        @templates_dir = Pathname.new(templates_dir)
       end
 
       # @since x.x.x
@@ -35,7 +34,7 @@ module Hanami
       # @since x.x.x
       # @api public
       def copy(source, destination)
-        files.cp(templates.find(source), destination)
+        files.cp(template_path(source), destination)
         say(:create, destination)
       end
 
@@ -120,15 +119,21 @@ module Hanami
 
       # @since x.x.x
       # @api private
-      attr_reader :templates
+      attr_reader :templates_dir
 
       # @since x.x.x
       # @api private
       def render(path, context)
-        template = File.read(templates.find(path))
+        template = File.read(template_path(path))
         renderer = Renderer.new
 
         renderer.call(template, context.binding)
+      end
+
+      # @since x.x.x
+      # @api private
+      def template_path(name)
+        templates_dir.join(name)
       end
 
       # @since x.x.x
