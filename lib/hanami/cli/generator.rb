@@ -22,8 +22,6 @@ module Hanami
         say(:create, destination)
       end
 
-      # Q: Should we replace this method with `create` and passing in
-      # `source` as `nil`? (and `context` too)
       # @since x.x.x
       # @api public
       def touch(path)
