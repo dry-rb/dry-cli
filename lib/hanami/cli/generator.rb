@@ -1,4 +1,5 @@
 require 'hanami/utils/files'
+require 'hanami/cli/templates'
 require 'erb'
 
 module Hanami
@@ -9,10 +10,10 @@ module Hanami
     class Generator
       # @since x.x.x
       # @api public
-      def initialize(out: $stdout, files: Utils::Files, templates:)
+      def initialize(out: $stdout, files: Utils::Files, root_dir: nil)
         @files     = files
         @out       = out
-        @templates = templates
+        @templates = Templates.new(root_dir)
       end
 
       # @since x.x.x
