@@ -62,8 +62,15 @@ module Hanami
 
       # @since x.x.x
       # @api public
-      def insert(path, content, after:)
+      def insert_after_first(path, content, after:)
         files.inject_line_after(path, after, content)
+        say(:insert, path)
+      end
+
+      # @since x.x.x
+      # @api public
+      def insert_after_last(path, content, after:)
+        files.inject_line_after_last(path, after, content)
         say(:insert, path)
       end
 
