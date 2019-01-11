@@ -3,10 +3,15 @@ require 'erb'
 
 module Hanami
   class CLI
-    # A class to help generate files
+    # A class to help manipulate files, including:
+    # - creating files from ERB templates
+    # - copying files
+    # - deleting files and directories
+    # - inserting lines into existing files
+    # - executing arbitrary shell commands (ok this is not file-related)
     #
-    # @since 0.1.0
-    class Generator
+    # @since x.x.x
+    class FileHelper
       # @since x.x.x
       # @api public
       def initialize(out: $stdout, files: Utils::Files, templates_dir: __dir__)
