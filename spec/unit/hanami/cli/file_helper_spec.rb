@@ -14,6 +14,21 @@ RSpec.describe Hanami::CLI::FileHelper do
     )
   end
 
+  describe "#create" do
+    let(:context) { double(binding: nil) }
+
+    it "creates files" do
+      destination = File.join(destination_dir, "Gemfile")
+      source = Pathname.new(source_dir).join("Gemfile.erb")
+      expect(File).to receive(:read).with(source) { "My fake template" }
+      expect(files).to receive(:write).with(destination, "My fake template")
+      expect(stdout).to receive(:puts).with(
+        "      create  tmp/file_helper_test/output/Gemfile\n"
+      )
+      subject.create("Gemfile.erb", destination, context)
+    end
+  end
+
   describe "#copy" do
     it "creates files" do
       destination = File.join(destination_dir, "Gemfile")
