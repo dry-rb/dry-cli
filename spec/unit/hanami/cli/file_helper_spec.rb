@@ -17,7 +17,7 @@ RSpec.describe Hanami::CLI::FileHelper do
   describe "#create" do
     let(:context) { double(binding: nil) }
 
-    it "creates files" do
+    it "creates file" do
       destination = File.join(destination_dir, "Gemfile")
       source = Pathname.new(source_dir).join("Gemfile.erb")
       expect(File).to receive(:read).with(source) { "My fake template" }
@@ -30,7 +30,7 @@ RSpec.describe Hanami::CLI::FileHelper do
   end
 
   describe "#touch" do
-    it "creates files" do
+    it "touches destination" do
       destination = File.join(destination_dir, ".keep")
       expect(files).to receive(:touch).with(destination)
       expect(stdout).to receive(:puts).with(
@@ -41,7 +41,7 @@ RSpec.describe Hanami::CLI::FileHelper do
   end
 
   describe "#copy" do
-    it "creates files" do
+    it "copies file" do
       destination = File.join(destination_dir, "Gemfile")
       source = Pathname.new(source_dir).join("Gemfile")
       expect(files).to receive(:cp).with(source, destination)
