@@ -51,4 +51,72 @@ RSpec.describe Hanami::CLI::FileHelper do
       subject.copy("Gemfile", destination)
     end
   end
+
+  describe "#delete" do
+    let(:path) { File.join(destination_dir, "Gemfile") }
+
+    it "deletes path" do
+      expect(files).to receive(:delete).with(path)
+      expect(stdout).to receive(:puts).with(
+        "      remove  tmp/file_helper_test/output/Gemfile\n"
+      )
+      subject.delete(path)
+    end
+
+    describe "path doesn't exist" do
+      before do
+        allow(files).to receive(:exist?).with(path).and_return(false)
+      end
+
+      it "quietly allows missing path when allow_missing is true" do
+        expect(files).to_not receive(:delete)
+        expect(stdout).to_not receive(:puts)
+
+        subject.delete(path, allow_missing: true)
+      end
+
+      it "raises error when allow_missing is false" do
+        expect(files).to receive(:delete).and_raise(Errno::ENOENT)
+        expect(stdout).to_not receive(:puts)
+
+        expect {
+          subject.delete(path, allow_missing: false)
+        }.to raise_error(Errno::ENOENT)
+      end
+    end
+  end
+
+  describe "#delete_directory" do
+    let(:path) { File.join(destination_dir, "delete_me/") }
+
+    it "deletes directory" do
+      expect(files).to receive(:delete_directory).with(path)
+      expect(stdout).to receive(:puts).with(
+        "      remove  tmp/file_helper_test/output/delete_me/\n"
+      )
+      subject.delete_directory(path)
+    end
+
+    describe "path doesn't exist" do
+      before do
+        allow(files).to receive(:exist?).with(path).and_return(false)
+      end
+
+      it "quietly allows missing path when allow_missing is true" do
+        expect(files).to_not receive(:delete_directory)
+        expect(stdout).to_not receive(:puts)
+
+        subject.delete_directory(path, allow_missing: true)
+      end
+
+      it "raises error when allow_missing is false" do
+        expect(files).to receive(:delete_directory).and_raise(Errno::ENOENT)
+        expect(stdout).to_not receive(:puts)
+
+        expect {
+          subject.delete_directory(path, allow_missing: false)
+        }.to raise_error(Errno::ENOENT)
+      end
+    end
+  end
 end
