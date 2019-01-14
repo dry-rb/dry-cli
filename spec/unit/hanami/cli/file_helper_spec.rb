@@ -29,6 +29,17 @@ RSpec.describe Hanami::CLI::FileHelper do
     end
   end
 
+  describe "#touch" do
+    it "creates files" do
+      destination = File.join(destination_dir, ".keep")
+      expect(files).to receive(:touch).with(destination)
+      expect(stdout).to receive(:puts).with(
+        "      create  tmp/file_helper_test/output/.keep\n"
+      )
+      subject.touch(destination)
+    end
+  end
+
   describe "#copy" do
     it "creates files" do
       destination = File.join(destination_dir, "Gemfile")
