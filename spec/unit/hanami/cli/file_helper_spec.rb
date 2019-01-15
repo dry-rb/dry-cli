@@ -135,7 +135,7 @@ RSpec.describe Hanami::CLI::FileHelper do
     end
 
     describe "#insert_after_first" do
-      it "injects line after specified line" do
+      it "injects line after first instance of specified line" do
         expect(files).to receive(:inject_line_after).with(
           path,
           "# after me",
@@ -145,6 +145,20 @@ RSpec.describe Hanami::CLI::FileHelper do
           "      insert  tmp/file_helper_test/output/Gemfile\n"
         )
         subject.insert_after_first(path, "# inserted line", after: "# after me")
+      end
+    end
+
+    describe "#insert_after_last" do
+      it "injects line after last instance of specified line" do
+        expect(files).to receive(:inject_line_after_last).with(
+          path,
+          "# after me",
+          "# inserted line"
+        )
+        expect(stdout).to receive(:puts).with(
+          "      insert  tmp/file_helper_test/output/Gemfile\n"
+        )
+        subject.insert_after_last(path, "# inserted line", after: "# after me")
       end
     end
   end
