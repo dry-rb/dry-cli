@@ -119,4 +119,17 @@ RSpec.describe Hanami::CLI::FileHelper do
       end
     end
   end
+
+  describe "#remove_line" do
+    let(:path) { File.join(destination_dir, "Gemfile") }
+    let(:content) { "gemspec" }
+
+    it "removes line file from file" do
+      expect(files).to receive(:remove_line).with(path, "gemspec")
+      expect(stdout).to receive(:puts).with(
+        "    subtract  tmp/file_helper_test/output/Gemfile\n"
+      )
+      subject.remove_line(path, content)
+    end
+  end
 end
