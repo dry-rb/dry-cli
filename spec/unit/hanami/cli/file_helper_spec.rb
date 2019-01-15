@@ -161,5 +161,18 @@ RSpec.describe Hanami::CLI::FileHelper do
         subject.insert_after_last(path, "# inserted line", after: "# after me")
       end
     end
+
+    describe "#append" do
+      it "appends line to end of file" do
+        expect(files).to receive(:append).with(
+          path,
+          "# inserted line"
+        )
+        expect(stdout).to receive(:puts).with(
+          "      append  tmp/file_helper_test/output/Gemfile\n"
+        )
+        subject.append(path, "# inserted line")
+      end
+    end
   end
 end
