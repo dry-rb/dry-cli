@@ -120,16 +120,32 @@ RSpec.describe Hanami::CLI::FileHelper do
     end
   end
 
-  describe "#remove_line" do
+  describe "altering existing files" do
     let(:path) { File.join(destination_dir, "Gemfile") }
     let(:content) { "gemspec" }
 
-    it "removes line file from file" do
-      expect(files).to receive(:remove_line).with(path, "gemspec")
-      expect(stdout).to receive(:puts).with(
-        "    subtract  tmp/file_helper_test/output/Gemfile\n"
-      )
-      subject.remove_line(path, content)
+    describe "#remove_line" do
+      it "removes line file from file" do
+        expect(files).to receive(:remove_line).with(path, "gemspec")
+        expect(stdout).to receive(:puts).with(
+          "    subtract  tmp/file_helper_test/output/Gemfile\n"
+        )
+        subject.remove_line(path, content)
+      end
+    end
+
+    describe "#insert_after_first" do
+      it "injects line after specified line" do
+        expect(files).to receive(:inject_line_after).with(
+          path,
+          "# after me",
+          "# inserted line"
+        )
+        expect(stdout).to receive(:puts).with(
+          "      insert  tmp/file_helper_test/output/Gemfile\n"
+        )
+        subject.insert_after_first(path, "# inserted line", after: "# after me")
+      end
     end
   end
 end
