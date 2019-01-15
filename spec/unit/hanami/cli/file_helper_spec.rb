@@ -134,31 +134,55 @@ RSpec.describe Hanami::CLI::FileHelper do
       end
     end
 
-    describe "#insert_after_first" do
-      it "injects line after first instance of specified line" do
-        expect(files).to receive(:inject_line_after).with(
-          path,
-          "# after me",
-          "# inserted line"
-        )
-        expect(stdout).to receive(:puts).with(
-          "      insert  tmp/file_helper_test/output/Gemfile\n"
-        )
-        subject.insert_after_first(path, "# inserted line", after: "# after me")
+    describe "#insert" do
+      describe "with after_first:" do
+        it "injects line after first instance of specified line" do
+          expect(files).to receive(:inject_line_after).with(
+            path,
+            "# after me",
+            "# inserted line"
+          )
+          expect(stdout).to receive(:puts).with(
+            "      insert  tmp/file_helper_test/output/Gemfile\n"
+          )
+          subject.insert(path, "# inserted line", after_first: "# after me")
+        end
       end
-    end
 
-    describe "#insert_after_last" do
-      it "injects line after last instance of specified line" do
-        expect(files).to receive(:inject_line_after_last).with(
-          path,
-          "# after me",
-          "# inserted line"
-        )
-        expect(stdout).to receive(:puts).with(
-          "      insert  tmp/file_helper_test/output/Gemfile\n"
-        )
-        subject.insert_after_last(path, "# inserted line", after: "# after me")
+      describe "with after_last:" do
+        it "injects line after last instance of specified line" do
+          expect(files).to receive(:inject_line_after_last).with(
+            path,
+            "# after me",
+            "# inserted line"
+          )
+          expect(stdout).to receive(:puts).with(
+            "      insert  tmp/file_helper_test/output/Gemfile\n"
+          )
+          subject.insert(path, "# inserted line", after_last: "# after me")
+        end
+      end
+
+      describe "usage errors" do
+        describe "when neither after_last nor after_first are specified" do
+          it "raises UsageError with correct message" do
+            expect { subject.insert(path, "# inserted line") }.to raise_error(
+              Hanami::CLI::FileHelper::UsageError,
+              "Pass in either `after_first:` or `after_last:`"
+            )
+          end
+        end
+
+        describe "when both after_last and after_first are specified" do
+          it "raises UsageError with correct message" do
+            expect {
+              subject.insert(path, "# inserted_line", after_first: "first", after_last: "last")
+            }.to raise_error(
+              Hanami::CLI::FileHelper::UsageError,
+              "Pass in only one of either `after_first:` or `after_last:`"
+            )
+          end
+        end
       end
     end
 

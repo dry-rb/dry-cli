@@ -68,15 +68,16 @@ module Hanami
 
       # @since x.x.x
       # @api public
-      def insert_after_first(path, content, after:)
-        files.inject_line_after(path, after, content)
-        say(:insert, path)
-      end
+      def insert(path, content, after_first: nil, after_last: nil)
+        raise UsageError.new("Pass in only one of either `after_first:` or `after_last:`") if after_first && after_last
 
-      # @since x.x.x
-      # @api public
-      def insert_after_last(path, content, after:)
-        files.inject_line_after_last(path, after, content)
+        if after_first
+          files.inject_line_after(path, after_first, content)
+        elsif after_last
+          files.inject_line_after_last(path, after_last, content)
+        else
+          raise UsageError.new("Pass in either `after_first:` or `after_last:`")
+        end
         say(:insert, path)
       end
 
@@ -112,6 +113,11 @@ module Hanami
         def call(template, context)
           ::ERB.new(template, nil, TRIM_MODE).result(context)
         end
+      end
+
+      # @since x.x.x
+      # @api private
+      class UsageError < Error
       end
 
       # @since x.x.x
