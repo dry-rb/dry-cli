@@ -90,7 +90,7 @@ module Hanami
       # @since x.x.x
       # @api public
       def execute(command, **opts)
-        system(command, opts)
+        Kernel.system(command, opts)
         say(:run, command)
       end
 
