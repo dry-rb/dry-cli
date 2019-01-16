@@ -79,9 +79,9 @@ RSpec.describe Hanami::CLI::FileHelper do
         expect(files).to receive(:delete).and_raise(Errno::ENOENT)
         expect(stdout).to_not receive(:puts)
 
-        expect {
+        expect do
           subject.delete(path, allow_missing: false)
-        }.to raise_error(Errno::ENOENT)
+        end.to raise_error(Errno::ENOENT)
       end
     end
   end
@@ -113,9 +113,9 @@ RSpec.describe Hanami::CLI::FileHelper do
         expect(files).to receive(:delete_directory).and_raise(Errno::ENOENT)
         expect(stdout).to_not receive(:puts)
 
-        expect {
+        expect do
           subject.delete_directory(path, allow_missing: false)
-        }.to raise_error(Errno::ENOENT)
+        end.to raise_error(Errno::ENOENT)
       end
     end
   end
@@ -175,9 +175,9 @@ RSpec.describe Hanami::CLI::FileHelper do
 
         describe "when both after_last and after_first are specified" do
           it "raises UsageError with correct message" do
-            expect {
+            expect do
               subject.insert(path, "# inserted_line", after_first: "first", after_last: "last")
-            }.to raise_error(
+            end.to raise_error(
               Hanami::CLI::FileHelper::UsageError,
               "Pass in only one of either `after_first:` or `after_last:`"
             )
