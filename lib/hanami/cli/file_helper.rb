@@ -3,7 +3,7 @@ require 'erb'
 
 module Hanami
   class CLI
-    # A class to help manipulate files, including:
+    # A class for manipulating files and output useful info to user, including:
     # - creating files from ERB templates
     # - copying files
     # - deleting files and directories
@@ -15,8 +15,8 @@ module Hanami
       # @since x.x.x
       # @api public
       def initialize(out: $stdout, files: Utils::Files, templates_dir: __dir__)
-        @files         = files
         @out           = out
+        @files         = files
         @templates_dir = Pathname.new(templates_dir)
       end
 
