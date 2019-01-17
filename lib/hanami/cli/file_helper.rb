@@ -69,14 +69,14 @@ module Hanami
       # @since x.x.x
       # @api public
       def insert(path, content, after_first: nil, after_last: nil)
-        raise UsageError.new("Pass in only one of either `after_first:` or `after_last:`") if after_first && after_last
+        raise ArgumentError.new("Pass in only one of either `after_first:` or `after_last:`") if after_first && after_last
 
         if after_first
           files.inject_line_after(path, after_first, content)
         elsif after_last
           files.inject_line_after_last(path, after_last, content)
         else
-          raise UsageError.new("Pass in either `after_first:` or `after_last:`")
+          raise ArgumentError.new("Pass in either `after_first:` or `after_last:`")
         end
         say(:insert, path)
       end
@@ -117,8 +117,7 @@ module Hanami
 
       # @since x.x.x
       # @api private
-      class UsageError < Error
-      end
+      class ArgumentError < Error; end
 
       # @since x.x.x
       # @api private

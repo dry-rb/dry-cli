@@ -165,20 +165,20 @@ RSpec.describe Hanami::CLI::FileHelper do
 
       describe "usage errors" do
         describe "when neither after_last nor after_first are specified" do
-          it "raises UsageError with correct message" do
+          it "raises ArgumentError with correct message" do
             expect { subject.insert(path, "# inserted line") }.to raise_error(
-              Hanami::CLI::FileHelper::UsageError,
+              Hanami::CLI::FileHelper::ArgumentError,
               "Pass in either `after_first:` or `after_last:`"
             )
           end
         end
 
         describe "when both after_last and after_first are specified" do
-          it "raises UsageError with correct message" do
+          it "raises ArgumentError with correct message" do
             expect do
               subject.insert(path, "# inserted_line", after_first: "first", after_last: "last")
             end.to raise_error(
-              Hanami::CLI::FileHelper::UsageError,
+              Hanami::CLI::FileHelper::ArgumentError,
               "Pass in only one of either `after_first:` or `after_last:`"
             )
           end
