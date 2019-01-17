@@ -23,6 +23,8 @@ module Hanami
       # @since x.x.x
       # @api public
       def create(source, destination, context)
+        raise FileAlreadyExistsError.new(destination) if files.exist?(destination)
+
         files.write(destination, render(source, context))
         say(:create, destination)
       end
@@ -118,6 +120,14 @@ module Hanami
       # @since x.x.x
       # @api private
       class ArgumentError < Error; end
+
+      # @since x.xx
+      # @api private
+      class FileAlreadyExistsError < Error
+        def initialize(path)
+          super("#{path} expected to not exist yet")
+        end
+      end
 
       # @since x.x.x
       # @api private

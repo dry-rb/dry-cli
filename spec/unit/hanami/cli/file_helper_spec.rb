@@ -15,17 +15,31 @@ RSpec.describe Hanami::CLI::FileHelper do
   end
 
   describe "#create" do
+    let(:destination) { File.join(destination_dir, "Gemfile") }
+    let(:source) { Pathname.new(source_dir).join("Gemfile.erb") }
     let(:context) { double(binding: nil) }
 
     it "creates file" do
-      destination = File.join(destination_dir, "Gemfile")
-      source = Pathname.new(source_dir).join("Gemfile.erb")
+      expect(files).to receive(:exist?).with(destination) { false }
       expect(File).to receive(:read).with(source) { "My fake template" }
       expect(files).to receive(:write).with(destination, "My fake template")
       expect(stdout).to receive(:puts).with(
         "      create  tmp/file_helper_test/output/Gemfile\n"
       )
       subject.create("Gemfile.erb", destination, context)
+    end
+
+    it "raises FileAlreadyExistsError when file exists" do
+      expect(files).to receive(:exist?).with(destination) { true }
+      expect(File).to_not receive(:read)
+      expect(files).to_not receive(:write)
+      expect(stdout).to_not receive(:puts)
+      expect do
+        subject.create("Gemfile.erb", destination, context)
+      end.to raise_error(
+        Hanami::CLI::FileHelper::FileAlreadyExistsError,
+        "tmp/file_helper_test/output/Gemfile expected to not exist yet"
+      )
     end
   end
 
