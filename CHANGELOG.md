@@ -1,7 +1,7 @@
 # Hanami::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
-## v0.3.1 - 2019-01-17
+## v0.3.1 - 2019-01-18
 ### Added
 - [Luca Guidi] Official support for Ruby: MRI 2.6
 - [Luca Guidi] Support `bundler` 2.0+
