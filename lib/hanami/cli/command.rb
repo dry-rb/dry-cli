@@ -27,6 +27,7 @@ module Hanami
         # rubocop:disable Metrics/MethodLength
         def self.extended(base)
           super
+          return unless extend?(base)
 
           base.class_eval do
             include Utils::ClassAttribute
@@ -45,6 +46,39 @@ module Hanami
           end
         end
         # rubocop:enable Metrics/MethodLength
+
+        # Only add class attributes if a command is inheriting directly from `Hanami::CLI::Command`.
+        # In this way, its subclasses can inherit arguments/options from the parent class.
+        #
+        # @return [TrueClass,FalseClass] the result of the check
+        #
+        # @since x.x.x
+        # @api private
+        #
+        # @example
+        #   # For this class `extend?` will return `true`
+        #   class Server < Hanami::CLI::Command
+        #     option :engine
+        #
+        #     def call(**options)
+        #       # start the server
+        #     end
+        #   end
+        #
+        #   # For this class `extend?` will return `false`
+        #   class ServerReloader < Server
+        #     option :reload, type: :boolean, default: true
+        #
+        #     def call(**options)
+        #       reload = options.fetch(:reload)
+        #       super unless reload
+        #
+        #       # activate reloading
+        #     end
+        #   end
+        def self.extend?(base)
+          base.superclass == Hanami::CLI::Command
+        end
       end
 
       # Set the description of the command

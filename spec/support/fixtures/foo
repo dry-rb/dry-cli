@@ -321,14 +321,12 @@ module Foo
         option :warn,           desc: "Turn on warnings"
         option :daemonize,      desc: "Daemonize the server"
         option :pid,            desc: "Path to write a pid file after daemonize"
-        option :code_reloading, desc: "Code reloading", type: :boolean, default: true
 
         example [
           "                    # Basic usage (it uses the bundled server engine)",
           "--server=webrick    # Force `webrick` server engine",
           "--host=0.0.0.0      # Bind to a host",
-          "--port=2306         # Bind to a port",
-          "--no-code-reloading # Disable code reloading"
+          "--port=2306         # Bind to a port"
         ]
 
         def call(options)
@@ -506,6 +504,26 @@ Foo::CLI::Commands.register "callbacks",        Foo::Webpack::CLI::CallbacksComm
 
 # we need to be sure that command will not override with nil command
 Foo::CLI::Commands.register "generate webpack", nil
+
+module Foo
+  module Reloader
+    module CLI
+      class Server < Foo::CLI::Commands::Server
+        option :code_reloading, type: :boolean, default: true, desc: "Code reloading"
+
+        example [
+          "--no-code-reloading # Disable code reloading"
+        ]
+
+        def call(options)
+          super
+        end
+      end
+    end
+  end
+end
+
+Foo::CLI::Commands.register "server", Foo::Reloader::CLI::Server
 
 Foo::CLI::Commands.before("callbacks") do |args|
   puts "before command callback #{self.class.name} #{args.inspect}"
