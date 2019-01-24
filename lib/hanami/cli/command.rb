@@ -3,6 +3,7 @@
 require "forwardable"
 require "concurrent/array"
 require "hanami/cli/option"
+require "hanami/utils/class_attribute"
 
 module Hanami
   class CLI
@@ -22,32 +23,28 @@ module Hanami
       module ClassMethods
         # @since 0.1.0
         # @api private
+        #
+        # rubocop:disable Metrics/MethodLength
         def self.extended(base)
           super
 
           base.class_eval do
-            @description  = nil
-            @examples     = Concurrent::Array.new
-            @arguments    = Concurrent::Array.new
-            @options      = Concurrent::Array.new
+            include Utils::ClassAttribute
+
+            class_attribute :description
+            self.description = nil
+
+            class_attribute :examples
+            self.examples = Concurrent::Array.new
+
+            class_attribute :arguments
+            self.arguments = Concurrent::Array.new
+
+            class_attribute :options
+            self.options = Concurrent::Array.new
           end
         end
-
-        # @since 0.1.0
-        # @api private
-        attr_reader :description
-
-        # @since 0.1.0
-        # @api private
-        attr_reader :examples
-
-        # @since 0.1.0
-        # @api private
-        attr_reader :arguments
-
-        # @since 0.1.0
-        # @api private
-        attr_reader :options
+        # rubocop:enable Metrics/MethodLength
       end
 
       # Set the description of the command
@@ -67,7 +64,7 @@ module Hanami
       #     end
       #   end
       def self.desc(description)
-        @description = description
+        self.description = description
       end
 
       # Describe the usage of the command
@@ -103,7 +100,7 @@ module Hanami
       #   #     foo server --port=2306         # Bind to a port
       #   #     foo server --no-code-reloading # Disable code reloading
       def self.example(*examples)
-        @examples += examples.flatten
+        self.examples += examples.flatten
       end
 
       # Specify an argument
@@ -197,7 +194,7 @@ module Hanami
       #   #   Options:
       #   #     --help, -h          # Print this help
       def self.argument(name, options = {})
-        @arguments << Argument.new(name, options)
+        arguments << Argument.new(name, options)
       end
 
       # Command line option (aka optional argument)
@@ -311,13 +308,13 @@ module Hanami
       #   # Options:
       #   #   --port=VALUE, -p VALUE
       def self.option(name, options = {})
-        @options << Option.new(name, options)
+        self.options << Option.new(name, options)
       end
 
       # @since 0.1.0
       # @api private
       def self.params
-        (@arguments + @options).uniq
+        (arguments + options).uniq
       end
 
       # @since 0.1.0
