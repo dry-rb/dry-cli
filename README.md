@@ -24,7 +24,7 @@ General purpose Command Line Interface (CLI) framework for Ruby.
 
 ## Rubies
 
-__Hanami::CLI__ supports Ruby (MRI) 2.3+, JRuby 9.1.5.0+
+__Hanami::CLI__ supports Ruby (MRI) 2.5+
 
 ## Installation
 
@@ -633,4 +633,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/hanami
 
 ## Copyright
 
-Copyright © 2017 Luca Guidi – Released under MIT License
+Copyright © 2017-2019 Luca Guidi – Released under MIT License

@@ -1,6 +1,10 @@
 # Hanami::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
+## v1.0.0.alpha1 - 2019-01-30
+### Changed
+- [Luca Guidi] Drop support for Ruby: MRI 2.3, and 2.4.
+
 ## v0.3.1 - 2019-01-18
 ### Added
 - [Luca Guidi] Official support for Ruby: MRI 2.6
