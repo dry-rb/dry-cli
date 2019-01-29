@@ -52,7 +52,7 @@ module Hanami
         #
         # @return [TrueClass,FalseClass] the result of the check
         #
-        # @since x.x.x
+        # @since 1.0.0
         # @api private
         #
         # @example

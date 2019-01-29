@@ -2,6 +2,10 @@
 General purpose Command Line Interface (CLI) framework for Ruby
 
 ## v1.0.0.alpha1 - 2019-01-30
+### Added
+- [Luca Guidi] Inheritng from subclasses of `Hanami::CLI::Command`, allows to inherit arguments, options, description, and examples.
+- [Luca Guidi] Allow to use `super` from `#call`
+
 ### Changed
 - [Luca Guidi] Drop support for Ruby: MRI 2.3, and 2.4.
 
