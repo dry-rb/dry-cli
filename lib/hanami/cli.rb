@@ -51,9 +51,8 @@ module Hanami
     # @since 0.1.0
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
-    def call(arguments: ARGV, out: $stdout, **opts)
-      err = opts[:err]
-      @kernel = opts[:kernel]
+    def call(arguments: ARGV, out: $stdout, err: nil, kernel: Kernel)
+      @kernel = kernel
 
       original_argv = ARGV.dup
 
