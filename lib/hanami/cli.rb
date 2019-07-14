@@ -45,27 +45,57 @@ module Hanami
     #
     # @param arguments [Array<string>] the command line arguments (defaults to `ARGV`)
     # @param out [IO] the standard output (defaults to `$stdout`)
+    # @param err [IO, NilClass] the standard output or the standard error or nil (default)
+    # @param kernel [Module, NilClass] optional replacement for Kernel, on which #exit() is called.
     #
     # @since 0.1.0
-    def call(arguments: ARGV, out: $stdout)
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
+    def call(arguments: ARGV, out: $stdout, **opts)
+      err = opts[:err]
+      @kernel = opts[:kernel]
+
+      original_argv = ARGV.dup
+
       result = commands.get(arguments)
 
       if result.found?
-        command, args = parse(result, out)
-
-        result.before_callbacks.run(command, args)
-        command.call(args)
-        result.after_callbacks.run(command, args)
+        call_command(result, out)
       else
-        usage(result, out)
+        exit_code = 0
+        invalid_commands = original_argv.reject { |a| a.start_with?('-') }
+        if invalid_commands.size.positive?
+          err&.puts("Error:\n")
+          err&.puts("  Unknown command(s): #{invalid_commands.join(', ')}")
+          err&.puts
+          exit_code = 1
+        end
+        usage(result, out, exit_code)
       end
     end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
 
     private
 
+    # Calls the command and runs callbacks.
+    #
+    # @param result [Hanami::CLI::CommandRegistry::LookupResult]
+    # @param out [IO] sta output
+    #
     # @since 0.1.0
     # @api private
-    attr_reader :commands
+    def call_command(result, out)
+      command, args = parse(result, out)
+
+      result.before_callbacks.run(command, args)
+      command.call(args)
+      result.after_callbacks.run(command, args)
+    end
+
+    # @since 0.1.0
+    # @api private
+    attr_reader :commands, :kernel
 
     # Parse arguments for a command.
     #
@@ -79,7 +109,9 @@ module Hanami
     #
     # @since 0.1.0
     # @api private
-    def parse(result, out) # rubocop:disable Metrics/MethodLength
+    #
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def parse(result, out)
       command = result.command
       return [command, result.arguments] unless command?(command)
 
@@ -87,16 +119,17 @@ module Hanami
 
       if result.help?
         Banner.call(command, out)
-        exit(0)
+        kernel.exit(0)
       end
 
       if result.error?
         out.puts(result.error)
-        exit(1)
+        kernel.exit(1)
       end
 
       [command, result.arguments]
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     # Prints the command usage and exit.
     #
@@ -105,9 +138,9 @@ module Hanami
     #
     # @since 0.1.0
     # @api private
-    def usage(result, out)
+    def usage(result, out, exit_code = 1)
       Usage.call(result, out)
-      exit(1)
+      kernel.exit(exit_code)
     end
 
     # Check if command

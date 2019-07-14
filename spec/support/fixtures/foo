@@ -569,4 +569,4 @@ Foo::CLI::Commands.before("callbacks", Callbacks::Before.new)
 Foo::CLI::Commands.after("callbacks",  Callbacks::After.new)
 
 cli = Hanami::CLI.new(Foo::CLI::Commands)
-cli.call
+cli.call(err: ENV['PRINT_UNKNOWN_COMMANDS'] ? $stdout : nil)
