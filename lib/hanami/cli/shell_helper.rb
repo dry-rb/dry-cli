@@ -2,8 +2,7 @@
 
 module Hanami
   class CLI
-    # A class for manipulating files and output useful info to user, including:
-    # - executing arbitrary shell commands (ok this is not file-related)
+    # A class for executing arbitrary shell commands and outputting what was executed.
     #
     # @since x.x.x
     class ShellHelper
