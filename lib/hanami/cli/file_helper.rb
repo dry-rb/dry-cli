@@ -8,7 +8,6 @@ module Hanami
     # - copying files
     # - deleting files and directories
     # - inserting lines into existing files
-    # - executing arbitrary shell commands (ok this is not file-related)
     #
     # @since x.x.x
     class FileHelper
@@ -88,13 +87,6 @@ module Hanami
       def append(path, content)
         files.append(path, content)
         say(:append, path)
-      end
-
-      # @since x.x.x
-      # @api public
-      def execute(command, **opts)
-        Kernel.system(command, opts)
-        say(:run, command)
       end
 
       private
