@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/cli/file_helper"
 
 RSpec.describe Hanami::CLI::FileHelper do

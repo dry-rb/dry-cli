@@ -1,5 +1,7 @@
-require 'hanami/utils/files'
-require 'erb'
+# frozen_string_literal: true
+
+require "hanami/utils/files"
+require "erb"
 
 module Hanami
   class CLI
@@ -93,12 +95,12 @@ module Hanami
 
       # @since x.x.x
       # @api private
-      SAY_FORMATTER = "%<operation>12s  %<path>s\n".freeze
+      SAY_FORMATTER = "%<operation>12s  %<path>s\n"
 
       # @since x.x.x
       # @api private
       class Renderer
-        TRIM_MODE = "-".freeze
+        TRIM_MODE = "-"
 
         def initialize
           freeze

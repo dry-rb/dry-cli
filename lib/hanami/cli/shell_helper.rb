@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Hanami
   class CLI
     # A class for manipulating files and output useful info to user, including:
@@ -7,7 +9,7 @@ module Hanami
     class ShellHelper
       # @since x.x.x
       # @api private
-      RUN_OUTPUT_FORMATTER = "         run  %s\n".freeze
+      RUN_OUTPUT_FORMATTER = "         run  %s\n"
 
       # @since x.x.x
       # @api public
