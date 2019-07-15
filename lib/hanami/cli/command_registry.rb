@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 require "concurrent/hash"
-require 'hanami/utils/callbacks'
+require "hanami/utils/callbacks"
 
 module Hanami
   class CLI

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Third-party gems" do
   it "allows to add a subcommand" do
     output = `foo generate webpack`

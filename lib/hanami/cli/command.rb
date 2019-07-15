@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 require "forwardable"
 require "concurrent/array"
 require "hanami/cli/option"
+require "hanami/utils/class_attribute"
 
 module Hanami
   class CLI
@@ -20,32 +23,62 @@ module Hanami
       module ClassMethods
         # @since 0.1.0
         # @api private
+        #
+        # rubocop:disable Metrics/MethodLength
         def self.extended(base)
           super
+          return unless extend?(base)
 
           base.class_eval do
-            @description  = nil
-            @examples     = Concurrent::Array.new
-            @arguments    = Concurrent::Array.new
-            @options      = Concurrent::Array.new
+            include Utils::ClassAttribute
+
+            class_attribute :description
+            self.description = nil
+
+            class_attribute :examples
+            self.examples = Concurrent::Array.new
+
+            class_attribute :arguments
+            self.arguments = Concurrent::Array.new
+
+            class_attribute :options
+            self.options = Concurrent::Array.new
           end
         end
+        # rubocop:enable Metrics/MethodLength
 
-        # @since 0.1.0
+        # Only add class attributes if a command is inheriting directly from `Hanami::CLI::Command`.
+        # In this way, its subclasses can inherit arguments/options from the parent class.
+        #
+        # @return [TrueClass,FalseClass] the result of the check
+        #
+        # @since 1.0.0
         # @api private
-        attr_reader :description
-
-        # @since 0.1.0
-        # @api private
-        attr_reader :examples
-
-        # @since 0.1.0
-        # @api private
-        attr_reader :arguments
-
-        # @since 0.1.0
-        # @api private
-        attr_reader :options
+        #
+        # @example
+        #   # For this class `extend?` will return `true`
+        #   class Server < Hanami::CLI::Command
+        #     option :engine
+        #
+        #     def call(**options)
+        #       # start the server
+        #     end
+        #   end
+        #
+        #   # For this class `extend?` will return `false`
+        #   class ServerReloader < Server
+        #     option :reload, type: :boolean, default: true
+        #
+        #     def call(**options)
+        #       reload = options.fetch(:reload)
+        #       super unless reload
+        #
+        #       # activate reloading
+        #     end
+        #   end
+        def self.extend?(base)
+          base.superclass == Hanami::CLI::Command
+        end
       end
 
       # Set the description of the command
@@ -65,7 +98,7 @@ module Hanami
       #     end
       #   end
       def self.desc(description)
-        @description = description
+        self.description = description
       end
 
       # Describe the usage of the command
@@ -101,7 +134,7 @@ module Hanami
       #   #     foo server --port=2306         # Bind to a port
       #   #     foo server --no-code-reloading # Disable code reloading
       def self.example(*examples)
-        @examples += examples.flatten
+        self.examples += examples.flatten
       end
 
       # Specify an argument
@@ -195,7 +228,7 @@ module Hanami
       #   #   Options:
       #   #     --help, -h          # Print this help
       def self.argument(name, options = {})
-        @arguments << Argument.new(name, options)
+        arguments << Argument.new(name, options)
       end
 
       # Command line option (aka optional argument)
@@ -309,13 +342,13 @@ module Hanami
       #   # Options:
       #   #   --port=VALUE, -p VALUE
       def self.option(name, options = {})
-        @options << Option.new(name, options)
+        self.options << Option.new(name, options)
       end
 
       # @since 0.1.0
       # @api private
       def self.params
-        (@arguments + @options).uniq
+        (arguments + options).uniq
       end
 
       # @since 0.1.0

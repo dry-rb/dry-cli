@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/cli/command_registry"
 
 module Hanami
@@ -260,7 +262,7 @@ module Hanami
 
       private
 
-      COMMAND_NAME_SEPARATOR = " ".freeze
+      COMMAND_NAME_SEPARATOR = " "
 
       # @since 0.2.0
       # @api private

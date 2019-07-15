@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Commands" do
   it "calls basic command" do
     output = `foo version`

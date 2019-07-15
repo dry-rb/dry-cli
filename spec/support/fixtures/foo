@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
-$LOAD_PATH.unshift __dir__ + '/../../lib'
-require 'hanami/cli'
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift __dir__ + "/../../lib"
+require "hanami/cli"
 
 module Foo
   module CLI
@@ -319,14 +321,12 @@ module Foo
         option :warn,           desc: "Turn on warnings"
         option :daemonize,      desc: "Daemonize the server"
         option :pid,            desc: "Path to write a pid file after daemonize"
-        option :code_reloading, desc: "Code reloading", type: :boolean, default: true
 
         example [
           "                    # Basic usage (it uses the bundled server engine)",
           "--server=webrick    # Force `webrick` server engine",
           "--host=0.0.0.0      # Bind to a host",
-          "--port=2306         # Bind to a port",
-          "--no-code-reloading # Disable code reloading"
+          "--port=2306         # Bind to a port"
         ]
 
         def call(options)
@@ -380,7 +380,7 @@ module Foo
       class MandatoryAndVariadicArguments < Hanami::CLI::Command
         desc "require one command and accept multiple unused arguments"
 
-        argument :first, desc: 'mandatory first argument', required: true
+        argument :first, desc: "mandatory first argument", required: true
 
         def call(first:, **options)
           puts "first: #{first}"
@@ -391,7 +391,7 @@ module Foo
       class MandatoryOptionsAndVariadicArguments < Hanami::CLI::Command
         desc "require one command, accept options and multiple unused arguments"
 
-        argument :first, desc: 'mandatory first argument', required: true
+        argument :first, desc: "mandatory first argument", required: true
         option :url, desc: "The action URL"
         option :method, desc: "The action HTTP method"
 
@@ -504,6 +504,26 @@ Foo::CLI::Commands.register "callbacks",        Foo::Webpack::CLI::CallbacksComm
 
 # we need to be sure that command will not override with nil command
 Foo::CLI::Commands.register "generate webpack", nil
+
+module Foo
+  module Reloader
+    module CLI
+      class Server < Foo::CLI::Commands::Server
+        option :code_reloading, type: :boolean, default: true, desc: "Code reloading"
+
+        example [
+          "--no-code-reloading # Disable code reloading"
+        ]
+
+        def call(options)
+          super
+        end
+      end
+    end
+  end
+end
+
+Foo::CLI::Commands.register "server", Foo::Reloader::CLI::Server
 
 Foo::CLI::Commands.before("callbacks") do |args|
   puts "before command callback #{self.class.name} #{args.inspect}"

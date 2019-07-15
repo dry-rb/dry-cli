@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/utils/deprecation"
 
 module Hanami
@@ -37,7 +39,7 @@ module Hanami
     # @since 0.2.1
     def self.const_missing(name)
       super unless name == :UnkwnownCommandError
-      Hanami::Utils::Deprecation.new('UnkwnownCommandError is deprecated, please use UnknownCommandError')
+      Hanami::Utils::Deprecation.new("UnkwnownCommandError is deprecated, please use UnknownCommandError")
       UnknownCommandError
     end
   end

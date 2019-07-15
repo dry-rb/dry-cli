@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "hanami/cli/program_name"
 
 module Hanami
@@ -9,7 +11,7 @@ module Hanami
     module Usage
       # @since 0.1.0
       # @api private
-      SUBCOMMAND_BANNER = " [SUBCOMMAND]".freeze
+      SUBCOMMAND_BANNER = " [SUBCOMMAND]"
 
       # @since 0.1.0
       # @api private
@@ -50,8 +52,8 @@ module Hanami
         required_arguments = command.required_arguments
         optional_arguments = command.optional_arguments
 
-        required = required_arguments.map { |arg| arg.name.upcase }.join(' ') if required_arguments.any?
-        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(' ') if optional_arguments.any?
+        required = required_arguments.map { |arg| arg.name.upcase }.join(" ") if required_arguments.any?
+        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(" ") if optional_arguments.any?
         result = [required, optional].compact
 
         " #{result.join(' ')}" unless result.empty?
