@@ -2,11 +2,3 @@
 # alphabetically
 inherit_from:
   - https://raw.githubusercontent.com/hanami/devtools/master/.rubocop.yml
-
-AllCops:
-  TargetRubyVersion: 2.3
-  Exclude:
-    - 'spec/support/fixtures/foo'
-
-Style/SpecialGlobalVars:
-  Enabled: false

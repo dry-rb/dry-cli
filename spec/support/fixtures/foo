@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-$LOAD_PATH.unshift __dir__ + '/../../lib'
+$LOAD_PATH.unshift File.expand_path(__dir__ + '/../../../lib')
 require 'hanami/cli'
 
 module Foo
@@ -569,4 +569,4 @@ Foo::CLI::Commands.before("callbacks", Callbacks::Before.new)
 Foo::CLI::Commands.after("callbacks",  Callbacks::After.new)
 
 cli = Hanami::CLI.new(Foo::CLI::Commands)
-cli.call(err: ENV['PRINT_UNKNOWN_COMMANDS'] ? $stdout : nil)
+cli.call(err: ENV['PRINT_UNKNOWN_COMMANDS'] ? $stdout : nil, kernel: nil)

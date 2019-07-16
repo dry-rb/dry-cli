@@ -49,10 +49,9 @@ module Hanami
     # @param kernel [Module, NilClass] optional replacement for Kernel, on which #exit() is called.
     #
     # @since 0.1.0
-    # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
-    def call(arguments: ARGV, out: $stdout, err: nil, kernel: Kernel)
-      @kernel = kernel
+    def call(arguments: ARGV, out: $stdout, err: nil, kernel: nil)
+      @kernel = kernel || Kernel
 
       original_argv = ARGV.dup
 
@@ -64,18 +63,28 @@ module Hanami
         exit_code = 0
         invalid_commands = original_argv.reject { |a| a.start_with?('-') }
         if invalid_commands.size.positive?
-          err&.puts("Error:\n")
-          err&.puts("  Unknown command(s): #{invalid_commands.join(', ')}")
-          err&.puts
+          report_unknown_command(err, invalid_commands)
           exit_code = 1
         end
         usage(result, out, exit_code)
       end
     end
     # rubocop:enable Metrics/MethodLength
-    # rubocop:enable Metrics/AbcSize
 
     private
+
+    # Reports unknown commands to the output
+    #
+    # @param err [IO, NilClass] the standard output or the standard error or nil (default)
+    # @param invalid_commands [Array<String>] array of invalid commands
+    #
+    # @since 0.1.0
+    # @api private
+    def report_unknown_command(err, invalid_commands)
+      err&.puts("Error:\n")
+      err&.puts("  Unknown command(s): #{invalid_commands.join(', ')}")
+      err&.puts
+    end
 
     # Calls the command and runs callbacks.
     #
@@ -118,12 +127,12 @@ module Hanami
 
       if result.help?
         Banner.call(command, out)
-        kernel.exit(0)
+        kernel&.send(:exit, 0)
       end
 
       if result.error?
         out.puts(result.error)
-        kernel.exit(1)
+        kernel&.send(:exit, 1)
       end
 
       [command, result.arguments]
@@ -139,7 +148,7 @@ module Hanami
     # @api private
     def usage(result, out, exit_code = 1)
       Usage.call(result, out)
-      kernel.exit(exit_code)
+      kernel&.send(:exit, exit_code)
     end
 
     # Check if command
