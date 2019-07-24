@@ -1,5 +1,3 @@
-require 'english'
-
 FOOS_COMPLETE_OUTPUT = <<~DESC.freeze
   Commands:
     foo assets [SUBCOMMAND]

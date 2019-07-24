@@ -78,7 +78,7 @@ module Hanami
     # @param err [IO, NilClass] the standard output or the standard error or nil (default)
     # @param invalid_commands [Array<String>] array of invalid commands
     #
-    # @since 0.1.0
+    # @since x.x.x
     # @api private
     def report_unknown_command(err, invalid_commands)
       err&.puts("Error:\n")
@@ -91,7 +91,7 @@ module Hanami
     # @param result [Hanami::CLI::CommandRegistry::LookupResult]
     # @param out [IO] sta output
     #
-    # @since 0.1.0
+    # @since x.x.x
     # @api private
     def call_command(result, out)
       command, args = parse(result, out)

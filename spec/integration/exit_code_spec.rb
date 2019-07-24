@@ -1,6 +1,3 @@
-require_relative 'helpers/constants'
-require_relative 'helpers/command_runner'
-
 require 'spec_helper'
 
 RSpec.describe 'Usage and an exit code' do
@@ -12,12 +9,22 @@ RSpec.describe 'Usage and an exit code' do
 
   # This shared example can be customized with an expected output, exit code and an exception
   shared_examples_for :a_command_that_ran_with do |expected_output: FOOS_COMPLETE_OUTPUT, expected_code: 0, expected_error: nil|
-    its(:out) { is_expected.to eq(expected_output) }
-    its(:code) { is_expected.to eq(expected_code) }
+    it 'its output should match the expected output' do
+      expect(subject.out).to eq(expected_output)
+    end
+
+    it "its exit code should be #{expected_code}" do
+      expect(subject.code).to eq(expected_code)
+    end
+
     if expected_error.nil?
-      its(:error) { is_expected.to be_nil }
+      it 'should not produce an error' do
+        expect(subject.error).to be_nil
+      end
     else
-      its(:error) { is_expected.to eq(expected_error) }
+      it 'should produce an error' do
+        expect(subject.error).to eq(expected_error)
+      end
     end
   end
 

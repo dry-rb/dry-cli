@@ -1,5 +1,3 @@
-require_relative 'helpers/constants'
-
 RSpec.describe "Rendering" do
   it "prints required params" do
     output = `foo`
