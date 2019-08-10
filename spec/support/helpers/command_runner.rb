@@ -17,8 +17,8 @@ class CommandRunner
 
     begin
       @out = `#{cmd}`
-    rescue StandardError => e
-      @error = e.class
+    rescue StandardError => exception
+      @error = exception.class
     ensure
       @code    = $?.exitstatus
       @has_run = true

@@ -4,6 +4,7 @@ RSpec.describe 'Usage and an exit code' do
   let(:command_prefix) { '' }
   let(:argv) { '' }
   let(:command_line) { "#{command_prefix}foo #{argv}" }
+  let(:command_prefix) { 'PRINT_UNKNOWN_COMMANDS=true ' }
 
   subject(:executioner) { CommandRunner.new(command_line, run_now: true) }
 
@@ -30,26 +31,47 @@ RSpec.describe 'Usage and an exit code' do
 
   describe 'for a valid command' do
     describe 'with a non-existent subcommand' do
-      let(:command_prefix) { 'PRINT_UNKNOWN_COMMANDS=true ' }
       let(:argv) { 'moo' }
-
       it_behaves_like :a_command_that_ran_with,
                       expected_output: "Error:\n  Unknown command(s): moo\n\n#{FOOS_COMPLETE_OUTPUT}",
                       expected_code: 1
     end
 
     describe 'with no subcommands but -h or --help options' do
-      let(:command_prefix) { 'PRINT_UNKNOWN_COMMANDS=true ' }
       let(:argv) { '-h' }
-
       it_behaves_like :a_command_that_ran_with
     end
 
-    describe 'with no subcommands nor options' do
+    describe 'with no arguments at all' do
       let(:command_prefix) { '' }
       let(:argv) { '' }
-
       it_behaves_like :a_command_that_ran_with
+    end
+
+    describe 'given a command that expects a subcommand' do
+      describe 'given --help' do
+        let(:argv) { 'assets --help' }
+        it_behaves_like :a_command_that_ran_with,
+                        expected_output: "Commands:\n  foo assets precompile            # Precompile assets for deployment\n",
+                        expected_error: nil,
+                        expected_code: 0
+      end
+
+      describe 'given valid subcommand' do
+        let(:argv) { 'assets precompile' }
+        it_behaves_like :a_command_that_ran_with,
+                        expected_output: '',
+                        expected_error: nil,
+                        expected_code: 0
+      end
+
+      describe 'given an invalid subcommand' do
+        let(:argv) { 'assets purge' }
+        it_behaves_like :a_command_that_ran_with,
+                        expected_output: "Error:\n  Unknown command(s): purge\n\nCommands:\n  foo assets precompile            # Precompile assets for deployment\n",
+                        expected_error: nil,
+                        expected_code: 1
+      end
     end
   end
 
