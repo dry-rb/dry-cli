@@ -1,7 +1,7 @@
 require "concurrent/hash"
 require 'hanami/utils/callbacks'
 
-module Hanami
+module Dry
   class CLI
     # Command registry
     #
@@ -113,8 +113,8 @@ module Hanami
           @aliases  = Concurrent::Hash.new
           @command  = nil
 
-          @before_callbacks = Utils::Callbacks::Chain.new
-          @after_callbacks = Utils::Callbacks::Chain.new
+          @before_callbacks = Hanami::Utils::Callbacks::Chain.new
+          @after_callbacks = Hanami::Utils::Callbacks::Chain.new
         end
 
         # @since 0.1.0

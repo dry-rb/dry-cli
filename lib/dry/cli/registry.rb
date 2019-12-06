@@ -1,6 +1,6 @@
-require "hanami/cli/command_registry"
+require "dry/cli/command_registry"
 
-module Hanami
+module Dry
   class CLI
     # Registry mixin
     #
@@ -17,20 +17,20 @@ module Hanami
       # Register a command
       #
       # @param name [String] the command name
-      # @param command [NilClass,Hanami::CLI::Command] the optional command
+      # @param command [NilClass,Dry::CLI::Command] the optional command
       # @param aliases [Array<String>] an optional list of aliases
       # @param options [Hash] a set of options
       #
       # @since 0.1.0
       #
       # @example Register a command
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
       #   module Foo
       #     module Commands
-      #       extend Hanami::CLI::Registry
+      #       extend Dry::CLI::Registry
       #
-      #       class Hello < Hanami::CLI::Command
+      #       class Hello < Dry::CLI::Command
       #       end
       #
       #       register "hi", Hello
@@ -38,13 +38,13 @@ module Hanami
       #   end
       #
       # @example Register a command with aliases
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
       #   module Foo
       #     module Commands
-      #       extend Hanami::CLI::Registry
+      #       extend Dry::CLI::Registry
       #
-      #       class Hello < Hanami::CLI::Command
+      #       class Hello < Dry::CLI::Command
       #       end
       #
       #       register "hello", Hello, aliases: ["hi", "ciao"]
@@ -52,17 +52,17 @@ module Hanami
       #   end
       #
       # @example Register a group of commands
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
       #   module Foo
       #     module Commands
-      #       extend Hanami::CLI::Registry
+      #       extend Dry::CLI::Registry
       #
       #       module Generate
-      #         class App < Hanami::CLI::Command
+      #         class App < Dry::CLI::Command
       #         end
       #
-      #         class Action < Hanami::CLI::Command
+      #         class Action < Dry::CLI::Command
       #         end
       #       end
       #
@@ -87,20 +87,20 @@ module Hanami
       #   it MUST respond to `#call`.
       # @param blk [Proc] the callback espressed as a block
       #
-      # @raise [Hanami::CLI::UnknownCommandError] if the command isn't registered
-      # @raise [Hanami::CLI::InvalidCallbackError] if the given callback doesn't
+      # @raise [Dry::CLI::UnknownCommandError] if the command isn't registered
+      # @raise [Dry::CLI::InvalidCallbackError] if the given callback doesn't
       #   implement the required interface
       #
       # @since 0.2.0
       #
       # @example
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
       #   module Foo
       #     module Commands
-      #       extend Hanami::CLI::Registry
+      #       extend Dry::CLI::Registry
       #
-      #       class Hello < Hanami::CLI::Command
+      #       class Hello < Dry::CLI::Command
       #         def call(*)
       #           puts "hello"
       #         end
@@ -112,7 +112,7 @@ module Hanami
       #   end
       #
       # @example Register an object as callback
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
       #   module Callbacks
       #     class Hello
@@ -124,9 +124,9 @@ module Hanami
       #
       #   module Foo
       #     module Commands
-      #       extend Hanami::CLI::Registry
+      #       extend Dry::CLI::Registry
       #
-      #       class Hello < Hanami::CLI::Command
+      #       class Hello < Dry::CLI::Command
       #         def call(*)
       #           puts "I'm about to say.."
       #         end
@@ -138,7 +138,7 @@ module Hanami
       #   end
       #
       # @example Register a class as callback
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
       #   module Callbacks
       #     class Hello
@@ -150,9 +150,9 @@ module Hanami
       #
       #   module Foo
       #     module Commands
-      #       extend Hanami::CLI::Registry
+      #       extend Dry::CLI::Registry
       #
-      #       class Hello < Hanami::CLI::Command
+      #       class Hello < Dry::CLI::Command
       #         def call(*)
       #           puts "I'm about to say.."
       #         end
@@ -173,20 +173,20 @@ module Hanami
       #   it MUST respond to `#call`.
       # @param blk [Proc] the callback espressed as a block
       #
-      # @raise [Hanami::CLI::UnknownCommandError] if the command isn't registered
-      # @raise [Hanami::CLI::InvalidCallbackError] if the given callback doesn't
+      # @raise [Dry::CLI::UnknownCommandError] if the command isn't registered
+      # @raise [Dry::CLI::InvalidCallbackError] if the given callback doesn't
       #   implement the required interface
       #
       # @since 0.2.0
       #
       # @example
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
       #   module Foo
       #     module Commands
-      #       extend Hanami::CLI::Registry
+      #       extend Dry::CLI::Registry
       #
-      #       class Hello < Hanami::CLI::Command
+      #       class Hello < Dry::CLI::Command
       #         def call(*)
       #           puts "hello"
       #         end
@@ -198,7 +198,7 @@ module Hanami
       #   end
       #
       # @example Register an object as callback
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
       #   module Callbacks
       #     class World
@@ -210,9 +210,9 @@ module Hanami
       #
       #   module Foo
       #     module Commands
-      #       extend Hanami::CLI::Registry
+      #       extend Dry::CLI::Registry
       #
-      #       class Hello < Hanami::CLI::Command
+      #       class Hello < Dry::CLI::Command
       #         def call(*)
       #           puts "hello"
       #         end
@@ -224,7 +224,7 @@ module Hanami
       #   end
       #
       # @example Register a class as callback
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
       #   module Callbacks
       #     class World
@@ -236,9 +236,9 @@ module Hanami
       #
       #   module Foo
       #     module Commands
-      #       extend Hanami::CLI::Registry
+      #       extend Dry::CLI::Registry
       #
-      #       class Hello < Hanami::CLI::Command
+      #       class Hello < Dry::CLI::Command
       #         def call(*)
       #           puts "hello"
       #         end
@@ -307,7 +307,7 @@ module Hanami
 
         # @since 0.1.0
         #
-        # @see Hanami::CLI::Registry#register
+        # @see Dry::CLI::Registry#register
         def register(name, command, aliases: [], **options)
           command_name = "#{prefix} #{name}"
           registry.set(command_name, command, aliases, **options)

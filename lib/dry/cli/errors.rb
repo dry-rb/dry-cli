@@ -1,6 +1,6 @@
 require "hanami/utils/deprecation"
 
-module Hanami
+module Dry
   # General purpose Command Line Interface (CLI) framework for Ruby
   #
   # @since 0.1.0

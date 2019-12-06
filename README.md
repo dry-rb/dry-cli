@@ -1,4 +1,4 @@
-# Hanami::CLI
+# Dry::CLI (former Hanami::CLI)
 
 General purpose Command Line Interface (CLI) framework for Ruby.
 
@@ -7,9 +7,9 @@ General purpose Command Line Interface (CLI) framework for Ruby.
 ## Status
 
 [![Gem Version](https://badge.fury.io/rb/hanami-cli.svg)](https://badge.fury.io/rb/hanami-cli)
-[![TravisCI](https://travis-ci.org/hanami/cli.svg?branch=master)](https://travis-ci.org/hanami/cli)
+[![TravisCI](https://travis-ci.org/dry-rb/dry-cli.svg?branch=master)](https://travis-ci.org/dry-rb/dry-cli)
 [![CircleCI](https://circleci.com/gh/hanami/cli/tree/master.svg?style=svg)](https://circleci.com/gh/hanami/cli/tree/master)
-[![Test Coverage](https://codecov.io/gh/hanami/cli/branch/master/graph/badge.svg)](https://codecov.io/gh/hanami/cli)
+[![Test Coverage](https://codecov.io/gh/dry-rb/dry-cli/branch/master/graph/badge.svg)](https://codecov.io/gh/dry-rb/dry-cli)
 [![Depfu](https://badges.depfu.com/badges/2c1bc076f16c6b5508334c44b5800362/overview.svg)](https://depfu.com/github/hanami/cli?project=Bundler)
 [![Inline Docs](http://inch-ci.org/github/hanami/cli.svg)](http://inch-ci.org/github/hanami/cli)
 
@@ -17,21 +17,21 @@ General purpose Command Line Interface (CLI) framework for Ruby.
 
 * Home page: http://hanamirb.org
 * Mailing List: http://hanamirb.org/mailing-list
-* API Doc: http://rdoc.info/gems/hanami-cli
-* Bugs/Issues: https://github.com/hanami/cli/issues
-* Support: http://stackoverflow.com/questions/tagged/hanami
+* API Doc: http://rdoc.info/gems/dry-cli
+* Bugs/Issues: https://github.com/dry-rb/dry-cli/issues
+* Support: http://stackoverflow.com/questions/tagged/dry-cli
 * Chat: http://chat.hanamirb.org
 
 ## Rubies
 
-__Hanami::CLI__ supports Ruby (MRI) 2.3+, JRuby 9.1.5.0+
+__Dry::CLI__ supports Ruby (MRI) 2.3+, JRuby 9.1.5.0+
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'hanami-cli'
+gem 'dry-cli'
 ```
 
 And then execute:
@@ -40,7 +40,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install hanami-cli
+    $ gem install dry-cli
 
 <!-- Tocer[start]: Auto-generated, don't remove. -->
 
@@ -84,14 +84,14 @@ Example: for `foo hi` _command name_ there is the corresponding `Foo::CLI::Hello
 ```ruby
 #!/usr/bin/env ruby
 require "bundler/setup"
-require "hanami/cli"
+require "dry/cli"
 
 module Foo
   module CLI
     module Commands
-      extend Hanami::CLI::Registry
+      extend Dry::CLI::Registry
 
-      class Hello < Hanami::CLI::Command
+      class Hello < Dry::CLI::Command
         def call(*)
         end
       end
@@ -99,7 +99,7 @@ module Foo
   end
 end
 
-class Version < Hanami::CLI::Command
+class Version < Dry::CLI::Command
   def call(*)
   end
 end
@@ -107,7 +107,7 @@ end
 Foo::CLI::Commands.register "hi", Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register "v",  Version
 
-Hanami::CLI.new(Foo::CLI::Commands).call
+Dry::CLI.new(Foo::CLI::Commands).call
 ```
 
 **Please note:** there is NOT a convention between the _command name_ and the _command object_ class.
@@ -115,7 +115,7 @@ The manual _registration_ assigns a _command object_ to a _command name_.
 
 ### Commands as objects
 
-A command is a subclass of `Hanami::CLI::Command` and it MUST respond to `#call(*)`.
+A command is a subclass of `Dry::CLI::Command` and it MUST respond to `#call(*)`.
 
 ### Subcommands
 
@@ -124,15 +124,15 @@ There is nothing special in subcommands: they are just _command objects_ registe
 ```ruby
 #!/usr/bin/env ruby
 require "bundler/setup"
-require "hanami/cli"
+require "dry/cli"
 
 module Foo
   module CLI
     module Commands
-      extend Hanami::CLI::Registry
+      extend Dry::CLI::Registry
 
       module Generate
-        class Configuration < Hanami::CLI::Command
+        class Configuration < Dry::CLI::Command
           def call(*)
           end
         end
@@ -143,7 +143,7 @@ end
 
 Foo::CLI::Commands.register "generate configuration", Foo::CLI::Commands::Generate::Configuration
 
-Hanami::CLI.new(Foo::CLI::Commands).call
+Dry::CLI.new(Foo::CLI::Commands).call
 ```
 
 ### Arguments
@@ -156,14 +156,14 @@ An argument can be declared as _required_.
 ```ruby
 #!/usr/bin/env ruby
 require "bundler/setup"
-require "hanami/cli"
+require "dry/cli"
 
 module Foo
   module CLI
     module Commands
-      extend Hanami::CLI::Registry
+      extend Dry::CLI::Registry
 
-      class Greet < Hanami::CLI::Command
+      class Greet < Dry::CLI::Command
         argument :name, required: true, desc: "The name of the person to greet"
         argument :age, desc: "The age of the person to greet"
 
@@ -180,7 +180,7 @@ module Foo
   end
 end
 
-Hanami::CLI.new(Foo::CLI::Commands).call
+Dry::CLI.new(Foo::CLI::Commands).call
 ```
 
 ```shell
@@ -209,14 +209,14 @@ A command can accept none or many options.
 ```ruby
 #!/usr/bin/env ruby
 require "bundler/setup"
-require "hanami/cli"
+require "dry/cli"
 
 module Foo
   module CLI
     module Commands
-      extend Hanami::CLI::Registry
+      extend Dry::CLI::Registry
 
-      class Request < Hanami::CLI::Command
+      class Request < Dry::CLI::Command
         option :mode, default: "http", values: %w[http http2], desc: "The request mode"
 
         def call(**options)
@@ -229,7 +229,7 @@ module Foo
   end
 end
 
-Hanami::CLI.new(Foo::CLI::Commands).call
+Dry::CLI.new(Foo::CLI::Commands).call
 ```
 
 ```shell
@@ -257,14 +257,14 @@ These extra arguments are included as `:args` in the keyword arguments available
 ```ruby
 #!/usr/bin/env ruby
 require "bundler/setup"
-require "hanami/cli"
+require "dry/cli"
 
 module Foo
   module CLI
     module Commands
-      extend Hanami::CLI::Registry
+      extend Dry::CLI::Registry
 
-      class Runner < Hanami::CLI::Command
+      class Runner < Dry::CLI::Command
         argument :image, required: true, desc: "Docker image"
 
         def call(image:, args: [], **)
@@ -277,7 +277,7 @@ module Foo
   end
 end
 
-Hanami::CLI.new(Foo::CLI::Commands).call
+Dry::CLI.new(Foo::CLI::Commands).call
 ```
 
 ```shell
@@ -293,7 +293,7 @@ In this specific case, `ruby:latest` corresponds to the `image` mandatory argume
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "hanami-cli"
+gem "dry-cli"
 ```
 
 And then execute:
@@ -302,7 +302,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install hanami-cli
+    $ gem install dry-cli
 
 ## Usage
 
@@ -311,14 +311,14 @@ Imagine to build a CLI executable `foo` for your Ruby project.
 ```ruby
 #!/usr/bin/env ruby
 require "bundler/setup"
-require "hanami/cli"
+require "dry/cli"
 
 module Foo
   module CLI
     module Commands
-      extend Hanami::CLI::Registry
+      extend Dry::CLI::Registry
 
-      class Version < Hanami::CLI::Command
+      class Version < Dry::CLI::Command
         desc "Print version"
 
         def call(*)
@@ -326,7 +326,7 @@ module Foo
         end
       end
 
-      class Echo < Hanami::CLI::Command
+      class Echo < Dry::CLI::Command
         desc "Print input"
 
         argument :input, desc: "Input to print"
@@ -345,7 +345,7 @@ module Foo
         end
       end
 
-      class Start < Hanami::CLI::Command
+      class Start < Dry::CLI::Command
         desc "Start Foo machinery"
 
         argument :root, required: true, desc: "Root directory"
@@ -359,7 +359,7 @@ module Foo
         end
       end
 
-      class Stop < Hanami::CLI::Command
+      class Stop < Dry::CLI::Command
         desc "Stop Foo machinery"
 
         option :graceful, type: :boolean, default: true, desc: "Graceful stop"
@@ -369,7 +369,7 @@ module Foo
         end
       end
 
-      class Exec < Hanami::CLI::Command
+      class Exec < Dry::CLI::Command
         desc "Execute a task"
 
         argument :task, type: :string, required: true,  desc: "Task to be executed"
@@ -381,7 +381,7 @@ module Foo
       end
 
       module Generate
-        class Configuration < Hanami::CLI::Command
+        class Configuration < Dry::CLI::Command
           desc "Generate configuration"
 
           option :apps, type: :array, default: [], desc: "Generate configuration for specific apps"
@@ -391,7 +391,7 @@ module Foo
           end
         end
 
-        class Test < Hanami::CLI::Command
+        class Test < Dry::CLI::Command
           desc "Generate tests"
 
           option :framework, default: "minitest", values: %w[minitest rspec]
@@ -416,7 +416,7 @@ module Foo
   end
 end
 
-Hanami::CLI.new(Foo::CLI::Commands).call
+Dry::CLI.new(Foo::CLI::Commands).call
 ```
 
 Let's have a look at the command line usage.
@@ -578,14 +578,14 @@ From the `foo` gem we have a command `hello`.
 
 ```ruby
 #!/usr/bin/env ruby
-require "hanami/cli"
+require "dry/cli"
 
 module Foo
   module CLI
     module Commands
-      extend Hanami::CLI::Registry
+      extend Dry::CLI::Registry
 
-      class Hello < Hanami::CLI::Command
+      class Hello < Dry::CLI::Command
         argument :name, required: true
 
         def call(name:, **)
@@ -598,7 +598,7 @@ end
 
 Foo::CLI::Commands.register "hello", Foo::CLI::Commands::Hello
 
-cli = Hanami::CLI.new(Foo::CLI::Commands)
+cli = Dry::CLI.new(Foo::CLI::Commands)
 cli.call
 ```
 
@@ -624,7 +624,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/hanami/cli.
+Bug reports and pull requests are welcome on GitHub at https://github.com/dry-rb/dry-cli.
 
 ## Alternatives
 

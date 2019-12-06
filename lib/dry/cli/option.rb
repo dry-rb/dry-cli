@@ -1,6 +1,6 @@
 require "hanami/utils/string"
 
-module Hanami
+module Dry
   class CLI
     # Command line option
     #

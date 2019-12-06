@@ -1,6 +1,6 @@
-require "hanami/cli/program_name"
+require "dry/cli/program_name"
 
-module Hanami
+module Dry
   class CLI
     # Command(s) usage
     #

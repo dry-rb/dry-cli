@@ -1,6 +1,6 @@
-require "hanami/cli/program_name"
+require "dry/cli/program_name"
 
-module Hanami
+module Dry
   class CLI
     # Command banner
     #
@@ -9,7 +9,7 @@ module Hanami
     module Banner
       # Prints command banner
       #
-      # @param command [Hanami::CLI::Command] the command
+      # @param command [Dry::CLI::Command] the command
       # @param out [IO] standard output
       #
       # @since 0.1.0
@@ -103,7 +103,7 @@ module Hanami
       # rubocop:disable Metrics/MethodLength
       def self.extended_command_options(command)
         result = command.options.map do |option|
-          name = Utils::String.dasherize(option.name)
+          name = Hanami::Utils::String.dasherize(option.name)
           name = if option.boolean?
                    "[no-]#{name}"
                  else

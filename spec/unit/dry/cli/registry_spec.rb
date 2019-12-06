@@ -1,10 +1,10 @@
-RSpec.describe Hanami::CLI::Registry do
+RSpec.describe Dry::CLI::Registry do
   describe ".before" do
     context "when command can't be found" do
       it "raises error" do
         expect do
           Bar::CLI::Commands.before("pixel") { puts "hello" }
-        end.to raise_error(Hanami::CLI::UnknownCommandError, "unknown command: `pixel'")
+        end.to raise_error(Dry::CLI::UnknownCommandError, "unknown command: `pixel'")
       end
     end
 
@@ -14,7 +14,7 @@ RSpec.describe Hanami::CLI::Registry do
 
         expect do
           Bar::CLI::Commands.before("alpha", callback)
-        end.to raise_error(Hanami::CLI::InvalidCallbackError, "expected `#{callback.inspect}' to respond to `#call'")
+        end.to raise_error(Dry::CLI::InvalidCallbackError, "expected `#{callback.inspect}' to respond to `#call'")
       end
     end
 
@@ -24,7 +24,7 @@ RSpec.describe Hanami::CLI::Registry do
 
         expect do
           Bar::CLI::Commands.before("alpha", callback)
-        end.to raise_error(Hanami::CLI::InvalidCallbackError, "expected `#{callback.inspect}' to respond to `#initialize' with arity 0")
+        end.to raise_error(Dry::CLI::InvalidCallbackError, "expected `#{callback.inspect}' to respond to `#initialize' with arity 0")
       end
     end
   end
@@ -34,7 +34,7 @@ RSpec.describe Hanami::CLI::Registry do
       it "raises error" do
         expect do
           Bar::CLI::Commands.after("peta") { puts "hello" }
-        end.to raise_error(Hanami::CLI::UnknownCommandError, "unknown command: `peta'")
+        end.to raise_error(Dry::CLI::UnknownCommandError, "unknown command: `peta'")
       end
     end
 
@@ -44,7 +44,7 @@ RSpec.describe Hanami::CLI::Registry do
 
         expect do
           Bar::CLI::Commands.after("alpha", callback)
-        end.to raise_error(Hanami::CLI::InvalidCallbackError, "expected `#{callback.inspect}' to respond to `#call'")
+        end.to raise_error(Dry::CLI::InvalidCallbackError, "expected `#{callback.inspect}' to respond to `#call'")
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe Hanami::CLI::Registry do
 
         expect do
           Bar::CLI::Commands.after("alpha", callback)
-        end.to raise_error(Hanami::CLI::InvalidCallbackError, "expected `#{callback.inspect}' to respond to `#initialize' with arity 0")
+        end.to raise_error(Dry::CLI::InvalidCallbackError, "expected `#{callback.inspect}' to respond to `#initialize' with arity 0")
       end
     end
   end

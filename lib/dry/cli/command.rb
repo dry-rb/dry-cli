@@ -1,8 +1,8 @@
 require "forwardable"
 require "concurrent/array"
-require "hanami/cli/option"
+require "dry/cli/option"
 
-module Hanami
+module Dry
   class CLI
     # Base class for commands
     #
@@ -55,9 +55,9 @@ module Hanami
       # @since 0.1.0
       #
       # @example
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
-      #   class Echo < Hanami::CLI::Command
+      #   class Echo < Dry::CLI::Command
       #     desc "Prints given input"
       #
       #     def call(*)
@@ -75,9 +75,9 @@ module Hanami
       # @since 0.1.0
       #
       # @example
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
-      #   class Server < Hanami::CLI::Command
+      #   class Server < Dry::CLI::Command
       #     example [
       #       "                    # Basic usage (it uses the bundled server engine)",
       #       "--server=webrick    # Force `webrick` server engine",
@@ -112,9 +112,9 @@ module Hanami
       # @since 0.1.0
       #
       # @example Optional argument
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
-      #   class Hello < Hanami::CLI::Command
+      #   class Hello < Dry::CLI::Command
       #     argument :name
       #
       #     def call(name: nil, **)
@@ -133,9 +133,9 @@ module Hanami
       #   #   Hello, Luca
       #
       # @example Required argument
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
-      #   class Hello < Hanami::CLI::Command
+      #   class Hello < Dry::CLI::Command
       #     argument :name, required: true
       #
       #     def call(name:, **)
@@ -151,10 +151,10 @@ module Hanami
       #   #   Usage: "foo hello NAME"
       #
       # @example Multiple arguments
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
       #   module Generate
-      #     class Action < Hanami::CLI::Command
+      #     class Action < Dry::CLI::Command
       #       argument :app,    required: true
       #       argument :action, required: true
       #
@@ -172,9 +172,9 @@ module Hanami
       #   #   Usage: "foo generate action APP ACTION"
       #
       # @example Description
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
-      #   class Hello < Hanami::CLI::Command
+      #   class Hello < Dry::CLI::Command
       #     argument :name, desc: "The name of the person to greet"
       #
       #     def call(name: nil, **)
@@ -206,9 +206,9 @@ module Hanami
       # @since 0.1.0
       #
       # @example Basic usage
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
-      #   class Console < Hanami::CLI::Command
+      #   class Console < Dry::CLI::Command
       #     param :engine
       #
       #     def call(engine: nil, **)
@@ -223,9 +223,9 @@ module Hanami
       #   # starting console (engine: pry)
       #
       # @example List values
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
-      #   class Console < Hanami::CLI::Command
+      #   class Console < Dry::CLI::Command
       #     param :engine, values: %w(irb pry ripl)
       #
       #     def call(engine: nil, **)
@@ -243,9 +243,9 @@ module Hanami
       #   # Error: Invalid param provided
       #
       # @example Description
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
-      #   class Console < Hanami::CLI::Command
+      #   class Console < Dry::CLI::Command
       #     param :engine, desc: "Force a console engine"
       #
       #     def call(engine: nil, **)
@@ -261,9 +261,9 @@ module Hanami
       #   #   --help, -h                      # Print this help
       #
       # @example Boolean
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
-      #   class Server < Hanami::CLI::Command
+      #   class Server < Dry::CLI::Command
       #     param :code_reloading, type: :boolean, default: true
       #
       #     def call(code_reloading:, **)
@@ -284,9 +284,9 @@ module Hanami
       #   #   --[no]-code-reloading
       #
       # @example Aliases
-      #   require "hanami/cli"
+      #   require "dry/cli"
       #
-      #   class Server < Hanami::CLI::Command
+      #   class Server < Dry::CLI::Command
       #     param :port, aliases: ["-p"]
       #
       #     def call(options)
