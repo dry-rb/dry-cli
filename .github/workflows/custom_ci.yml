@@ -10,6 +10,9 @@ on:
       - spec/**
       - Gemfile
       - "*.gemspec"
+  pull_request:
+    branches:
+      - master
 
 jobs:
   tests-mri:
