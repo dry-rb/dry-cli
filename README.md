@@ -66,6 +66,7 @@ Or install it yourself as:
     - [Aliases](#aliases)
     - [Subcommand aliases](#subcommand-aliases)
     - [Callbacks](#callbacks)
+    - [File Utils](#file-utils)
   - [Development](#development)
   - [Contributing](#contributing)
   - [Alternatives](#alternatives)
@@ -614,6 +615,14 @@ Foo::CLI::Commands.after "hello", &->(args) { puts "bye, #{args.fetch(:name)}" }
 debug: {:name=>"Anton"}
 hello Anton
 bye, Anton
+```
+
+### File Utilities
+
+File utilities is a set of useful methods to manipulate files and directories, which is opted to be required. [API doc](http://www.rubydoc.info/gems/dry-cli/Dry/CLI/Utils/Files)
+
+```ruby
+require 'dry/cli/utils/files'
 ```
 
 ## Development
