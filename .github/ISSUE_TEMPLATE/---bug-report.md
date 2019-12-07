@@ -9,7 +9,11 @@ assignees: ''
 
 **Before you submit this: WE ONLY ACCEPT BUG REPORTS AND FEATURE REQUESTS**
 
-For more information see [our contribution guidelines](https://github.com/dry-rb/dry-cli/blob/master/CONTRIBUTING.md)
+For more information see `CONTRIBUTING.md`.
+
+**Before you report**
+
+:warning: If you have a problem related to a schema, please **report it under [dry-schema issues](https://github.com/dry-rb/dry-schema/issues/new?assignees=&labels=bug&template=---bug-report.md&title=)** instead.
 
 **Describe the bug**
 
