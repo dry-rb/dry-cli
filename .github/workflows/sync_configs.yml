@@ -1,0 +1,34 @@
+# this file is managed by dry-rb/devtools project
+
+name: sync_configs
+
+on:
+  repository_dispatch:
+
+jobs:
+  sync-configs:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'sync_configs'
+    steps:
+      - uses: actions/checkout@v1
+      - name: Update configuration files from devtools
+        env:
+          GITHUB_LOGIN: dry-bot
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git clone https://github.com/dry-rb/devtools.git tmp/devtools
+
+          if [ -f ".github/workflows/custom_ci.yml" ]; then
+            rsync -av --exclude '.github/workflows/ci.yml' tmp/devtools/shared/ . ;
+          else
+            rsync -av tmp/devtools/shared/ . ;
+          fi
+
+          git config --local user.email "dry-bot@dry-rb.org"
+          git config --local user.name "dry-bot"
+          git add -A
+          git commit -m "[devtools] config sync" || echo "nothing changed"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GH_PAT }}
