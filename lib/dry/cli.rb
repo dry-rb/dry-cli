@@ -1,24 +1,24 @@
-# Hanami
+# Dry
 #
 # @since 0.1.0
-module Hanami
+module Dry
   # General purpose Command Line Interface (CLI) framework for Ruby
   #
   # @since 0.1.0
   class CLI
-    require "hanami/cli/version"
-    require "hanami/cli/errors"
-    require "hanami/cli/command"
-    require "hanami/cli/registry"
-    require "hanami/cli/parser"
-    require "hanami/cli/usage"
-    require "hanami/cli/banner"
+    require "dry/cli/version"
+    require "dry/cli/errors"
+    require "dry/cli/command"
+    require "dry/cli/registry"
+    require "dry/cli/parser"
+    require "dry/cli/usage"
+    require "dry/cli/banner"
 
     # Check if command
     #
     # @param command [Object] the command to check
     #
-    # @return [TrueClass,FalseClass] true if instance of `Hanami::CLI::Command`
+    # @return [TrueClass,FalseClass] true if instance of `Dry::CLI::Command`
     #
     # @since 0.1.0
     # @api private
@@ -33,9 +33,9 @@ module Hanami
 
     # Create a new instance
     #
-    # @param registry [Hanami::CLI::Registry] a registry
+    # @param registry [Dry::CLI::Registry] a registry
     #
-    # @return [Hanami::CLI] the new instance
+    # @return [Dry::CLI] the new instance
     # @since 0.1.0
     def initialize(registry)
       @commands = registry
@@ -71,7 +71,7 @@ module Hanami
     #
     # It may exit in case of error, or in case of help.
     #
-    # @param result [Hanami::CLI::CommandRegistry::LookupResult]
+    # @param result [Dry::CLI::CommandRegistry::LookupResult]
     # @param out [IO] sta output
     #
     # @return [Array<Hanami:CLI::Command, Array>] returns an array where the
@@ -100,7 +100,7 @@ module Hanami
 
     # Prints the command usage and exit.
     #
-    # @param result [Hanami::CLI::CommandRegistry::LookupResult]
+    # @param result [Dry::CLI::CommandRegistry::LookupResult]
     # @param out [IO] sta output
     #
     # @since 0.1.0
@@ -114,7 +114,7 @@ module Hanami
     #
     # @param command [Object] the command to check
     #
-    # @return [TrueClass,FalseClass] true if instance of `Hanami::CLI::Command`
+    # @return [TrueClass,FalseClass] true if instance of `Dry::CLI::Command`
     #
     # @since 0.1.0
     # @api private

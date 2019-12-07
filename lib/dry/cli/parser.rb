@@ -1,7 +1,7 @@
 require "optparse"
-require "hanami/cli/program_name"
+require "dry/cli/program_name"
 
-module Hanami
+module Dry
   class CLI
     # Parse command line arguments and options
     #

@@ -1,4 +1,4 @@
-# Hanami::CLI
+# Dry::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
 ## v0.3.1 - 2019-01-18

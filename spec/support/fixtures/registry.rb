@@ -1,9 +1,9 @@
 module Bar
   module CLI
     module Commands
-      extend Hanami::CLI::Registry
+      extend Dry::CLI::Registry
 
-      class Alpha < Hanami::CLI::Command
+      class Alpha < Dry::CLI::Command
         def call(*)
         end
       end

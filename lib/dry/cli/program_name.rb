@@ -1,4 +1,4 @@
-module Hanami
+module Dry
   class CLI
     # Program name
     #
