@@ -1,4 +1,6 @@
-require "dry/cli/program_name"
+# frozen_string_literal: true
+
+require 'dry/cli/program_name'
 
 module Dry
   class CLI
@@ -44,7 +46,9 @@ module Dry
       def self.command_examples(command)
         return if command.examples.empty?
 
-        "\nExamples:\n#{command.examples.map { |example| "  #{full_command_name(command)} #{example}" }.join("\n")}"
+        examples = command.examples
+          .map { |example| "  #{full_command_name(command)} #{example}" }.join("\n")
+        "\nExamples:\n#{examples}"
       end
 
       # @since 0.1.0
@@ -77,12 +81,12 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      def self.arguments(command) # rubocop:disable Metrics/AbcSize
-        required_arguments = command.required_arguments
-        optional_arguments = command.optional_arguments
+      def self.arguments(command)
+        required_args = command.required_arguments
+        optional_args = command.optional_arguments
 
-        required = required_arguments.map { |arg| arg.name.upcase }.join(' ') if required_arguments.any?
-        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(' ') if optional_arguments.any?
+        required = required_args.map { |arg| arg.name.upcase }.join(' ') if required_args.any?
+        optional = optional_args.map { |arg| "[#{arg.name.upcase}]" }.join(' ') if optional_args.any? # rubocop:disable Metrics/LineLength
         result = [required, optional].compact
 
         " #{result.join(' ')}" unless result.empty?
@@ -92,7 +96,8 @@ module Dry
       # @api private
       def self.extended_command_arguments(command)
         command.arguments.map do |argument|
-          "  #{argument.name.to_s.upcase.ljust(20)}\t# #{'REQUIRED ' if argument.required?}#{argument.desc}"
+          "  #{argument.name.to_s.upcase.ljust(20)}\t" \
+            "# #{'REQUIRED ' if argument.required?}#{argument.desc}"
         end.join("\n")
       end
 
@@ -100,7 +105,6 @@ module Dry
       # @api private
       #
       # rubocop:disable Metrics/AbcSize
-      # rubocop:disable Metrics/MethodLength
       def self.extended_command_options(command)
         result = command.options.map do |option|
           name = Hanami::Utils::String.dasherize(option.name)
@@ -109,8 +113,12 @@ module Dry
                  else
                    "#{name}=VALUE"
                  end
-
-          name = "#{name}, #{option.aliases.map { |a| a.start_with?('--') ? "#{a}=VALUE" : "#{a} VALUE" }.join(', ')}" unless option.aliases.empty?
+          unless option.aliases.empty?
+            aliases = option.aliases
+              .map { |a| a.start_with?('--') ? "#{a}=VALUE" : "#{a} VALUE" }
+              .join(', ')
+            name = "#{name}, #{aliases}"
+          end
           name = "  --#{name.ljust(30)}"
           name = "#{name}\t# #{option.desc}"
           name = "#{name}, default: #{option.default.inspect}" unless option.default.nil?
@@ -120,7 +128,6 @@ module Dry
         result << "  --#{'help, -h'.ljust(30)}\t# Print this help"
         result.join("\n")
       end
-      # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/AbcSize
     end
   end

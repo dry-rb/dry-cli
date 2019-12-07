@@ -1,4 +1,6 @@
-require "hanami/utils/string"
+# frozen_string_literal: true
+
+require 'hanami/utils/string'
 
 module Dry
   class CLI
@@ -87,7 +89,6 @@ module Dry
       # @api private
       #
       # rubocop:disable Metrics/AbcSize
-      # rubocop:disable Metrics/MethodLength
       def parser_options
         dasherized_name = Hanami::Utils::String.dasherize(name)
         parser_options  = []
@@ -105,7 +106,6 @@ module Dry
         parser_options << desc if desc
         parser_options
       end
-      # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/AbcSize
 
       private
@@ -113,7 +113,7 @@ module Dry
       # @since 0.1.0
       # @api private
       def alias_name
-        aliases.join(" ") if aliases.any?
+        aliases.join(' ') if aliases.any?
       end
     end
 

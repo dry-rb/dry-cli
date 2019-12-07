@@ -1,5 +1,7 @@
-require "optparse"
-require "dry/cli/program_name"
+# frozen_string_literal: true
+
+require 'optparse'
+require 'dry/cli/program_name'
 
 module Dry
   class CLI
@@ -11,7 +13,6 @@ module Dry
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       def self.call(command, arguments, names)
         original_arguments = arguments.dup
         parsed_options = {}
@@ -23,7 +24,7 @@ module Dry
             end
           end
 
-          opts.on_tail("-h", "--help") do
+          opts.on_tail('-h', '--help') do
             return Result.help
           end
         end.parse!(arguments)
@@ -31,9 +32,9 @@ module Dry
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, names, parsed_options)
       rescue ::OptionParser::ParseError
-        Result.failure("Error: \"#{command.command_name}\" was called with arguments \"#{original_arguments.join(' ')}\"")
+        Result.failure("Error: \"#{command.command_name}\" was called " \
+          "with arguments \"#{original_arguments.join(' ')}\"")
       end
-      # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
       # @since 0.1.0
       # @api private
@@ -44,8 +45,7 @@ module Dry
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/AbcSize
-      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/AbcSize, Metrics/LineLength
       def self.parse_required_params(command, arguments, names, parsed_options)
         parsed_params          = match_arguments(command.arguments, arguments)
         parsed_required_params = match_arguments(command.required_arguments, arguments)
@@ -70,8 +70,7 @@ module Dry
         parsed_options = parsed_options.merge(args: unused_arguments) if unused_arguments.any?
         Result.success(parsed_options)
       end
-      # rubocop:enable Metrics/MethodLength
-      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/AbcSize, Metrics/LineLength
 
       def self.match_arguments(command_arguments, arguments)
         result = {}
@@ -105,7 +104,7 @@ module Dry
 
         # @since 0.1.0
         # @api private
-        def self.failure(error = "Error: Invalid param provided")
+        def self.failure(error = 'Error: Invalid param provided')
           new(error: error)
         end
 

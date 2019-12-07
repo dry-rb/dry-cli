@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Dry
 #
 # @since 0.1.0
@@ -6,13 +8,13 @@ module Dry
   #
   # @since 0.1.0
   class CLI
-    require "dry/cli/version"
-    require "dry/cli/errors"
-    require "dry/cli/command"
-    require "dry/cli/registry"
-    require "dry/cli/parser"
-    require "dry/cli/usage"
-    require "dry/cli/banner"
+    require 'dry/cli/version'
+    require 'dry/cli/errors'
+    require 'dry/cli/command'
+    require 'dry/cli/registry'
+    require 'dry/cli/parser'
+    require 'dry/cli/usage'
+    require 'dry/cli/banner'
 
     # Check if command
     #
@@ -79,7 +81,7 @@ module Dry
     #
     # @since 0.1.0
     # @api private
-    def parse(result, out) # rubocop:disable Metrics/MethodLength
+    def parse(result, out)
       command = result.command
       return [command, result.arguments] unless command?(command)
 

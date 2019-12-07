@@ -1,4 +1,6 @@
-require "hanami/utils/deprecation"
+# frozen_string_literal: true
+
+require 'hanami/utils/deprecation'
 
 module Dry
   # General purpose Command Line Interface (CLI) framework for Ruby
@@ -32,13 +34,6 @@ module Dry
 
         super(message)
       end
-    end
-
-    # @since 0.2.1
-    def self.const_missing(name)
-      super unless name == :UnkwnownCommandError
-      Hanami::Utils::Deprecation.new('UnkwnownCommandError is deprecated, please use UnknownCommandError')
-      UnknownCommandError
     end
   end
 end

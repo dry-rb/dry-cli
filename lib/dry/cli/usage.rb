@@ -1,4 +1,6 @@
-require "dry/cli/program_name"
+# frozen_string_literal: true
+
+require 'dry/cli/program_name'
 
 module Dry
   class CLI
@@ -9,12 +11,12 @@ module Dry
     module Usage
       # @since 0.1.0
       # @api private
-      SUBCOMMAND_BANNER = " [SUBCOMMAND]".freeze
+      SUBCOMMAND_BANNER = ' [SUBCOMMAND]'
 
       # @since 0.1.0
       # @api private
       def self.call(result, out)
-        out.puts "Commands:"
+        out.puts 'Commands:'
         max_length, commands = commands_and_arguments(result)
 
         commands.each do |banner, node|
@@ -25,7 +27,7 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      def self.commands_and_arguments(result) # rubocop:disable Metrics/MethodLength
+      def self.commands_and_arguments(result)
         max_length = 0
         ret        = commands(result).each_with_object({}) do |(name, node), memo|
           args = if node.leaf?
@@ -44,14 +46,14 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      def self.arguments(command) # rubocop:disable Metrics/AbcSize
+      def self.arguments(command)
         return unless CLI.command?(command)
 
-        required_arguments = command.required_arguments
-        optional_arguments = command.optional_arguments
+        required = command.required_arguments
+        optional = command.optional_arguments
 
-        required = required_arguments.map { |arg| arg.name.upcase }.join(' ') if required_arguments.any?
-        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(' ') if optional_arguments.any?
+        required = required.map { |arg| arg.name.upcase }.join(' ') if required.any?
+        optional = optional.map { |arg| "[#{arg.name.upcase}]" }.join(' ') if optional.any?
         result = [required, optional].compact
 
         " #{result.join(' ')}" unless result.empty?
@@ -68,7 +70,7 @@ module Dry
       # @since 0.1.0
       # @api private
       def self.justify(string, padding, usage)
-        return string.chomp(" ") if usage.nil?
+        return string.chomp(' ') if usage.nil?
 
         string.ljust(padding + padding / 2)
       end
