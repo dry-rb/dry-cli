@@ -32,7 +32,7 @@ module Dry
         # @since 0.3.1
         def self.write(path, *content)
           mkdir_p(path)
-          open(path, ::File::CREAT | ::File::WRONLY | ::File::TRUNC, *content) # rubocop:disable Security/Open - this isn't a call to `::Kernel.open`, but to `self.open`
+          open(path, ::File::CREAT | ::File::WRONLY | ::File::TRUNC, *content) # rubocop:disable LineLength, Security/Open - this isn't a call to `::Kernel.open`, but to `self.open`
         end
 
         # Copies source into destination.
@@ -314,7 +314,7 @@ module Dry
           starting = index(content, path, target)
           line     = content[starting]
           size     = line[/\A[[:space:]]*/].bytesize
-          closing  = (' ' * size) + (target =~ /{/ ? '}' : 'end')
+          closing  = (' ' * size) + (target.match?(/{/) ? '}' : 'end')
           ending   = starting + index(content[starting..-1], path, closing)
 
           content.slice!(starting..ending)

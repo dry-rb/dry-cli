@@ -78,12 +78,12 @@ RSpec.describe 'Subcommands' do
 
       it 'more than one param and with optional params' do
         output = `foo generate action web users#index --url=/signin`
-        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>false, :url=>\"/signin\"}\n")
+        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>false, :url=>\"/signin\"}\n") # rubocop:disable Metrics/LineLength
       end
 
       it 'more than one param and with boolean params' do
         output = `foo generate action web users#index --skip-view --url=/signin`
-        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>true, :url=>\"/signin\"}\n")
+        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>true, :url=>\"/signin\"}\n") # rubocop:disable Metrics/LineLength
       end
 
       it 'more than required params' do

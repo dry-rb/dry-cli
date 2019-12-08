@@ -46,7 +46,7 @@ module Dry
       def self.command_examples(command)
         return if command.examples.empty?
 
-        "\nExamples:\n#{command.examples.map { |example| "  #{full_command_name(command)} #{example}" }.join("\n")}"
+        "\nExamples:\n#{command.examples.map { |example| "  #{full_command_name(command)} #{example}" }.join("\n")}" # rubocop:disable Metrics/LineLength
       end
 
       # @since 0.1.0
@@ -83,8 +83,8 @@ module Dry
         required_arguments = command.required_arguments
         optional_arguments = command.optional_arguments
 
-        required = required_arguments.map { |arg| arg.name.upcase }.join(' ') if required_arguments.any?
-        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(' ') if optional_arguments.any?
+        required = required_arguments.map { |arg| arg.name.upcase }.join(' ') if required_arguments.any? # rubocop:disable Metrics/LineLength
+        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(' ') if optional_arguments.any? # rubocop:disable Metrics/LineLength
         result = [required, optional].compact
 
         " #{result.join(' ')}" unless result.empty?
@@ -94,7 +94,7 @@ module Dry
       # @api private
       def self.extended_command_arguments(command)
         command.arguments.map do |argument|
-          "  #{argument.name.to_s.upcase.ljust(20)}\t# #{'REQUIRED ' if argument.required?}#{argument.desc}"
+          "  #{argument.name.to_s.upcase.ljust(20)}\t# #{'REQUIRED ' if argument.required?}#{argument.desc}" # rubocop:disable Metrics/LineLength
         end.join("\n")
       end
 
@@ -111,7 +111,7 @@ module Dry
                    "#{name}=VALUE"
                  end
 
-          name = "#{name}, #{option.aliases.map { |a| a.start_with?('--') ? "#{a}=VALUE" : "#{a} VALUE" }.join(', ')}" unless option.aliases.empty?
+          name = "#{name}, #{option.aliases.map { |a| a.start_with?('--') ? "#{a}=VALUE" : "#{a} VALUE" }.join(', ')}" unless option.aliases.empty? # rubocop:disable Metrics/LineLength
           name = "  --#{name.ljust(30)}"
           name = "#{name}\t# #{option.desc}"
           name = "#{name}, default: #{option.default.inspect}" unless option.default.nil?

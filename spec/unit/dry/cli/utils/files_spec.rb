@@ -220,7 +220,7 @@ RSpec.describe Dry::CLI::Utils::Files do
     it "raises error if path doesn't exist" do
       path = root.join('unshift_no_exist.rb')
 
-      expect { described_class.unshift(path, '# frozen_string_literal: true') }.to raise_error do |exception|
+      expect { described_class.unshift(path, '# frozen_string_literal: true') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(Errno::ENOENT)
         expect(exception.message).to match('No such file or directory')
       end

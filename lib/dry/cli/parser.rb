@@ -32,7 +32,7 @@ module Dry
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, names, parsed_options)
       rescue ::OptionParser::ParseError
-        Result.failure("Error: \"#{command.command_name}\" was called with arguments \"#{original_arguments.join(' ')}\"")
+        Result.failure("Error: \"#{command.command_name}\" was called with arguments \"#{original_arguments.join(' ')}\"") # rubocop:disable Metrics/LineLength
       end
 
       # @since 0.1.0
@@ -48,19 +48,19 @@ module Dry
       def self.parse_required_params(command, arguments, names, parsed_options)
         parsed_params          = match_arguments(command.arguments, arguments)
         parsed_required_params = match_arguments(command.required_arguments, arguments)
-        all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? }
+        all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? } # rubocop:disable Metrics/LineLength
 
         unused_arguments = arguments.drop(command.required_arguments.length)
 
         unless all_required_params_satisfied
           parsed_required_params_values = parsed_required_params.values.compact
 
-          usage = "\nUsage: \"#{full_command_name(names)} #{command.required_arguments.map(&:description_name).join(' ')}\""
+          usage = "\nUsage: \"#{full_command_name(names)} #{command.required_arguments.map(&:description_name).join(' ')}\"" # rubocop:disable Metrics/LineLength
 
           if parsed_required_params_values.empty? # rubocop:disable Style/GuardClause
-            return Result.failure("ERROR: \"#{full_command_name(names)}\" was called with no arguments#{usage}")
+            return Result.failure("ERROR: \"#{full_command_name(names)}\" was called with no arguments#{usage}") # rubocop:disable Metrics/LineLength
           else
-            return Result.failure("ERROR: \"#{full_command_name(names)}\" was called with arguments #{parsed_required_params_values}#{usage}")
+            return Result.failure("ERROR: \"#{full_command_name(names)}\" was called with arguments #{parsed_required_params_values}#{usage}") # rubocop:disable Metrics/LineLength
           end
         end
 

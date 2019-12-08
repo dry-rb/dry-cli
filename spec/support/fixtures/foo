@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/LineLength
 $LOAD_PATH.unshift __dir__ + '/../../lib'
 require 'dry/cli'
 
@@ -548,6 +549,7 @@ module Callbacks
     end
   end
 end
+# rubocop:enable Metrics/LineLength
 
 Foo::CLI::Commands.before('callbacks', Callbacks::BeforeClass)
 Foo::CLI::Commands.after('callbacks',  Callbacks::AfterClass)

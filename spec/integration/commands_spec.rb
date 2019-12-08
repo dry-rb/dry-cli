@@ -79,7 +79,7 @@ RSpec.describe 'Commands' do
       context 'and with an unknown value passed' do
         it 'prints error' do
           output = `foo console --engine=unknown`
-          expect(output).to eq("Error: \"console\" was called with arguments \"--engine=unknown\"\n")
+          expect(output).to eq("Error: \"console\" was called with arguments \"--engine=unknown\"\n") # rubocop:disable Metrics/LineLength
         end
       end
     end
@@ -127,7 +127,7 @@ RSpec.describe 'Commands' do
 
       it 'with unknown param' do
         output = `foo new bookshelf --unknown 1234`
-        expect(output).to eq("Error: \"new\" was called with arguments \"bookshelf --unknown 1234\"\n")
+        expect(output).to eq("Error: \"new\" was called with arguments \"bookshelf --unknown 1234\"\n") # rubocop:disable Metrics/LineLength
       end
 
       it 'no required' do
@@ -173,11 +173,11 @@ RSpec.describe 'Commands' do
             output = `foo variadic with-mandatory-and-options foo bar baz`
             expect(output).to eq("first: foo\nurl: \nmethod: \nUnused Arguments: bar, baz\n")
 
-            output = `foo variadic with-mandatory-and-options --url="root" --method="index" foo bar baz`
-            expect(output).to eq("first: foo\nurl: root\nmethod: index\nUnused Arguments: bar, baz\n")
+            output = `foo variadic with-mandatory-and-options --url="root" --method="index" foo bar baz` # rubocop:disable Metrics/LineLength
+            expect(output).to eq("first: foo\nurl: root\nmethod: index\nUnused Arguments: bar, baz\n") # rubocop:disable Metrics/LineLength
 
             output = `foo variadic with-mandatory-and-options uno -- due tre --blah`
-            expect(output).to eq("first: uno\nurl: \nmethod: \nUnused Arguments: due, tre, --blah\n")
+            expect(output).to eq("first: uno\nurl: \nmethod: \nUnused Arguments: due, tre, --blah\n") # rubocop:disable Metrics/LineLength
           end
         end
       end
