@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dry/cli/utils/files"
 require "securerandom"
 require "hanami/utils/io"

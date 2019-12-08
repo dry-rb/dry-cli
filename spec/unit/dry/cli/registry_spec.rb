@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Dry::CLI::Registry do
   describe ".before" do
     context "when command can't be found" do

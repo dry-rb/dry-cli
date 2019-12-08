@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Dry
 #
 # @since 0.1.0

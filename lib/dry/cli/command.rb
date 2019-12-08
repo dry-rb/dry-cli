@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "forwardable"
 require "concurrent/array"
 require "dry/cli/option"

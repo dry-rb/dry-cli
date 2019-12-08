@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Dry::CLI do
   describe "UnkwnownCommandError" do
     it "shows deprecation message" do
