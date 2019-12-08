@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'dry/cli/command_registry'
 
 module Dry
@@ -262,20 +260,19 @@ module Dry
 
       private
 
-      COMMAND_NAME_SEPARATOR = ' '
+      COMMAND_NAME_SEPARATOR = ' '.freeze
 
       # @since 0.2.0
       # @api private
       def command(command_name)
         get(command_name.split(COMMAND_NAME_SEPARATOR)).tap do |result|
-          raise UnknownCommandError, command_name unless result.found?
+          raise UnknownCommandError.new(command_name) unless result.found?
         end
       end
 
       # @since 0.2.0
       # @api private
       #
-      # rubocop:disable Metrics/MethodLength
       def _callback(callback, blk)
         return blk if blk.respond_to?(:to_proc)
 
@@ -286,13 +283,12 @@ module Dry
           begin
             _callback(callback.new, blk)
           rescue ArgumentError
-            raise InvalidCallbackError, callback
+            raise InvalidCallbackError.new(callback)
           end
         else
-          raise InvalidCallbackError, callback
+          raise InvalidCallbackError.new(callback)
         end
       end
-      # rubocop:enable Metrics/MethodLength
 
       # Command name prefix
       #

@@ -269,7 +269,7 @@ RSpec.describe Dry::CLI::Utils::Files do
     it "raises error if path doesn't exist" do
       path = root.join('append_no_exist.rb')
 
-      expect { described_class.append(path, "\n Foo.register Append") }.to raise_error do |exception|
+      expect { described_class.append(path, "\n Foo.register Append") }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(Errno::ENOENT)
         expect(exception.message).to match('No such file or directory')
       end
@@ -362,7 +362,7 @@ RSpec.describe Dry::CLI::Utils::Files do
 
       described_class.write(path, content)
 
-      expect { described_class.replace_first_line(path, 'not existing target', '  def self.call(input)') }.to raise_error do |exception|
+      expect { described_class.replace_first_line(path, 'not existing target', '  def self.call(input)') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(ArgumentError)
         expect(exception.message).to eq("Cannot find `not existing target' inside `#{path}'.")
       end
@@ -373,7 +373,7 @@ RSpec.describe Dry::CLI::Utils::Files do
     it "raises error if path doesn't exist" do
       path = root.join('replace_no_exist.rb')
 
-      expect { described_class.replace_first_line(path, 'perform', '  def self.call(input)') }.to raise_error do |exception|
+      expect { described_class.replace_first_line(path, 'perform', '  def self.call(input)') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(Errno::ENOENT)
         expect(exception.message).to match('No such file or directory')
       end
@@ -466,7 +466,7 @@ RSpec.describe Dry::CLI::Utils::Files do
 
       described_class.write(path, content)
 
-      expect { described_class.replace_last_line(path, 'not existing target', '  def self.call(input)') }.to raise_error do |exception|
+      expect { described_class.replace_last_line(path, 'not existing target', '  def self.call(input)') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(ArgumentError)
         expect(exception.message).to eq("Cannot find `not existing target' inside `#{path}'.")
       end
@@ -477,7 +477,7 @@ RSpec.describe Dry::CLI::Utils::Files do
     it "raises error if path doesn't exist" do
       path = root.join('replace_last_no_exist.rb')
 
-      expect { described_class.replace_last_line(path, 'perform', '  def self.call(input)') }.to raise_error do |exception|
+      expect { described_class.replace_last_line(path, 'perform', '  def self.call(input)') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(Errno::ENOENT)
         expect(exception.message).to match('No such file or directory')
       end
@@ -544,7 +544,7 @@ RSpec.describe Dry::CLI::Utils::Files do
 
       described_class.write(path, content)
 
-      expect { described_class.inject_line_before(path, 'not existing target', '  # It performs the operation') }.to raise_error do |exception|
+      expect { described_class.inject_line_before(path, 'not existing target', '  # It performs the operation') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(ArgumentError)
         expect(exception.message).to eq("Cannot find `not existing target' inside `#{path}'.")
       end
@@ -555,7 +555,7 @@ RSpec.describe Dry::CLI::Utils::Files do
     it "raises error if path doesn't exist" do
       path = root.join('inject_before_no_exist.rb')
 
-      expect { described_class.inject_line_before(path, 'call', '  # It performs the operation') }.to raise_error do |exception|
+      expect { described_class.inject_line_before(path, 'call', '  # It performs the operation') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(Errno::ENOENT)
         expect(exception.message).to match('No such file or directory')
       end
@@ -632,7 +632,7 @@ RSpec.describe Dry::CLI::Utils::Files do
 
       described_class.write(path, content)
 
-      expect { described_class.inject_line_before_last(path, 'not existing target', '  # It performs the operation') }.to raise_error do |exception|
+      expect { described_class.inject_line_before_last(path, 'not existing target', '  # It performs the operation') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(ArgumentError)
         expect(exception.message).to eq("Cannot find `not existing target' inside `#{path}'.")
       end
@@ -643,7 +643,7 @@ RSpec.describe Dry::CLI::Utils::Files do
     it "raises error if path doesn't exist" do
       path = root.join('inject_before_last_no_exist.rb')
 
-      expect { described_class.inject_line_before_last(path, 'call', '  # It performs the operation') }.to raise_error do |exception|
+      expect { described_class.inject_line_before_last(path, 'call', '  # It performs the operation') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(Errno::ENOENT)
         expect(exception.message).to match('No such file or directory')
       end
@@ -710,7 +710,7 @@ RSpec.describe Dry::CLI::Utils::Files do
 
       described_class.write(path, content)
 
-      expect { described_class.inject_line_after(path, 'not existing target', '    :result') }.to raise_error do |exception|
+      expect { described_class.inject_line_after(path, 'not existing target', '    :result') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(ArgumentError)
         expect(exception.message).to eq("Cannot find `not existing target' inside `#{path}'.")
       end
@@ -721,7 +721,7 @@ RSpec.describe Dry::CLI::Utils::Files do
     it "raises error if path doesn't exist" do
       path = root.join('inject_after_no_exist.rb')
 
-      expect { described_class.inject_line_after(path, 'call', '    :result') }.to raise_error do |exception|
+      expect { described_class.inject_line_after(path, 'call', '    :result') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(Errno::ENOENT)
         expect(exception.message).to match('No such file or directory')
       end
@@ -798,7 +798,7 @@ RSpec.describe Dry::CLI::Utils::Files do
 
       described_class.write(path, content)
 
-      expect { described_class.inject_line_after_last(path, 'not existing target', '    :result') }.to raise_error do |exception|
+      expect { described_class.inject_line_after_last(path, 'not existing target', '    :result') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(ArgumentError)
         expect(exception.message).to eq("Cannot find `not existing target' inside `#{path}'.")
       end
@@ -809,7 +809,7 @@ RSpec.describe Dry::CLI::Utils::Files do
     it "raises error if path doesn't exist" do
       path = root.join('inject_after_last_no_exist.rb')
 
-      expect { described_class.inject_line_after_last(path, 'call', '    :result') }.to raise_error do |exception|
+      expect { described_class.inject_line_after_last(path, 'call', '    :result') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(Errno::ENOENT)
         expect(exception.message).to match('No such file or directory')
       end
@@ -877,7 +877,7 @@ RSpec.describe Dry::CLI::Utils::Files do
 
       described_class.write(path, content)
 
-      expect { described_class.remove_line(path, 'not existing target') }.to raise_error do |exception|
+      expect { described_class.remove_line(path, 'not existing target') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(ArgumentError)
         expect(exception.message).to eq("Cannot find `not existing target' inside `#{path}'.")
       end
@@ -962,7 +962,7 @@ RSpec.describe Dry::CLI::Utils::Files do
 
       described_class.write(path, content)
 
-      expect { described_class.remove_block(path, 'not existing target') }.to raise_error do |exception|
+      expect { described_class.remove_block(path, 'not existing target') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(ArgumentError)
         expect(exception.message).to eq("Cannot find `not existing target' inside `#{path}'.")
       end
@@ -982,7 +982,7 @@ RSpec.describe Dry::CLI::Utils::Files do
 
       described_class.write(path, content)
 
-      expect { described_class.remove_block(path, 'not existing target') }.to raise_error do |exception|
+      expect { described_class.remove_block(path, 'not existing target') }.to raise_error do |exception| # rubocop:disable Metrics/LineLength
         expect(exception).to be_kind_of(ArgumentError)
         expect(exception.message).to eq("Cannot find `not existing target' inside `#{path}'.")
       end
