@@ -384,8 +384,8 @@ module Dry
         # @since 0.3.1
         # @api private
         def self.index(content, path, target)
-          line_number(content, target) or
-            raise ArgumentError.new("Cannot find `#{target}' inside `#{path}'.")
+          line_number(content, target) ||
+            raise(ArgumentError.new("Cannot find `#{target}' inside `#{path}'."))
         end
 
         private_class_method :index
@@ -393,8 +393,8 @@ module Dry
         # @since 1.3.0
         # @api private
         def self.rindex(content, path, target)
-          line_number(content, target, finder: content.method(:rindex)) or
-            raise ArgumentError.new("Cannot find `#{target}' inside `#{path}'.")
+          line_number(content, target, finder: content.method(:rindex)) ||
+            raise(ArgumentError.new("Cannot find `#{target}' inside `#{path}'."))
         end
 
         private_class_method :rindex
