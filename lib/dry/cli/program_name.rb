@@ -9,7 +9,7 @@ module Dry
     module ProgramName
       # @since 0.1.0
       # @api private
-      SEPARATOR = ' '.freeze
+      SEPARATOR = ' '
 
       # @since 0.1.0
       # @api private

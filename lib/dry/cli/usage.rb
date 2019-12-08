@@ -11,7 +11,7 @@ module Dry
     module Usage
       # @since 0.1.0
       # @api private
-      SUBCOMMAND_BANNER = ' [SUBCOMMAND]'.freeze
+      SUBCOMMAND_BANNER = ' [SUBCOMMAND]'
 
       # @since 0.1.0
       # @api private
