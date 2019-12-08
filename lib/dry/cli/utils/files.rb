@@ -309,7 +309,7 @@ module Dry
         #
         #   # class App
         #   # end
-        def self.remove_block(path, target) # rubocop:disable Metrics/AbcSize
+        def self.remove_block(path, target)
           content  = ::File.readlines(path)
           starting = index(content, path, target)
           line     = content[starting]

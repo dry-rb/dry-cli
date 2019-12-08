@@ -27,7 +27,7 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      def self.commands_and_arguments(result) # rubocop:disable Metrics/MethodLength
+      def self.commands_and_arguments(result)
         max_length = 0
         ret        = commands(result).each_with_object({}) do |(name, node), memo|
           args = if node.leaf?
@@ -46,7 +46,7 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      def self.arguments(command) # rubocop:disable Metrics/AbcSize
+      def self.arguments(command)
         return unless CLI.command?(command)
 
         required_arguments = command.required_arguments

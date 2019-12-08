@@ -81,7 +81,7 @@ module Dry
     #
     # @since 0.1.0
     # @api private
-    def parse(result, out) # rubocop:disable Metrics/MethodLength
+    def parse(result, out)
       command = result.command
       return [command, result.arguments] unless command?(command)
 

@@ -89,7 +89,6 @@ module Dry
       # @api private
       #
       # rubocop:disable Metrics/AbcSize
-      # rubocop:disable Metrics/MethodLength
       def parser_options
         dasherized_name = Hanami::Utils::String.dasherize(name)
         parser_options  = []
@@ -107,7 +106,6 @@ module Dry
         parser_options << desc if desc
         parser_options
       end
-      # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/AbcSize
 
       private
