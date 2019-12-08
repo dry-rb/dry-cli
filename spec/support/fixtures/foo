@@ -20,8 +20,7 @@ module Foo
             'FOO_ENV=production # Precompile assets for production environment'
           ]
 
-          def call(*)
-          end
+          def call(*); end
         end
       end
 
@@ -43,29 +42,25 @@ module Foo
         class Apply < Dry::CLI::Command
           desc 'Migrate, dump the SQL schema, and delete the migrations (experimental)'
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Console < Dry::CLI::Command
           desc 'Starts a database console'
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Create < Dry::CLI::Command
           desc 'Create the database (only for development/test)'
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Drop < Dry::CLI::Command
           desc 'Drop the database (only for development/test)'
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Migrate < Dry::CLI::Command
@@ -77,22 +72,19 @@ module Foo
             '20170721120747 # Migrate to a specific version'
           ]
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Prepare < Dry::CLI::Command
           desc 'Drop, create, and migrate the database (only for development/test)'
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Version < Dry::CLI::Command
           desc 'Print the current migrated version'
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Rollback < Dry::CLI::Command
@@ -132,8 +124,7 @@ module Foo
             'admin # Destroy `admin` app'
           ]
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Mailer < Dry::CLI::Command
@@ -145,8 +136,7 @@ module Foo
             'welcome # Destroy `WelcomeMailer` mailer'
           ]
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Migration < Dry::CLI::Command
@@ -158,8 +148,7 @@ module Foo
             'create_users # Destroy `db/migrations/20170721120747_create_users.rb`'
           ]
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Model < Dry::CLI::Command
@@ -171,8 +160,7 @@ module Foo
             'user # Destroy `User` entity and `UserRepository` repository'
           ]
 
-          def call(*)
-          end
+          def call(*); end
         end
       end
 
@@ -211,8 +199,7 @@ module Foo
             'api --application-base-url=/api/v1 # Generate `api` app and mount at `/api/v1`'
           ]
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Mailer < Dry::CLI::Command
@@ -231,8 +218,7 @@ module Foo
             'forgot_password --subject="Your password reset" # Generate with default `subject`'
           ]
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Migration < Dry::CLI::Command
@@ -244,8 +230,7 @@ module Foo
             'create_users # Generate `db/migrations/20170721120747_create_users.rb`'
           ]
 
-          def call(*)
-          end
+          def call(*); end
         end
 
         class Model < Dry::CLI::Command
@@ -307,8 +292,7 @@ module Foo
       class Routes < Dry::CLI::Command
         desc 'Print routes'
 
-        def call(*)
-        end
+        def call(*); end
       end
 
       class Server < Dry::CLI::Command

@@ -6,8 +6,7 @@ module Bar
       extend Dry::CLI::Registry
 
       class Alpha < Dry::CLI::Command
-        def call(*)
-        end
+        def call(*); end
       end
 
       register 'alpha', Alpha
