@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/cli/program_name"
+require 'dry/cli/program_name'
 
 module Dry
   class CLI

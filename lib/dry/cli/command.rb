@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "forwardable"
-require "concurrent/array"
-require "dry/cli/option"
+require 'forwardable'
+require 'concurrent/array'
+require 'dry/cli/option'
 
 module Dry
   class CLI
@@ -351,7 +351,7 @@ module Dry
         default_params
         required_arguments
         optional_arguments
-      ] => "self.class"
+      ] => 'self.class'
 
       # @since 0.1.0
       # @api private

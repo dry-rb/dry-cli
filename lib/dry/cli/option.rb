@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "hanami/utils/string"
+require 'hanami/utils/string'
 
 module Dry
   class CLI
@@ -115,7 +115,7 @@ module Dry
       # @since 0.1.0
       # @api private
       def alias_name
-        aliases.join(" ") if aliases.any?
+        aliases.join(' ') if aliases.any?
       end
     end
 

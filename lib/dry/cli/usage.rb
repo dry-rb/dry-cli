@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/cli/program_name"
+require 'dry/cli/program_name'
 
 module Dry
   class CLI
@@ -11,12 +11,12 @@ module Dry
     module Usage
       # @since 0.1.0
       # @api private
-      SUBCOMMAND_BANNER = " [SUBCOMMAND]".freeze
+      SUBCOMMAND_BANNER = ' [SUBCOMMAND]'.freeze
 
       # @since 0.1.0
       # @api private
       def self.call(result, out)
-        out.puts "Commands:"
+        out.puts 'Commands:'
         max_length, commands = commands_and_arguments(result)
 
         commands.each do |banner, node|
@@ -70,7 +70,7 @@ module Dry
       # @since 0.1.0
       # @api private
       def self.justify(string, padding, usage)
-        return string.chomp(" ") if usage.nil?
+        return string.chomp(' ') if usage.nil?
 
         string.ljust(padding + padding / 2)
       end

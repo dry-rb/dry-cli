@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "optparse"
-require "dry/cli/program_name"
+require 'optparse'
+require 'dry/cli/program_name'
 
 module Dry
   class CLI
@@ -25,7 +25,7 @@ module Dry
             end
           end
 
-          opts.on_tail("-h", "--help") do
+          opts.on_tail('-h', '--help') do
             return Result.help
           end
         end.parse!(arguments)
@@ -107,7 +107,7 @@ module Dry
 
         # @since 0.1.0
         # @api private
-        def self.failure(error = "Error: Invalid param provided")
+        def self.failure(error = 'Error: Invalid param provided')
           new(error: error)
         end
 

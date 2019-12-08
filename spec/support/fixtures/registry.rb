@@ -10,7 +10,7 @@ module Bar
         end
       end
 
-      register "alpha", Alpha
+      register 'alpha', Alpha
     end
   end
 end

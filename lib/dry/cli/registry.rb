@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/cli/command_registry"
+require 'dry/cli/command_registry'
 
 module Dry
   class CLI
@@ -262,7 +262,7 @@ module Dry
 
       private
 
-      COMMAND_NAME_SEPARATOR = " ".freeze
+      COMMAND_NAME_SEPARATOR = ' '.freeze
 
       # @since 0.2.0
       # @api private
