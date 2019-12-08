@@ -266,7 +266,7 @@ module Dry
       # @api private
       def command(command_name)
         get(command_name.split(COMMAND_NAME_SEPARATOR)).tap do |result|
-          raise UnknownCommandError.new(command_name) unless result.found?
+          raise UnknownCommandError, command_name unless result.found?
         end
       end
 
@@ -283,10 +283,10 @@ module Dry
           begin
             _callback(callback.new, blk)
           rescue ArgumentError
-            raise InvalidCallbackError.new(callback)
+            raise InvalidCallbackError, callback
           end
         else
-          raise InvalidCallbackError.new(callback)
+          raise InvalidCallbackError, callback
         end
       end
 
