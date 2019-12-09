@@ -76,7 +76,7 @@ module Dry
     # @param result [Dry::CLI::CommandRegistry::LookupResult]
     # @param out [IO] sta output
     #
-    # @return [Array<Hanami:CLI::Command, Array>] returns an array where the
+    # @return [Array<Dry:CLI::Command, Array>] returns an array where the
     #   first element is a command and the second one is the list of arguments
     #
     # @since 0.1.0

@@ -5,9 +5,8 @@ General purpose Command Line Interface (CLI) framework for Ruby.
 ## Status
 
 [![Gem Version](https://badge.fury.io/rb/hanami-cli.svg)](https://badge.fury.io/rb/hanami-cli)
-[![TravisCI](https://travis-ci.org/dry-rb/dry-cli.svg?branch=master)](https://travis-ci.org/dry-rb/dry-cli)
-[![CircleCI](https://circleci.com/gh/hanami/cli/tree/master.svg?style=svg)](https://circleci.com/gh/hanami/cli/tree/master)
-[![Test Coverage](https://codecov.io/gh/dry-rb/dry-cli/branch/master/graph/badge.svg)](https://codecov.io/gh/dry-rb/dry-cli)
+[![Maintainability](https://api.codeclimate.com/v1/badges/bb83c42b0a9e6a088832/maintainability)](https://codeclimate.com/github/dry-rb/dry-cli/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/bb83c42b0a9e6a088832/test_coverage)](https://codeclimate.com/github/dry-rb/dry-cli/test_coverage)
 [![Depfu](https://badges.depfu.com/badges/2c1bc076f16c6b5508334c44b5800362/overview.svg)](https://depfu.com/github/hanami/cli?project=Bundler)
 [![Inline Docs](http://inch-ci.org/github/hanami/cli.svg)](http://inch-ci.org/github/hanami/cli)
 
