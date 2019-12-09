@@ -1,5 +1,7 @@
-RSpec.describe "Rendering" do
-  it "prints required params" do
+# frozen_string_literal: true
+
+RSpec.describe 'Rendering' do
+  it 'prints required params' do
     output = `foo`
 
     expected = <<~DESC
@@ -24,7 +26,7 @@ RSpec.describe "Rendering" do
     expect(output).to eq(expected)
   end
 
-  it "prints required params with labels" do
+  it 'prints required params with labels' do
     output = `foo destroy`
 
     expected = <<~DESC
@@ -39,7 +41,7 @@ RSpec.describe "Rendering" do
     expect(output).to eq(expected)
   end
 
-  it "prints available commands for unknown subcommand" do
+  it 'prints available commands for unknown subcommand' do
     output = `foo generate unknown`
 
     expected = <<~DESC
@@ -56,7 +58,7 @@ RSpec.describe "Rendering" do
     expect(output).to eq(expected)
   end
 
-  it "prints available commands for unknown command" do
+  it 'prints available commands for unknown command' do
     output = `foo unknown`
 
     expected = <<~DESC
@@ -81,7 +83,7 @@ RSpec.describe "Rendering" do
     expect(output).to eq(expected)
   end
 
-  it "prints first level" do
+  it 'prints first level' do
     output = `foo`
 
     expected = <<~DESC
@@ -139,7 +141,7 @@ RSpec.describe "Rendering" do
     expect(output).to eq(expected)
   end
 
-  it "prints list options when calling help" do
+  it 'prints list options when calling help' do
     output = `foo console --help`
 
     expected = <<~DESC

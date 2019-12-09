@@ -1,5 +1,7 @@
-require "optparse"
-require "dry/cli/program_name"
+# frozen_string_literal: true
+
+require 'optparse'
+require 'dry/cli/program_name'
 
 module Dry
   class CLI
@@ -11,7 +13,6 @@ module Dry
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       def self.call(command, arguments, names)
         original_arguments = arguments.dup
         parsed_options = {}
@@ -23,7 +24,7 @@ module Dry
             end
           end
 
-          opts.on_tail("-h", "--help") do
+          opts.on_tail('-h', '--help') do
             return Result.help
           end
         end.parse!(arguments)
@@ -31,9 +32,8 @@ module Dry
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, names, parsed_options)
       rescue ::OptionParser::ParseError
-        Result.failure("Error: \"#{command.command_name}\" was called with arguments \"#{original_arguments.join(' ')}\"")
+        Result.failure("Error: \"#{command.command_name}\" was called with arguments \"#{original_arguments.join(' ')}\"") # rubocop:disable Metrics/LineLength
       end
-      # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
       # @since 0.1.0
       # @api private
@@ -45,23 +45,22 @@ module Dry
       # @api private
       #
       # rubocop:disable Metrics/AbcSize
-      # rubocop:disable Metrics/MethodLength
       def self.parse_required_params(command, arguments, names, parsed_options)
         parsed_params          = match_arguments(command.arguments, arguments)
         parsed_required_params = match_arguments(command.required_arguments, arguments)
-        all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? }
+        all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? } # rubocop:disable Metrics/LineLength
 
         unused_arguments = arguments.drop(command.required_arguments.length)
 
         unless all_required_params_satisfied
           parsed_required_params_values = parsed_required_params.values.compact
 
-          usage = "\nUsage: \"#{full_command_name(names)} #{command.required_arguments.map(&:description_name).join(' ')}\""
+          usage = "\nUsage: \"#{full_command_name(names)} #{command.required_arguments.map(&:description_name).join(' ')}\"" # rubocop:disable Metrics/LineLength
 
           if parsed_required_params_values.empty? # rubocop:disable Style/GuardClause
-            return Result.failure("ERROR: \"#{full_command_name(names)}\" was called with no arguments#{usage}")
+            return Result.failure("ERROR: \"#{full_command_name(names)}\" was called with no arguments#{usage}") # rubocop:disable Metrics/LineLength
           else
-            return Result.failure("ERROR: \"#{full_command_name(names)}\" was called with arguments #{parsed_required_params_values}#{usage}")
+            return Result.failure("ERROR: \"#{full_command_name(names)}\" was called with arguments #{parsed_required_params_values}#{usage}") # rubocop:disable Metrics/LineLength
           end
         end
 
@@ -70,7 +69,6 @@ module Dry
         parsed_options = parsed_options.merge(args: unused_arguments) if unused_arguments.any?
         Result.success(parsed_options)
       end
-      # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/AbcSize
 
       def self.match_arguments(command_arguments, arguments)
@@ -105,7 +103,7 @@ module Dry
 
         # @since 0.1.0
         # @api private
-        def self.failure(error = "Error: Invalid param provided")
+        def self.failure(error = 'Error: Invalid param provided')
           new(error: error)
         end
 

@@ -1,5 +1,7 @@
-require "pathname"
-require "fileutils"
+# frozen_string_literal: true
+
+require 'pathname'
+require 'fileutils'
 
 module Dry
   class CLI
@@ -30,7 +32,7 @@ module Dry
         # @since 0.3.1
         def self.write(path, *content)
           mkdir_p(path)
-          open(path, ::File::CREAT | ::File::WRONLY | ::File::TRUNC, *content) # rubocop:disable Security/Open - this isn't a call to `::Kernel.open`, but to `self.open`
+          open(path, ::File::CREAT | ::File::WRONLY | ::File::TRUNC, *content) # rubocop:disable LineLength, Security/Open - this isn't a call to `::Kernel.open`, but to `self.open`
         end
 
         # Copies source into destination.
@@ -307,12 +309,12 @@ module Dry
         #
         #   # class App
         #   # end
-        def self.remove_block(path, target) # rubocop:disable Metrics/AbcSize
+        def self.remove_block(path, target)
           content  = ::File.readlines(path)
           starting = index(content, path, target)
           line     = content[starting]
           size     = line[/\A[[:space:]]*/].bytesize
-          closing  = (" " * size) + (target =~ /{/ ? '}' : 'end')
+          closing  = (' ' * size) + (target.match?(/{/) ? '}' : 'end')
           ending   = starting + index(content[starting..-1], path, closing)
 
           content.slice!(starting..ending)
@@ -382,8 +384,8 @@ module Dry
         # @since 0.3.1
         # @api private
         def self.index(content, path, target)
-          line_number(content, target) or
-            raise ArgumentError.new("Cannot find `#{target}' inside `#{path}'.")
+          line_number(content, target) ||
+            raise(ArgumentError, "Cannot find `#{target}' inside `#{path}'.")
         end
 
         private_class_method :index
@@ -391,8 +393,8 @@ module Dry
         # @since 1.3.0
         # @api private
         def self.rindex(content, path, target)
-          line_number(content, target, finder: content.method(:rindex)) or
-            raise ArgumentError.new("Cannot find `#{target}' inside `#{path}'.")
+          line_number(content, target, finder: content.method(:rindex)) ||
+            raise(ArgumentError, "Cannot find `#{target}' inside `#{path}'.")
         end
 
         private_class_method :rindex

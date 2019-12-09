@@ -48,7 +48,7 @@ upload_code_coverage() {
 main() {
   prepare_build &&
     print_ruby_version &&
-    run_unit_tests &&
+    # run_unit_tests &&
     run_integration_tests &&
     upload_code_coverage
 }
