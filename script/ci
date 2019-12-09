@@ -41,16 +41,11 @@ run_test() {
   SIMPLECOV_COMMAND_NAME=$hash bundle exec rspec $test
 }
 
-upload_code_coverage() {
-  bundle exec rake codecov:upload
-}
-
 main() {
   prepare_build &&
     print_ruby_version &&
-    # run_unit_tests &&
-    run_integration_tests &&
-    upload_code_coverage
+    run_unit_tests &&
+    run_integration_tests
 }
 
 main

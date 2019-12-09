@@ -15,6 +15,4 @@ gem 'hanami-utils', '~> 1.3', require: false,
                               git: 'https://github.com/hanami/utils.git',
                               branch: 'master'
 
-gem 'hanami-devtools', require: false, git: 'https://github.com/hanami/devtools.git'
-
 gem 'ossy', github: 'solnic/ossy', branch: 'master', platform: :mri
