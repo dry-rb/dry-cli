@@ -1,6 +1,10 @@
 # Dry::CLI
 General purpose Command Line Interface (CLI) framework for Ruby
 
+## v0.4.0 - 2019-12-10
+### Added
+- [Ivan Shamatov, Piotr Solnica, Luca Guidi] `hanami-cli` => `dry-cli`
+
 ## v0.3.1 - 2019-01-18
 ### Added
 - [Luca Guidi] Official support for Ruby: MRI 2.6
