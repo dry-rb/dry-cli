@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Dry CLI'
   spec.description   = 'Common framework to build command line interfaces with Ruby'
-  spec.homepage      = 'http://hanamirb.org'
+  spec.homepage      = 'http://dry-rb.org'
 
   spec.metadata['allowed_push_host'] = 'https://rubygems.org'
   spec.metadata['source_code_uri'] = 'https://github.com/dry-rb/dry-cli'

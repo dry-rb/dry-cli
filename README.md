@@ -1,60 +1,31 @@
-# dry-cli (former hanami-cli)
+[gem]: https://rubygems.org/gems/dry-cli
+[ci]: https://github.com/dry-rb/dry-cli/actions?query=workflow%3Aci
+[codeclimate]: https://codeclimate.com/github/dry-rb/dry-cli
+[chat]: https://dry-rb.zulipchat.com
+[inchpages]: http://inch-ci.org/github/dry-rb/dry-cli
 
-General purpose Command Line Interface (CLI) framework for Ruby.
+# dry-cli (formerly known as hanami-cli)[![Join the chat at https://dry-rb.zulipchat.com](https://img.shields.io/badge/dry--rb-join%20chat-%23346b7a.svg)][chat]
 
-## Status
+[![Gem Version](https://badge.fury.io/rb/dry-cli.svg)][gem]
+[![Build Status](https://github.com/dry-rb/dry-cli/workflows/ci/badge.svg)][ci]
+[![Code Climate](https://codeclimate.com/github/dry-rb/dry-cli/badges/gpa.svg)][codeclimate]
+[![Test Coverage](https://codeclimate.com/github/dry-rb/dry-cli/badges/coverage.svg)][codeclimate]
+[![Inline docs](http://inch-ci.org/github/dry-rb/dry-cli.svg?branch=master)][inchpages]
 
-[![Gem Version](https://badge.fury.io/rb/hanami-cli.svg)](https://badge.fury.io/rb/hanami-cli)
-[![Maintainability](https://api.codeclimate.com/v1/badges/bb83c42b0a9e6a088832/maintainability)](https://codeclimate.com/github/dry-rb/dry-cli/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/bb83c42b0a9e6a088832/test_coverage)](https://codeclimate.com/github/dry-rb/dry-cli/test_coverage)
-[![Depfu](https://badges.depfu.com/badges/2c1bc076f16c6b5508334c44b5800362/overview.svg)](https://depfu.com/github/hanami/cli?project=Bundler)
-[![Inline Docs](http://inch-ci.org/github/hanami/cli.svg)](http://inch-ci.org/github/hanami/cli)
+## Links
 
-## Contact
+- [User documentation](https://dry-rb.org/gems/dry-cli)
+- [API documentation](http://rubydoc.info/gems/dry-cli)
+- [Guidelines for contributing](CONTRIBUTING.md)
 
-* Home page: http://hanamirb.org
-* Mailing List: http://hanamirb.org/mailing-list
-* API Doc: http://rdoc.info/gems/dry-cli
-* Bugs/Issues: https://github.com/dry-rb/dry-cli/issues
-* Support: http://stackoverflow.com/questions/tagged/dry-cli
-* Chat: http://chat.hanamirb.org
+## Supported Ruby versions
 
-## Rubies
+This library officially supports the following Ruby versions:
 
-__Dry::CLI__ supports Ruby (MRI) 2.3+, JRuby 9.1.5.0+
+- MRI >= `2.3`
+- jruby >= `9.2`
 
-## Installation
+## License
 
-Add this line to your application's Gemfile:
+See `LICENSE` file.
 
-```ruby
-gem 'dry-cli'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install dry-cli
-
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/dry-rb/dry-cli.
-
-## Alternatives
-
-  * [thor](http://whatisthor.com/)
-  * [clamp](https://github.com/mdub/clamp)
-
-## Copyright
-
-Copyright © 2017 Luca Guidi – Released under MIT License
