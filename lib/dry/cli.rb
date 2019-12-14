@@ -15,6 +15,7 @@ module Dry
     require 'dry/cli/parser'
     require 'dry/cli/usage'
     require 'dry/cli/banner'
+    require 'dry/cli/inflector'
 
     # Check if command
     #

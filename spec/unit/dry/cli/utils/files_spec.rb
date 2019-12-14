@@ -2,7 +2,6 @@
 
 require 'dry/cli/utils/files'
 require 'securerandom'
-require 'hanami/utils/io'
 
 RSpec.describe Dry::CLI::Utils::Files do
   let(:root) { Pathname.new(Dir.pwd).join('tmp', SecureRandom.uuid).tap(&:mkpath) }

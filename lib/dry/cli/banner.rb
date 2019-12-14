@@ -104,7 +104,7 @@ module Dry
       # rubocop:disable Metrics/AbcSize
       def self.extended_command_options(command)
         result = command.options.map do |option|
-          name = Hanami::Utils::String.dasherize(option.name)
+          name = Inflector.dasherize(option.name)
           name = if option.boolean?
                    "[no-]#{name}"
                  else

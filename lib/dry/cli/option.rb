@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'hanami/utils/string'
-
 module Dry
   class CLI
     # Command line option
@@ -90,7 +88,7 @@ module Dry
       #
       # rubocop:disable Metrics/AbcSize
       def parser_options
-        dasherized_name = Hanami::Utils::String.dasherize(name)
+        dasherized_name = Inflector.dasherize(name)
         parser_options  = []
 
         if boolean?

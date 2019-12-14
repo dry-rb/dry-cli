@@ -11,8 +11,4 @@ unless ENV['CI']
   gem 'yard',   require: false
 end
 
-gem 'hanami-utils', '~> 1.3', require: false,
-                              git: 'https://github.com/hanami/utils.git',
-                              branch: 'master'
-
 gem 'ossy', github: 'solnic/ossy', branch: 'master', platform: :mri
