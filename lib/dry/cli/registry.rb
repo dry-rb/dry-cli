@@ -74,9 +74,14 @@ module Dry
       #       end
       #     end
       #   end
-      def register(name, command = nil, aliases: [], **options)
+      def register(name, command = nil, aliases: [], **options, &block)
         if block_given?
-          yield Prefix.new(@commands, name, aliases)
+          prefix = Prefix.new(@commands, name, aliases)
+          if block.arity.zero?
+            prefix.instance_eval(&block)
+          else
+            yield(prefix)
+          end
         else
           @commands.set(name, command, aliases, **options)
         end
