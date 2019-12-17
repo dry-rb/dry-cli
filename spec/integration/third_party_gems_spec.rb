@@ -1,15 +1,18 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Third-party gems' do
-  context 'registry defined with module' do
-    include_examples 'Third-party gems', 'foo'
-  end
+  it 'allows to add callbacks as a block' do
+    output = `foo callbacks . --url=https://hanamirb.test`
 
-  context 'registry defined with a block' do
-    include_examples 'Third-party gems', 'baz'
-  end
-
-  context 'CLI defined with builder and block (0 arity)' do
-    include_examples 'Third-party gems', 'faz'
+    expected = <<~OUTPUT
+      before command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
+      before callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+      before callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+      dir: ., url: "https://hanamirb.test"
+      after command callback Foo::Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
+      after callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+      after callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+    OUTPUT
+    expect(output).to eq(expected)
   end
 end

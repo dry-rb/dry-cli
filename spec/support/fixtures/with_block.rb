@@ -5,7 +5,7 @@ $LOAD_PATH.unshift __dir__ + '/../../lib'
 require 'dry/cli'
 require_relative 'shared_commands'
 
-baz = Dry::CLI.new do |cli|
+WithBlock = Dry::CLI.new do |cli|
   cli.register 'assets precompile', Commands::Assets::Precompile
   cli.register 'console',           Commands::Console
 
@@ -72,5 +72,3 @@ baz = Dry::CLI.new do |cli|
   cli.before 'callbacks', Callbacks::Before.new
   cli.after 'callbacks',  Callbacks::After.new
 end
-
-baz.call

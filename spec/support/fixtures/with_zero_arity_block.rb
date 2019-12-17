@@ -5,7 +5,7 @@ $LOAD_PATH.unshift __dir__ + '/../../lib'
 require 'dry/cli'
 require_relative 'shared_commands'
 
-Dry.CLI do
+WithZeroArityBlock = Dry.CLI do
   register 'assets precompile', Commands::Assets::Precompile
   register 'console',           Commands::Console
 
@@ -71,4 +71,4 @@ Dry.CLI do
   after 'callbacks',  Callbacks::AfterClass
   before 'callbacks', Callbacks::Before.new
   after 'callbacks',  Callbacks::After.new
-end.call
+end

@@ -1,15 +1,33 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Subcommands' do
-  context 'registry defined with module' do
-    include_examples 'Subcommands', 'foo'
-  end
+  context 'works with params' do
+    it 'with help param' do
+      output = `foo generate model --help`
 
-  context 'registry defined with a block' do
-    include_examples 'Subcommands', 'baz'
-  end
+      expected = <<~DESC
+        Command:
+          foo generate model
 
-  context 'CLI defined with builder and block (0 arity)' do
-    include_examples 'Subcommands', 'faz'
+        Usage:
+          foo generate model MODEL
+
+        Description:
+          Generate a model
+
+        Arguments:
+          MODEL               	# REQUIRED Model name (eg. `user`)
+
+        Options:
+          --[no-]skip-migration           	# Skip migration, default: false
+          --help, -h                      	# Print this help
+
+        Examples:
+          foo generate model user                  # Generate `User` entity, `UserRepository` repository, and the migration
+          foo generate model user --skip-migration # Generate `User` entity and `UserRepository` repository
+      DESC
+
+      expect(output).to eq(expected)
+    end
   end
 end
