@@ -9,8 +9,9 @@ if ENV['COVERAGE']
 end
 
 $LOAD_PATH.unshift 'lib'
-require 'hanami/utils'
 require 'dry/cli'
 require_relative './support/rspec'
-Hanami::Utils.require!('spec/unit')
-Hanami::Utils.require!('spec/support/**/*.rb')
+
+%w[support unit].each do |dir|
+  Dir[File.join(Dir.pwd, 'spec', dir, '**', '*.rb')].each { |file| require_relative file }
+end

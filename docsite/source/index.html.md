@@ -567,7 +567,7 @@ cli.call
 
 The `foo-bar` gem enhances `hello` command with callbacks:
 
-```
+```ruby
 Foo::CLI::Commands.before("hello") { |args| puts "debug: #{args.inspect}" } # syntax 1
 Foo::CLI::Commands.after "hello", &->(args) { puts "bye, #{args.fetch(:name)}" } # syntax 2
 ```

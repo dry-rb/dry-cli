@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'hanami/utils/deprecation'
-
 module Dry
   # General purpose Command Line Interface (CLI) framework for Ruby
   #

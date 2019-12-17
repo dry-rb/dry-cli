@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'concurrent/hash'
-require 'hanami/utils/callbacks'
 
 module Dry
   class CLI
@@ -111,8 +110,8 @@ module Dry
           @aliases  = Concurrent::Hash.new
           @command  = nil
 
-          @before_callbacks = Hanami::Utils::Callbacks::Chain.new
-          @after_callbacks = Hanami::Utils::Callbacks::Chain.new
+          @before_callbacks = Chain.new
+          @after_callbacks = Chain.new
         end
 
         # @since 0.1.0
@@ -204,6 +203,36 @@ module Dry
         # @api private
         def after_callbacks
           @node.after_callbacks
+        end
+      end
+
+      # Callbacks chain
+      #
+      # @since 0.4.0
+      # @api private
+      class Chain
+        # @since 0.4.0
+        # @api private
+        attr_reader :chain
+
+        # @since 0.4.0
+        # @api private
+        def initialize
+          @chain = Set.new
+        end
+
+        # @since 0.4.0
+        # @api private
+        def append(&callback)
+          chain.add(callback)
+        end
+
+        # @since 0.4.0
+        # @api private
+        def run(context, *args)
+          chain.each do |callback|
+            context.instance_exec(*args, &callback)
+          end
         end
       end
     end
