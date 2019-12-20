@@ -36,12 +36,17 @@ module Dry
 
     # Create a new instance
     #
-    # @param registry [Dry::CLI::Registry] a registry
+    # @param registry [Dry::CLI::Registry, Block] a registry or a configuration block
     #
     # @return [Dry::CLI] the new instance
-    # @since 0.1.0
-    def initialize(registry)
-      @commands = registry
+    # @since 0.4.0
+    def initialize(registry = nil, &block)
+      @commands =
+        if block_given?
+          anonymous_registry(&block)
+        else
+          registry
+        end
     end
 
     # Invoke the CLI
@@ -126,5 +131,33 @@ module Dry
     def command?(command)
       CLI.command?(command)
     end
+
+    # Generates registry in runtime
+    #
+    # @param &block [Block] configuration for the registry
+    #
+    # @return [Module] module extended with registry abilities and configured with a block
+    #
+    # @since 0.4.0
+    # @api private
+    def anonymous_registry(&block)
+      registry = Module.new { extend(Dry::CLI::Registry) }
+      if block.arity.zero?
+        registry.instance_eval(&block)
+      else
+        yield(registry)
+      end
+      registry
+    end
+  end
+
+  # Create a new instance
+  #
+  # @param registry [Dry::CLI::Registry, Block] a registry or a configuration block
+  #
+  # @return [Dry::CLI] the new instance
+  # @since 0.4.0
+  def self.CLI(registry = nil, &block)
+    CLI.new(registry, &block)
   end
 end
