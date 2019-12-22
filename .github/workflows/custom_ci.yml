@@ -43,7 +43,7 @@ jobs:
         run: |
           gem install bundler
           bundle install --jobs 4 --retry 3 --without tools docs benchmarks
-          script/ci
+          bundle exec rake
       - name: Send coverage results
         if: "matrix.coverage == 'true'"
         env:
@@ -74,4 +74,4 @@ jobs:
         run: |
           gem install bundler
           bundle install --jobs 4 --retry 3 --without tools docs benchmarks
-          script/ci
+          bundle exec rake

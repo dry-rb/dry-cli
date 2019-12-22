@@ -1,16 +1,13 @@
+#!/usr/bin/env rake
 # frozen_string_literal: true
 
-require 'rake'
 require 'bundler/gem_tasks'
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'lib'))
+
+require 'rspec/core'
 require 'rspec/core/rake_task'
 
-namespace :spec do
-  RSpec::Core::RakeTask.new(:unit) do |task|
-    file_list = FileList['spec/**/*_spec.rb']
-    file_list = file_list.exclude('spec/{integration,isolation}/**/*_spec.rb')
+task default: :spec
 
-    task.pattern = file_list
-  end
-end
-
-task default: 'spec:unit'
+desc 'Run all specs in spec directory'
+RSpec::Core::RakeTask.new(:spec)
