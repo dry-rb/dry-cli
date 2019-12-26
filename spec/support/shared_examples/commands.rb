@@ -46,6 +46,9 @@ RSpec.shared_examples 'Commands' do |cli|
     it 'a param using alias' do
       output = capture_output { cli.call(arguments: %w[server -p 1234]) }
       expect(output).to eq("server - {:code_reloading=>true, :port=>\"1234\"}\n")
+
+      output = capture_output { cli.call(arguments: %w[server -p1234]) }
+      expect(output).to eq("server - {:code_reloading=>true, :port=>\"1234\"}\n")
     end
 
     it 'a param with unknown param' do
