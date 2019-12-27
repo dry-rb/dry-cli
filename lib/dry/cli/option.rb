@@ -100,7 +100,7 @@ module Dry
 
         parser_options << Array if array?
         parser_options << values if values
-        parser_options.unshift(alias_name) unless alias_name.nil?
+        parser_options.unshift(*alias_name) if aliases.any?
         parser_options << desc if desc
         parser_options
       end
@@ -111,7 +111,7 @@ module Dry
       # @since 0.1.0
       # @api private
       def alias_name
-        aliases.join(' ') if aliases.any?
+        aliases.map { |name| "-#{name} VALUE" }
       end
     end
 
