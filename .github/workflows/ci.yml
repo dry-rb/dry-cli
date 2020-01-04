@@ -1,0 +1,44 @@
+# this file is managed by dry-rb/devtools project
+
+name: ci
+
+on:
+  push:
+    paths:
+      - .github/workflows/ci.yml
+      - lib/**
+      - spec/**
+      - Gemfile
+      - "*.gemspec"
+      - ".rubocop.yml"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - "2.6"
+          - "2.5"
+          - "2.4"
+          - "jruby"
+        include:
+          - ruby: "2.6"
+            coverage: "true"
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Ruby
+        uses: eregon/use-ruby-action@master
+        with:
+          ruby-version: ${{matrix.ruby}}
+      - name: Bundle install
+        run: |
+          gem install bundler
+          bundle install --jobs 4 --retry 3 --without tools docs benchmarks
+      - name: Run all tests
+        env:
+          COVERAGE: ${{matrix.coverage}}
+          CODACY_RUN_LOCAL: true
+          CODACY_PROJECT_TOKEN: ${{secrets.CODACY_PROJECT_TOKEN}}
+        run: bundle exec rake
