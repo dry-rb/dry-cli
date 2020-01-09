@@ -352,16 +352,6 @@ module Dry
         required_arguments
         optional_arguments
       ] => 'self.class'
-
-      # @since 0.1.0
-      # @api private
-      attr_reader :command_name
-
-      # @since 0.1.0
-      # @api private
-      def initialize(command_name:, **)
-        @command_name = command_name
-      end
     end
   end
 end

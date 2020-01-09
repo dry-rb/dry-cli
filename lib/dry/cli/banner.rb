@@ -16,14 +16,15 @@ module Dry
       #
       # @since 0.1.0
       # @api private
-      def self.call(command, out)
+      def self.call(command, out, names)
+        full_command_name = full_command_name(names)
         output = [
-          command_name(command),
-          command_name_and_arguments(command),
+          command_name(full_command_name),
+          command_name_and_arguments(command, full_command_name),
           command_description(command),
           command_arguments(command),
           command_options(command),
-          command_examples(command)
+          command_examples(command, full_command_name)
         ].compact.join("\n")
 
         out.puts output
@@ -31,22 +32,22 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      def self.command_name(command)
-        "Command:\n  #{full_command_name(command)}"
+      def self.command_name(name)
+        "Command:\n  #{name}"
       end
 
       # @since 0.1.0
       # @api private
-      def self.command_name_and_arguments(command)
-        "\nUsage:\n  #{full_command_name(command)}#{arguments(command)}"
+      def self.command_name_and_arguments(command, name)
+        "\nUsage:\n  #{name}#{arguments(command)}"
       end
 
       # @since 0.1.0
       # @api private
-      def self.command_examples(command)
+      def self.command_examples(command, name)
         return if command.examples.empty?
 
-        "\nExamples:\n#{command.examples.map { |example| "  #{full_command_name(command)} #{example}" }.join("\n")}" # rubocop:disable Metrics/LineLength
+        "\nExamples:\n#{command.examples.map { |example| "  #{name} #{example}" }.join("\n")}" # rubocop:disable Metrics/LineLength
       end
 
       # @since 0.1.0
@@ -73,8 +74,8 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      def self.full_command_name(command)
-        ProgramName.call(command.command_name)
+      def self.full_command_name(names)
+        ProgramName.call(names)
       end
 
       # @since 0.1.0

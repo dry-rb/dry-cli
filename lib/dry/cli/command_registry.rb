@@ -17,9 +17,9 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      def set(name, command, aliases, **options)
+      def set(name, command, aliases)
         node = @root
-        command = command_for(name, command, **options)
+        command = command.new if command
         name.split(/[[:space:]]/).each do |token|
           node = node.put(node, token)
         end
@@ -59,18 +59,6 @@ module Dry
         end
 
         result
-      end
-
-      private
-
-      # @since 0.1.0
-      # @api private
-      def command_for(name, command, **options)
-        if command.nil?
-          command
-        else
-          command.new(command_name: name, **options)
-        end
       end
 
       # Node of the registry
