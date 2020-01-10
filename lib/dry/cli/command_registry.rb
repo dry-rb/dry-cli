@@ -19,13 +19,12 @@ module Dry
       # @api private
       def set(name, command, aliases)
         node = @root
-        command = command.new if command
         name.split(/[[:space:]]/).each do |token|
           node = node.put(node, token)
         end
 
         node.aliases!(aliases)
-        node.leaf!(command) unless command.nil?
+        node.leaf!(command) if command
 
         nil
       end
