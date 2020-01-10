@@ -2,10 +2,7 @@
 
 module Dry
   class CLI
-    require 'dry/cli/command'
-    require 'dry/cli/parser'
-    require 'dry/cli/banner'
-    require 'dry/cli/program_name'
+    require 'dry/cli'
 
     module Inline
       extend Forwardable
@@ -14,30 +11,13 @@ module Dry
 
       delegate %i[desc example argument option] => AnonymousCommand
 
-      def run(arguments: ARGV, out: $stdout, &block)
+      def run(arguments: ARGV, out: $stdout)
         command = AnonymousCommand.new
-        result = Parser.call(command, arguments, command_names)
-
-        if result.help?
-          Banner.call(command, out)
-          exit(0)
-        end
-
-        if result.error?
-          out.puts(result.error)
-          exit(1)
-        end
-
         command.define_singleton_method(:call) do |*args|
-          block.call(*args)
+          yield(*args)
         end
-        command.call(result.arguments)
-      end
 
-      private
-
-      def command_names
-        [ProgramName.call]
+        Dry.CLI(command).call(arguments: arguments, out: out)
       end
     end
   end

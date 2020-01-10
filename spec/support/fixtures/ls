@@ -10,9 +10,9 @@ option :all, aliases: ['a'], type: :boolean
 
 run do |dir: '.', **options|
   list = if options.key?(:all)
-          Dir.entries(dir)
-        else
-          Dir.children(dir)
+           Dir.entries(dir)
+         else
+           Dir.children(dir)
         end
   puts list.sort.join("\n")
 end

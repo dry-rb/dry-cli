@@ -36,16 +36,19 @@ module Dry
 
     # Create a new instance
     #
-    # @param registry [Dry::CLI::Registry, Block] a registry or a configuration block
+    # @param command_or_registry [Dry::CLI::Registry, Dry::CLI::Command] a registry or singular command
+    # @param &block [Block] a configuration block for registry
     #
     # @return [Dry::CLI] the new instance
-    # @since 0.4.0
-    def initialize(registry = nil, &block)
-      @commands =
+    # @since 0.1.0
+    def initialize(command_or_registry = nil, &block)
+      @command = command_or_registry if command?(command_or_registry)
+
+      @registry =
         if block_given?
           anonymous_registry(&block)
         else
-          registry
+          command_or_registry
         end
     end
 
@@ -56,10 +59,47 @@ module Dry
     #
     # @since 0.1.0
     def call(arguments: ARGV, out: $stdout)
-      result = commands.get(arguments)
+      return perform_command(arguments, out) if command
+
+      perform_registry(arguments, out)
+    end
+
+    private
+
+    # @since 0.6.x
+    # @api private
+    attr_reader :registry
+
+    # @since 0.6.x
+    # @api private
+    attr_reader :command
+
+    # Invoke the CLI if singular command passed
+    #
+    # @param arguments [Array<string>] the command line arguments
+    # @param out [IO] the standard output (defaults to `$stdout`)
+    #
+    # @since 0.6.x
+    # @api private
+    def perform_command(arguments, out)
+      kommand = command.is_instance_of?(Command) ? command : command.new
+      args = parse_arguments(kommand, arguments, names, out)
+      kommand.call(args)
+    end
+
+    # Invoke the CLI if registry passed
+    #
+    # @param arguments [Array<string>] the command line arguments
+    # @param out [IO] the standard output (defaults to `$stdout`)
+    #
+    # @since 0.6.x
+    # @api private
+    def perform_registry(arguments, out)
+      result = registry.get(arguments)
+      command = result.command
 
       if result.found?
-        command, args = parse(result, out)
+        args = parse_arguments(command, result.arguments, result.names, out)
 
         result.before_callbacks.run(command, args)
         command.call(args)
@@ -69,11 +109,6 @@ module Dry
       end
     end
 
-    private
-
-    # @since 0.1.0
-    # @api private
-    attr_reader :commands
 
     # Parse arguments for a command.
     #
@@ -85,14 +120,10 @@ module Dry
     # @return [Array<Dry:CLI::Command, Array>] returns an array where the
     #   first element is a command and the second one is the list of arguments
     #
-    # @since 0.1.0
+    # @since 0.6.x
     # @api private
-    def parse(result, out)
-      command = result.command
-      return [command, result.arguments] unless command?(command)
-
-      names = result.names
-      result = Parser.call(command, result.arguments, result.names)
+    def parse_arguments(command, arguments, names, out)
+      result = Parser.call(command, arguments, names)
 
       if result.help?
         Banner.call(command, out, names)
@@ -104,7 +135,7 @@ module Dry
         exit(1)
       end
 
-      [command, result.arguments]
+      result.arguments
     end
 
     # Prints the command usage and exit.
@@ -154,11 +185,12 @@ module Dry
 
   # Create a new instance
   #
-  # @param registry [Dry::CLI::Registry, Block] a registry or a configuration block
+  # @param registry_or_command [Dry::CLI::Registry, Dry::CLI::Command] a registry or singular command
+  # @param &block [Block] a configuration block for registry
   #
   # @return [Dry::CLI] the new instance
   # @since 0.4.0
-  def self.CLI(registry = nil, &block)
-    CLI.new(registry, &block)
+  def self.CLI(registry_or_command = nil, &block)
+    CLI.new(registry_or_command, &block)
   end
 end
