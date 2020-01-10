@@ -86,7 +86,6 @@ module Dry
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/AbcSize
       def parser_options
         dasherized_name = Inflector.dasherize(name)
         parser_options  = []
@@ -104,7 +103,6 @@ module Dry
         parser_options << desc if desc
         parser_options
       end
-      # rubocop:enable Metrics/AbcSize
 
       private
 

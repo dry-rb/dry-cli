@@ -102,7 +102,6 @@ module Dry
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/AbcSize
       def self.extended_command_options(command)
         result = command.options.map do |option|
           name = Inflector.dasherize(option.name)
@@ -122,7 +121,6 @@ module Dry
         result << "  --#{'help, -h'.ljust(30)}\t# Print this help"
         result.join("\n")
       end
-      # rubocop:enable Metrics/AbcSize
     end
   end
 end
