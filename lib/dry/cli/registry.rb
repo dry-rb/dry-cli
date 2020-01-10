@@ -74,7 +74,7 @@ module Dry
       #       end
       #     end
       #   end
-      def register(name, command = nil, aliases: [], **options, &block)
+      def register(name, command = nil, aliases: [], &block)
         if block_given?
           prefix = Prefix.new(@commands, name, aliases)
           if block.arity.zero?
@@ -83,7 +83,7 @@ module Dry
             yield(prefix)
           end
         else
-          @commands.set(name, command, aliases, **options)
+          @commands.set(name, command, aliases)
         end
       end
 
@@ -313,9 +313,9 @@ module Dry
         # @since 0.1.0
         #
         # @see Dry::CLI::Registry#register
-        def register(name, command, aliases: [], **options)
+        def register(name, command, aliases: [])
           command_name = "#{prefix} #{name}"
-          registry.set(command_name, command, aliases, **options)
+          registry.set(command_name, command, aliases)
         end
 
         private

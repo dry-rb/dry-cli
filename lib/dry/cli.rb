@@ -89,12 +89,13 @@ module Dry
     # @api private
     def parse(result, out)
       command = result.command
+      names = result.names
       return [command, result.arguments] unless command?(command)
 
       result = Parser.call(command, result.arguments, result.names)
 
       if result.help?
-        Banner.call(command, out)
+        Banner.call(command, out, names)
         exit(0)
       end
 
