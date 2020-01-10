@@ -16,7 +16,7 @@ module Dry
       #
       # @since 0.1.0
       # @api private
-      def self.call(command, out, names)
+      def self.call(command, out, names = [])
         full_command_name = full_command_name(names)
         output = [
           command_name(full_command_name),

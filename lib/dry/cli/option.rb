@@ -109,7 +109,7 @@ module Dry
       # @since 0.1.0
       # @api private
       def alias_name
-        aliases.map { |name| "-#{name} VALUE" }
+        aliases.map { |name| boolean? ? "-#{name}" : "-#{name} VALUE" }
       end
     end
 

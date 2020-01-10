@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift __dir__ + '/../../lib'
+require_relative './../../../lib/dry/cli/inline'
+
+argument :dir, required: false, desc: '[DIR]'
+
+option :all, aliases: ['a'], type: :boolean
+
+run do |dir: '.', **options|
+  list = if options.key?(:all)
+          Dir.entries(dir)
+        else
+          Dir.children(dir)
+        end
+  puts list.sort.join("\n")
+end
