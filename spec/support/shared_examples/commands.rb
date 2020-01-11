@@ -44,11 +44,20 @@ RSpec.shared_examples 'Commands' do |cli|
     end
 
     it 'a param using alias' do
-      output = capture_output { cli.call(arguments: %w[server -p 1234]) }
-      expect(output).to eq("server - {:code_reloading=>true, :port=>\"1234\"}\n")
+      output = capture_output { cli.call(arguments: %w[options-with-aliases -u test]) }
+      expect(output).to eq("options with aliases - {:opt=>false, :url=>\"test\"}\n")
 
-      output = capture_output { cli.call(arguments: %w[server -p1234]) }
-      expect(output).to eq("server - {:code_reloading=>true, :port=>\"1234\"}\n")
+      output = capture_output { cli.call(arguments: %w[options-with-aliases -utest]) }
+      expect(output).to eq("options with aliases - {:opt=>false, :url=>\"test\"}\n")
+
+      output = capture_output { cli.call(arguments: %w[options-with-aliases -f -u test]) }
+      expect(output).to eq("options with aliases - {:opt=>false, :flag=>true, :url=>\"test\"}\n")
+
+      output = capture_output { cli.call(arguments: %w[options-with-aliases -o]) }
+      expect(output).to eq("options with aliases - {:opt=>true}\n")
+
+      output = capture_output { cli.call(arguments: %w[options-with-aliases -of]) }
+      expect(output).to eq("options with aliases - {:opt=>true, :flag=>true}\n")
     end
 
     it 'a param with unknown param' do

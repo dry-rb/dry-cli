@@ -19,6 +19,7 @@ WithBlock = Dry::CLI.new do |cli|
   cli.register 'greeting',    Commands::Greeting
   cli.register 'sub command', Commands::Sub::Command
 
+  cli.register 'options-with-aliases',                Commands::OptionsWithAliases
   cli.register 'variadic default',                    Commands::VariadicArguments
   cli.register 'variadic with-mandatory',             Commands::MandatoryAndVariadicArguments
   cli.register 'variadic with-mandatory-and-options', Commands::MandatoryOptionsAndVariadicArguments

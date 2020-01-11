@@ -293,7 +293,7 @@ module Commands
 
     option :server,         desc: 'Force a server engine (eg, webrick, puma, thin, etc..)'
     option :host,           desc: 'The host address to bind to'
-    option :port,           desc: 'The port to run the server on', aliases: ['-p']
+    option :port,           desc: 'The port to run the server on', aliases: ['-p', 'p', '--p']
     option :debug,          desc: 'Turn on debug output'
     option :warn,           desc: 'Turn on warnings'
     option :daemonize,      desc: 'Daemonize the server'
@@ -379,6 +379,18 @@ module Commands
       puts "url: #{options[:url]}"
       puts "method: #{options[:method]}"
       puts "Unused Arguments: #{options[:args].join(', ')}"
+    end
+  end
+
+  class OptionsWithAliases < Dry::CLI::Command
+    desc 'Accepts options with aliases'
+
+    option :url, desc: 'The action URL', aliases: %w[-u u --u]
+    option :flag, desc: 'The flag', type: :boolean, aliases: %w[f]
+    option :opt, desc: 'The opt', type: :boolean, aliases: %w[o], default: false
+
+    def call(options)
+      puts "options with aliases - #{options.inspect}"
     end
   end
 

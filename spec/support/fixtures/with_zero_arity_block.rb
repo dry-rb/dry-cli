@@ -19,6 +19,7 @@ WithZeroArityBlock = Dry.CLI do
   register 'greeting',    Commands::Greeting
   register 'sub command', Commands::Sub::Command
 
+  register 'options-with-aliases',                Commands::OptionsWithAliases
   register 'variadic default',                    Commands::VariadicArguments
   register 'variadic with-mandatory',             Commands::MandatoryAndVariadicArguments
   register 'variadic with-mandatory-and-options', Commands::MandatoryOptionsAndVariadicArguments
