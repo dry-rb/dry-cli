@@ -1,2 +1,13 @@
 name: dry-cli
 codacy_id: 61dd5d070fc74f0cacf575b19d4930e1
+gemspec:
+  authors: ["Luca Guidi"]
+  email: ["me@lucaguidi.com"]
+  summary: "Common framework to build command line interfaces with Ruby"
+  development_dependencies:
+    - [bundler, ">= 1.6", "< 3"]
+    - [rake, "~> 13.0"]
+    - [rspec, "~> 3.7"]
+    - [simplecov, "~> 0.17.1"]
+  runtime_dependencies:
+    - [concurrent-ruby, "~> 1.0"]
