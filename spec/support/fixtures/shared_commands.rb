@@ -308,7 +308,7 @@ module Commands
       '--no-code-reloading # Disable code reloading'
     ]
 
-    def call(options)
+    def call(**options)
       puts "server - #{options.inspect}"
     end
   end
@@ -389,7 +389,7 @@ module Commands
     option :flag, desc: 'The flag', type: :boolean, aliases: %w[f]
     option :opt, desc: 'The opt', type: :boolean, aliases: %w[o], default: false
 
-    def call(options)
+    def call(**options)
       puts "options with aliases - #{options.inspect}"
     end
   end
