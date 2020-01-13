@@ -99,17 +99,20 @@ module Dry
 
         parser_options << Array if array?
         parser_options << values if values
-        parser_options.unshift(*alias_name) if aliases.any?
+        parser_options.unshift(*alias_names) if aliases.any?
         parser_options << desc if desc
         parser_options
       end
 
-      private
-
       # @since 0.1.0
       # @api private
-      def alias_name
-        aliases.map { |name| "-#{name} VALUE" }
+      def alias_names
+        aliases
+          .map { |name| name.gsub(/^-{1,2}/, '') }
+          .compact
+          .uniq
+          .map { |name| name.size == 1 ? "-#{name}" : "--#{name}" }
+          .map { |name| boolean? ? name : "#{name} VALUE" }
       end
     end
 

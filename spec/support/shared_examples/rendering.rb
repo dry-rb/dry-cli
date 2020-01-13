@@ -19,6 +19,7 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} greeting [RESPONSE]
         #{cmd} hello                               # Print a greeting
         #{cmd} new PROJECT                         # Generate a new Foo project
+        #{cmd} options-with-aliases                # Accepts options with aliases
         #{cmd} routes                              # Print routes
         #{cmd} server                              # Start Foo server (only for development)
         #{cmd} sub [SUBCOMMAND]
@@ -76,6 +77,7 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} greeting [RESPONSE]
         #{cmd} hello                               # Print a greeting
         #{cmd} new PROJECT                         # Generate a new Foo project
+        #{cmd} options-with-aliases                # Accepts options with aliases
         #{cmd} routes                              # Print routes
         #{cmd} server                              # Start Foo server (only for development)
         #{cmd} sub [SUBCOMMAND]
@@ -101,6 +103,7 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} greeting [RESPONSE]
         #{cmd} hello                               # Print a greeting
         #{cmd} new PROJECT                         # Generate a new Foo project
+        #{cmd} options-with-aliases                # Accepts options with aliases
         #{cmd} routes                              # Print routes
         #{cmd} server                              # Start Foo server (only for development)
         #{cmd} sub [SUBCOMMAND]
@@ -145,25 +148,23 @@ RSpec.shared_examples 'Rendering' do |cli|
   end
 
   it 'prints list options when calling help' do
-    output = capture_output { cli.call(arguments: %w[console --help]) }
+    output = capture_output { cli.call(arguments: %w[options-with-aliases --help]) }
 
     expected = <<~DESC
       Command:
-        #{cmd} console
+        #{cmd} options-with-aliases
 
       Usage:
-        #{cmd} console
+        #{cmd} options-with-aliases
 
       Description:
-        Starts Foo console
+        Accepts options with aliases
 
       Options:
-        --engine=VALUE                  	# Force a console engine: (irb/pry/ripl)
+        --url=VALUE, -u VALUE           	# The action URL
+        --[no-]flag, -f                 	# The flag
+        --[no-]opt, -o                  	# The opt, default: false
         --help, -h                      	# Print this help
-
-      Examples:
-        #{cmd} console              # Uses the bundled engine
-        #{cmd} console --engine=pry # Force to use Pry
     DESC
 
     expect(output).to eq(expected)

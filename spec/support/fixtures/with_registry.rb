@@ -49,6 +49,7 @@ module Foo
       register 'greeting',    ::Commands::Greeting
       register 'sub command', ::Commands::Sub::Command
 
+      register 'options-with-aliases',                ::Commands::OptionsWithAliases
       register 'variadic default',                    ::Commands::VariadicArguments
       register 'variadic with-mandatory',             ::Commands::MandatoryAndVariadicArguments        # rubocop:disable Metrics/LineLength
       register 'variadic with-mandatory-and-options', ::Commands::MandatoryOptionsAndVariadicArguments # rubocop:disable Metrics/LineLength

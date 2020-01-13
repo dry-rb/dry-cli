@@ -110,8 +110,7 @@ module Dry
                  else
                    "#{name}=VALUE"
                  end
-
-          name = "#{name}, #{option.aliases.map { |a| a.start_with?('--') ? "#{a}=VALUE" : "#{a} VALUE" }.join(', ')}" unless option.aliases.empty? # rubocop:disable Metrics/LineLength
+          name = "#{name}, #{option.alias_names.join(', ')}" if option.aliases.any?
           name = "  --#{name.ljust(30)}"
           name = "#{name}\t# #{option.desc}"
           name = "#{name}, default: #{option.default.inspect}" unless option.default.nil?
