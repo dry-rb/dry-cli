@@ -1,7 +1,5 @@
-# Dry::CLI
-General purpose Command Line Interface (CLI) framework for Ruby
-
 ## v0.5.0 - 2019-12-21
+
 ### Added
 - [Ivan Shamatov, Piotr Solnica, Luca Guidi] [Internal] removed runtime and development dependency against `hanami-utils`
 
