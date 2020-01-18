@@ -5,6 +5,7 @@
 
 - [Ivan Shamatov, Piotr Solnica, Luca Guidi] [Internal] removed runtime and development dependency against `hanami-utils`
 
+
 [Compare v0.4.0...v0.5.0](https://github.com/dry-rb/dry-cli/compare/v0.4.0...v0.5.0)
 
 ## 0.4.0 2019-12-10
@@ -13,6 +14,7 @@
 ### Added
 
 - [Ivan Shamatov, Piotr Solnica, Luca Guidi] `hanami-cli` => `dry-cli`
+
 
 [Compare v0.3.1...v0.4.0](https://github.com/dry-rb/dry-cli/compare/v0.3.1...v0.4.0)
 
@@ -24,9 +26,11 @@
 - [Luca Guidi] Official support for Ruby: MRI 2.6
 - [Luca Guidi] Support `bundler` 2.0+
 
+
 [Compare v0.3.0...v0.3.1](https://github.com/dry-rb/dry-cli/compare/v0.3.0...v0.3.1)
 
 ## 0.3.0 2018-10-24
+
 
 
 [Compare v0.3.0.beta1...v0.3.0](https://github.com/dry-rb/dry-cli/compare/v0.3.0.beta1...v0.3.0)
@@ -45,9 +49,11 @@
 
 - [Anton Davydov] Print informative message when unknown or wrong option is passed (`"test" was called with arguments "--framework=unknown"`)
 
+
 [Compare v0.2.0...v0.3.0.beta1](https://github.com/dry-rb/dry-cli/compare/v0.2.0...v0.3.0.beta1)
 
 ## 0.2.0 2018-04-11
+
 
 
 [Compare v0.2.0.rc2...v0.2.0](https://github.com/dry-rb/dry-cli/compare/v0.2.0.rc2...v0.2.0)
@@ -55,9 +61,11 @@
 ## 0.2.0.rc2 2018-04-06
 
 
+
 [Compare v0.2.0.rc1...v0.2.0.rc2](https://github.com/dry-rb/dry-cli/compare/v0.2.0.rc1...v0.2.0.rc2)
 
 ## 0.2.0.rc1 2018-03-30
+
 
 
 [Compare v0.2.0.beta2...v0.2.0.rc1](https://github.com/dry-rb/dry-cli/compare/v0.2.0.beta2...v0.2.0.rc1)
@@ -73,6 +81,7 @@
 
 - [Anton Davydov & Luca Guidi] Ensure callbacks' context of execution (aka `self`) to be the command that is being executed
 
+
 [Compare v0.2.0.beta1...v0.2.0.beta2](https://github.com/dry-rb/dry-cli/compare/v0.2.0.beta1...v0.2.0.beta2)
 
 ## 0.2.0.beta1 2018-02-28
@@ -81,6 +90,7 @@
 ### Added
 
 - [Anton Davydov] Register `before`/`after` callbacks for commands
+
 
 [Compare v0.1.1...v0.2.0.beta1](https://github.com/dry-rb/dry-cli/compare/v0.1.1...v0.2.0.beta1)
 
@@ -96,9 +106,11 @@
 - [Alfonso Uceda] Ensure default values for arguments to be sent to commands
 - [Alfonso Uceda] Ensure to fail when a missing required argument isn't provider, but an option is provided instead
 
+
 [Compare v0.1.0...v0.1.1](https://github.com/dry-rb/dry-cli/compare/v0.1.0...v0.1.1)
 
 ## 0.1.0 2017-10-25
+
 
 
 [Compare v0.1.0.rc1...v0.1.0](https://github.com/dry-rb/dry-cli/compare/v0.1.0.rc1...v0.1.0)
@@ -106,9 +118,11 @@
 ## 0.1.0.rc1 2017-10-16
 
 
+
 [Compare v0.1.0.beta3...v0.1.0.rc1](https://github.com/dry-rb/dry-cli/compare/v0.1.0.beta3...v0.1.0.rc1)
 
 ## 0.1.0.beta3 2017-10-04
+
 
 
 [Compare v0.1.0.beta2...v0.1.0.beta3](https://github.com/dry-rb/dry-cli/compare/v0.1.0.beta2...v0.1.0.beta3)
@@ -119,6 +133,7 @@
 ### Added
 
 -  [Alfonso Uceda] Allow default value for arguments
+
 
 [Compare v0.1.0.beta1...v0.1.0.beta2](https://github.com/dry-rb/dry-cli/compare/v0.1.0.beta1...v0.1.0.beta2)
 
