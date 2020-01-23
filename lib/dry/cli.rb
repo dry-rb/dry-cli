@@ -84,7 +84,7 @@ module Dry
     # @api private
     def perform_command(arguments, out)
       command, args = parse(kommand, arguments, [], out)
-      command.call(args)
+      command.call(**args)
     end
 
     # Invoke the CLI if registry passed
