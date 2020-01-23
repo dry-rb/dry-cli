@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # this file is managed by dry-rb/devtools project
 
 require 'warning'
