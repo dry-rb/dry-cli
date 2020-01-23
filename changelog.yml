@@ -1,4 +1,8 @@
 ---
+- version: 0.5.1
+  date: '2020-01-23'
+  fixed:
+    - "Added missing 'set' require (@solnic)"
 - version: 0.5.0
   date: '2019-12-21'
   added:
