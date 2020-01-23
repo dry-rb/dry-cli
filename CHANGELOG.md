@@ -1,3 +1,13 @@
+## 0.5.1 2020-01-23
+
+
+### Fixed
+
+- Added missing 'set' require (@solnic)
+
+
+[Compare v0.5.0...v0.5.1](https://github.com/dry-rb/dry-cli/compare/v0.5.0...v0.5.1)
+
 ## 0.5.0 2019-12-21
 
 
