@@ -2,7 +2,8 @@
 # frozen_string_literal: true
 
 # rubocop:disable Metrics/LineLength
-$LOAD_PATH.unshift __dir__ + '/../../lib'
+$LOAD_PATH.unshift __dir__ + 'lib'
+$LOAD_PATH.unshift __dir__ + '/../../../lib'
 require 'dry/cli'
 
 module Foo
