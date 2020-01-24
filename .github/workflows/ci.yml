@@ -1,23 +1,20 @@
-# this file is managed by dry-rb/devtools project
-
+---
 name: Tests
-
-"on":
+'on':
   push:
     paths:
-      - .github/workflows/ci.yml
-      - lib/**
-      - spec/**
-      - Rakefile
-      - Gemfile
-      - Gemfile.devtools
-      - ".rubocop.yml"
-      - project.yml
+    - ".github/workflows/ci.yml"
+    - lib/**
+    - spec/**
+    - Rakefile
+    - Gemfile
+    - Gemfile.devtools
+    - ".rubocop.yml"
+    - project.yml
   pull_request:
     branches:
-      - master
-  create:
-
+    - master
+  create: 
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -25,49 +22,50 @@ jobs:
       fail-fast: false
       matrix:
         ruby:
-          - "2.7"
-          - "2.6"
-          - "2.5"
-          - "2.4"
-          - "jruby"
+        - '2.7'
+        - '2.6'
+        - '2.5'
+        - '2.4'
+        - jruby
+        - '2.3'
         include:
-          - ruby: "2.6"
-            coverage: "true"
+        - ruby: '2.6'
+          coverage: 'true'
     env:
-      CLASSPATH: "" # tmp jruby build workaround
-      COVERAGE: ${{matrix.coverage}}
+      CLASSPATH: ''
+      COVERAGE: "${{matrix.coverage}}"
       CODACY_RUN_LOCAL: true
-      CODACY_PROJECT_TOKEN: ${{secrets.CODACY_PROJECT_TOKEN}}
+      CODACY_PROJECT_TOKEN: "${{secrets.CODACY_PROJECT_TOKEN}}"
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up Ruby
-        uses: eregon/use-ruby-action@master
-        with:
-          ruby-version: ${{matrix.ruby}}
-      - name: Install latest bundler
-        run: |
-          gem install bundler --no-document
-          bundle config set without 'tools benchmarks docs'
-      - name: Bundle install
-        run: bundle install --jobs 4 --retry 3
-      - name: Run all tests
-        run: bundle exec rake
+    - uses: actions/checkout@v1
+    - name: Set up Ruby
+      uses: eregon/use-ruby-action@master
+      with:
+        ruby-version: "${{matrix.ruby}}"
+    - name: Install latest bundler
+      run: |
+        gem install bundler --no-document
+        bundle config set without 'tools benchmarks docs'
+    - name: Bundle install
+      run: bundle install --jobs 4 --retry 3
+    - name: Run all tests
+      run: bundle exec rake
   release:
     runs-on: ubuntu-latest
     if: contains(github.ref, 'tags') && github.event_name == 'create'
     needs: tests
     env:
       GITHUB_LOGIN: dry-bot
-      GITHUB_TOKEN: ${{secrets.GH_PAT}}
+      GITHUB_TOKEN: "${{secrets.GH_PAT}}"
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up Ruby
-        uses: eregon/use-ruby-action@master
-        with:
-          ruby-version: 2.6
-      - name: Install dependencies
-        run: gem install ossy --no-document
-      - name: Trigger release workflow
-        run: |
-          tag=$(echo $GITHUB_REF | cut -d / -f 3)
-          ossy gh w dry-rb/devtools release --payload "{\"tag\":\"$tag\",\"tag_creator\":\"$GITHUB_ACTOR\",\"repo\":\"$GITHUB_REPOSITORY\"}"
+    - uses: actions/checkout@v1
+    - name: Set up Ruby
+      uses: eregon/use-ruby-action@master
+      with:
+        ruby-version: 2.6
+    - name: Install dependencies
+      run: gem install ossy --no-document
+    - name: Trigger release workflow
+      run: |
+        tag=$(echo $GITHUB_REF | cut -d / -f 3)
+        ossy gh w dry-rb/devtools release --payload "{\"tag\":\"$tag\",\"tag_creator\":\"$GITHUB_ACTOR\",\"repo\":\"$GITHUB_REPOSITORY\"}"
