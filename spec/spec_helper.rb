@@ -7,5 +7,9 @@ require 'dry/cli'
 require_relative './support/rspec'
 
 %w[support unit].each do |dir|
-  Dir[File.join(Dir.pwd, 'spec', dir, '**', '*.rb')].each { |file| require_relative file }
+  Dir[File.join(Dir.pwd, 'spec', dir, '**', '*.rb')].each do |file|
+    unless RUBY_VERSION < '2.4.0' && file['support/warnings.rb']
+      require_relative file
+    end
+  end
 end
