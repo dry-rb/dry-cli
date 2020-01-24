@@ -37,7 +37,7 @@ RSpec.describe 'Single command' do
     end
 
     it 'with option_one' do
-      output = `baz first_arg --option_one=test2`
+      output = `baz first_arg --option-one=test2`
       expect(output).to eq(
         'mandatory_arg: first_arg. optional_arg: optional_arg. ' \
         "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
