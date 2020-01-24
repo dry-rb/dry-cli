@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift __dir__ + '/../../../lib'
+require 'dry/cli'
+require_relative '../../../lib/dry/cli/inline'
+
+desc 'Baz command line interface'
+argument :mandatory_arg, required: true, aliases: %w[m], desc: 'Mandatory argument'
+argument :optional_arg, aliases: %w[o],
+                        desc: 'Optional argument (has to have default value in call method)'
+option :option_one, aliases: %w[1], desc: 'Option one'
+option :boolean_option, aliases: %w[b], desc: 'Option boolean', type: :boolean
+option :option_with_default, aliases: %w[d], desc: 'Option default', default: 'test'
+
+run do |mandatory_arg:, optional_arg: 'optional_arg', **options|
+  puts "mandatory_arg: #{mandatory_arg}. " \
+         "optional_arg: #{optional_arg}. " \
+         "Options: #{options.inspect}"
+end
