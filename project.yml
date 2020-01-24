@@ -4,6 +4,7 @@ gemspec:
   authors: ["Luca Guidi"]
   email: ["me@lucaguidi.com"]
   summary: "Common framework to build command line interfaces with Ruby"
+  required_ruby_version: ">= 2.3.0"
   development_dependencies:
     - [bundler, ">= 1.6", "< 3"]
     - [rake, "~> 13.0"]
