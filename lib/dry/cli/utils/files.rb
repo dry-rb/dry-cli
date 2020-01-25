@@ -2,6 +2,7 @@
 
 require 'pathname'
 require 'fileutils'
+require 'backports/2.4.0/string/match' if RUBY_VERSION < '2.4'
 
 module Dry
   class CLI
