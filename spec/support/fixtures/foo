@@ -264,6 +264,17 @@ module Foo
             puts "generate secret - app: #{app}"
           end
         end
+
+        class Scaffold < Dry::CLI::Command
+          desc 'Generate scaffold'
+
+          argument :model, required: true, desc: 'Scaffold for model'
+
+          def call(model:)
+            invoke(%w[g model], model)
+            invoke(%w[g secret])
+          end
+        end
       end
 
       class New < Dry::CLI::Command
@@ -427,6 +438,7 @@ Foo::CLI::Commands.register 'generate', aliases: ['g'] do |prefix|
   prefix.register 'migration', Foo::CLI::Commands::Generate::Migration
   prefix.register 'model',     Foo::CLI::Commands::Generate::Model
   prefix.register 'secret',    Foo::CLI::Commands::Generate::Secret
+  prefix.register 'scaffold',  Foo::CLI::Commands::Generate::Scaffold
 end
 Foo::CLI::Commands.register 'new',     Foo::CLI::Commands::New
 Foo::CLI::Commands.register 'routes',  Foo::CLI::Commands::Routes

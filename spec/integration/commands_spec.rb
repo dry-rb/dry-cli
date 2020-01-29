@@ -11,4 +11,9 @@ RSpec.describe 'Commands' do
       end
     end
   end
+
+  it 'calls other commands from inside call' do
+    output = `foo g scaffold Test`
+    expect(output).to eq("generate model - model: Test\ngenerate secret - app: \n")
+  end
 end

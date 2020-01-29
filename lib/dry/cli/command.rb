@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'forwardable'
+require 'open3'
+require 'dry/cli/program_name'
 require 'concurrent/array'
 require 'dry/cli/option'
 
@@ -15,6 +17,7 @@ module Dry
       def self.inherited(base)
         super
         base.extend ClassMethods
+        base.include Dry::Effects.Reader(:cli)
       end
 
       # @since 0.1.0
@@ -352,6 +355,11 @@ module Dry
         required_arguments
         optional_arguments
       ] => 'self.class'
+
+      def invoke(command, *arguments)
+        command = [command] unless command.is_a?(Array)
+        cli.call(arguments: [*command, *arguments])
+      end
     end
   end
 end
