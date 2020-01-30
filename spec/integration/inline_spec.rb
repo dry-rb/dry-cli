@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'open3'
+
 RSpec.describe 'Inline' do
   context 'with command' do
     let(:cmd) { 'inline' }

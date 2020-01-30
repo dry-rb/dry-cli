@@ -6,24 +6,24 @@ RSpec.shared_examples 'Subcommands' do |cli|
   let(:cmd) { File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME)) }
 
   it 'calls subcommand' do
-    output = capture_output { cli.call(arguments: %w[generate model]) }
+    error = capture_error { cli.call(arguments: %w[generate model]) }
     expected = <<~DESC
       ERROR: "#{cmd} generate model" was called with no arguments
       Usage: "#{cmd} generate model MODEL"
     DESC
 
-    expect(output).to eq(expected)
+    expect(error).to eq(expected)
   end
 
   context 'works with params' do
     it 'without params' do
-      output = capture_output { cli.call(arguments: %w[generate model]) }
+      error = capture_error { cli.call(arguments: %w[generate model]) }
       expected = <<~DESC
         ERROR: "#{cmd} generate model" was called with no arguments
         Usage: "#{cmd} generate model MODEL"
       DESC
 
-      expect(output).to eq(expected)
+      expect(error).to eq(expected)
     end
 
     it 'a param using space' do
@@ -96,23 +96,23 @@ RSpec.shared_examples 'Subcommands' do |cli|
       end
 
       it "an error is displayed if there aren't required params" do
-        output = capture_output { cli.call(arguments: %w[destroy action]) }
+        error = capture_error { cli.call(arguments: %w[destroy action]) }
         expected = <<~DESC
           ERROR: "#{cmd} destroy action" was called with no arguments
           Usage: "#{cmd} destroy action APP ACTION"
         DESC
 
-        expect(output).to eq(expected)
+        expect(error).to eq(expected)
       end
 
       it 'an error is displayed if there are some required params' do
-        output = capture_output { cli.call(arguments: %w[destroy action web]) }
+        error = capture_error { cli.call(arguments: %w[destroy action web]) }
         expected = <<~DESC
           ERROR: "#{cmd} destroy action" was called with arguments [\"web\"]
           Usage: "#{cmd} destroy action APP ACTION"
         DESC
 
-        expect(output).to eq(expected)
+        expect(error).to eq(expected)
       end
 
       context 'and a default value' do

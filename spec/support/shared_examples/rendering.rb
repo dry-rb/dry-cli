@@ -6,7 +6,7 @@ RSpec.shared_examples 'Rendering' do |cli|
   let(:cmd) { File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME)) }
 
   it 'prints required params' do
-    output = capture_output { cli.call }
+    error = capture_error { cli.call }
     expected = <<~DESC
       Commands:
         #{cmd} assets [SUBCOMMAND]
@@ -27,11 +27,11 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} version                             # Print Foo version
     DESC
 
-    expect(output).to eq(expected)
+    expect(error).to eq(expected)
   end
 
   it 'prints required params with labels' do
-    output = capture_output { cli.call(arguments: ['destroy']) }
+    error = capture_error { cli.call(arguments: ['destroy']) }
 
     expected = <<~DESC
       Commands:
@@ -42,11 +42,11 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} destroy model MODEL                          # Destroy a model
     DESC
 
-    expect(output).to eq(expected)
+    expect(error).to eq(expected)
   end
 
   it 'prints available commands for unknown subcommand' do
-    output = capture_output { cli.call(arguments: %w[generate unknown]) }
+    error = capture_error { cli.call(arguments: %w[generate unknown]) }
 
     expected = <<~DESC
       Commands:
@@ -59,11 +59,11 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} generate webpack                               # Generate webpack configuration
     DESC
 
-    expect(output).to eq(expected)
+    expect(error).to eq(expected)
   end
 
   it 'prints available commands for unknown command' do
-    output = capture_output { cli.call(arguments: ['unknown']) }
+    error = capture_error { cli.call(arguments: ['unknown']) }
 
     expected = <<~DESC
       Commands:
@@ -85,11 +85,11 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} version                             # Print Foo version
     DESC
 
-    expect(output).to eq(expected)
+    expect(error).to eq(expected)
   end
 
   it 'prints first level' do
-    output = capture_output { cli.call }
+    error = capture_error { cli.call }
 
     expected = <<~DESC
       Commands:
@@ -111,11 +111,11 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} version                             # Print Foo version
     DESC
 
-    expect(output).to eq(expected)
+    expect(error).to eq(expected)
   end
 
   it "prints subcommand's commands" do
-    output = capture_output { cli.call(arguments: ['generate']) }
+    error = capture_error { cli.call(arguments: ['generate']) }
 
     expected = <<~DESC
       Commands:
@@ -128,11 +128,11 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} generate webpack                               # Generate webpack configuration
     DESC
 
-    expect(output).to eq(expected)
+    expect(error).to eq(expected)
   end
 
   it "prints subcommand's subcommand" do
-    output = capture_output { cli.call(arguments: %w[generate application]) }
+    error = capture_error { cli.call(arguments: %w[generate application]) }
 
     expected = <<~DESC
       Commands:
@@ -144,7 +144,7 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} generate secret [APP]                          # Generate session secret
         #{cmd} generate webpack                               # Generate webpack configuration
     DESC
-    expect(output).to eq(expected)
+    expect(error).to eq(expected)
   end
 
   it 'prints list options when calling help' do

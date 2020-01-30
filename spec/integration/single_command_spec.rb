@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
+require 'open3'
+
 RSpec.describe 'Single command' do
   context 'with command' do
     let(:cmd) { 'baz' }
 
     it 'shows usage' do
-      output = `baz`
-      expect(output).to eq(
+      _, stderr, = Open3.capture3('baz')
+      expect(stderr).to eq(
         "ERROR: \"#{cmd}\" was called with no arguments\nUsage: \"#{cmd} MANDATORY_ARG\"\n"
       )
     end
