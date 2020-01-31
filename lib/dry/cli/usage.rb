@@ -15,14 +15,14 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      def self.call(result, out)
-        out.puts 'Commands:'
+      def self.call(result)
+        header = 'Commands:'
         max_length, commands = commands_and_arguments(result)
 
-        commands.each do |banner, node|
+        commands.map do |banner, node|
           usage = description(node.command) if node.leaf?
-          out.puts "#{justify(banner, max_length, usage)}#{usage}"
-        end
+          "#{justify(banner, max_length, usage)}#{usage}"
+        end.unshift(header).join("\n")
       end
 
       # @since 0.1.0

@@ -16,9 +16,9 @@ module Dry
       #
       # @since 0.1.0
       # @api private
-      def self.call(command, out, names)
+      def self.call(command, names)
         full_command_name = full_command_name(names)
-        output = [
+        [
           command_name(full_command_name),
           command_name_and_arguments(command, full_command_name),
           command_description(command),
@@ -26,8 +26,6 @@ module Dry
           command_options(command),
           command_examples(command, full_command_name)
         ].compact.join("\n")
-
-        out.puts output
       end
 
       # @since 0.1.0

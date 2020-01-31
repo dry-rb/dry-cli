@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require 'open3'
+
 RSpec.describe 'Rendering' do
   it 'prints available commands for unknown command' do
-    output = `foo unknown`
+    _, stderr, = Open3.capture3('foo unknown')
 
     expected = <<~DESC
       Commands:
@@ -23,6 +25,6 @@ RSpec.describe 'Rendering' do
         foo version                            # Print Foo version
     DESC
 
-    expect(output).to eq(expected)
+    expect(stderr).to eq(expected)
   end
 end

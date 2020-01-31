@@ -61,8 +61,8 @@ RSpec.shared_examples 'Commands' do |cli|
     end
 
     it 'a param with unknown param' do
-      output = capture_output { cli.call(arguments: %w[server --unknown 1234]) }
-      expect(output).to eq("Error: \"server\" was called with arguments \"--unknown 1234\"\n")
+      error = capture_error { cli.call(arguments: %w[server --unknown 1234]) }
+      expect(error).to eq("Error: \"server\" was called with arguments \"--unknown 1234\"\n")
     end
 
     it 'with boolean param' do
@@ -95,8 +95,8 @@ RSpec.shared_examples 'Commands' do |cli|
 
       context 'and with an unknown value passed' do
         it 'prints error' do
-          output = capture_output { cli.call(arguments: %w[console --engine=unknown]) }
-          expect(output).to eq("Error: \"console\" was called with arguments \"--engine=unknown\"\n") # rubocop:disable Metrics/LineLength
+          error = capture_error { cli.call(arguments: %w[console --engine=unknown]) }
+          expect(error).to eq("Error: \"console\" was called with arguments \"--engine=unknown\"\n") # rubocop:disable Metrics/LineLength
         end
       end
     end
@@ -143,8 +143,8 @@ RSpec.shared_examples 'Commands' do |cli|
       end
 
       it 'with unknown param' do
-        output = capture_output { cli.call(arguments: %w[new bookshelf --unknown 1234]) }
-        expect(output).to eq("Error: \"new\" was called with arguments \"bookshelf --unknown 1234\"\n") # rubocop:disable Metrics/LineLength
+        error = capture_error { cli.call(arguments: %w[new bookshelf --unknown 1234]) }
+        expect(error).to eq("Error: \"new\" was called with arguments \"bookshelf --unknown 1234\"\n") # rubocop:disable Metrics/LineLength
       end
 
       it 'no required' do
@@ -156,12 +156,12 @@ RSpec.shared_examples 'Commands' do |cli|
       end
 
       it "an error is displayed if there aren't required params" do
-        output = capture_output { cli.call(arguments: ['new']) }
-        expected_output = <<~DESC
+        error = capture_error { cli.call(arguments: ['new']) }
+        expected_error = <<~DESC
           ERROR: "#{cmd} new" was called with no arguments
           Usage: "#{cmd} new PROJECT"
         DESC
-        expect(output).to eq(expected_output)
+        expect(error).to eq(expected_error)
       end
 
       it 'with default value and using options' do

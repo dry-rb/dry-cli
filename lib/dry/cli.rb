@@ -57,12 +57,14 @@ module Dry
     #
     # @param arguments [Array<string>] the command line arguments (defaults to `ARGV`)
     # @param out [IO] the standard output (defaults to `$stdout`)
+    # @param err [IO] the error output (defaults to `$stderr`)
     #
     # @since 0.1.0
-    def call(arguments: ARGV, out: $stdout)
-      return perform_command(arguments, out) if kommand
+    def call(arguments: ARGV, out: $stdout, err: $stderr)
+      @out, @err = out, err
+      return perform_command(arguments) if kommand
 
-      perform_registry(arguments, out)
+      perform_registry(arguments)
     end
 
     private
@@ -75,6 +77,14 @@ module Dry
     # @api private
     attr_reader :kommand
 
+    # @since 0.6.x
+    # @api private
+    attr_reader :out
+
+    # @since 0.6.x
+    # @api private
+    attr_reader :err
+
     # Invoke the CLI if singular command passed
     #
     # @param arguments [Array<string>] the command line arguments
@@ -82,8 +92,8 @@ module Dry
     #
     # @since 0.6.x
     # @api private
-    def perform_command(arguments, out)
-      command, args = parse(kommand, arguments, [], out)
+    def perform_command(arguments)
+      command, args = parse(kommand, arguments, [])
       command.call(**args)
     end
 
@@ -94,17 +104,17 @@ module Dry
     #
     # @since 0.6.x
     # @api private
-    def perform_registry(arguments, out)
+    def perform_registry(arguments)
       result = registry.get(arguments)
 
       if result.found?
-        command, args = parse(result.command, result.arguments, result.names, out)
+        command, args = parse(result.command, result.arguments, result.names)
 
         result.before_callbacks.run(command, args)
         command.call(**args)
         result.after_callbacks.run(command, args)
       else
-        usage(result, out)
+        usage(result)
       end
     end
 
@@ -120,16 +130,16 @@ module Dry
     #
     # @since 0.6.x
     # @api private
-    def parse(command, arguments, names, out)
+    def parse(command, arguments, names)
       result = Parser.call(command, arguments, names)
 
       if result.help?
-        Banner.call(command, out, names)
+        out.puts Banner.call(command, names)
         exit(0)
       end
 
       if result.error?
-        out.puts(result.error)
+        err.puts(result.error)
         exit(1)
       end
 
@@ -143,8 +153,8 @@ module Dry
     #
     # @since 0.1.0
     # @api private
-    def usage(result, out)
-      Usage.call(result, out)
+    def usage(result)
+      err.puts Usage.call(result)
       exit(1)
     end
 
