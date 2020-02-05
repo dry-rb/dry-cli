@@ -299,6 +299,7 @@ module Commands
     option :daemonize,      desc: 'Daemonize the server'
     option :pid,            desc: 'Path to write a pid file after daemonize'
     option :code_reloading, desc: 'Code reloading', type: :boolean, default: true
+    option :deps,           desc: 'List of extra dependencies', type: :array, default: %w[dep1 dep2]
 
     example [
       '                    # Basic usage (it uses the bundled server engine)',

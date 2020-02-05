@@ -30,17 +30,17 @@ RSpec.shared_examples 'Commands' do |cli|
   context 'works with params' do
     it 'without params' do
       output = capture_output { cli.call(arguments: ['server']) }
-      expect(output).to eq("server - {:code_reloading=>true}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"]}\n")
     end
 
     it 'a param using space' do
       output = capture_output { cli.call(arguments: %w[server --server thin]) }
-      expect(output).to eq("server - {:code_reloading=>true, :server=>\"thin\"}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :server=>\"thin\"}\n")
     end
 
     it 'a param using equal sign' do
       output = capture_output { cli.call(arguments: %w[server --host=localhost]) }
-      expect(output).to eq("server - {:code_reloading=>true, :host=>\"localhost\"}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :host=>\"localhost\"}\n")
     end
 
     it 'a param using alias' do
@@ -67,10 +67,10 @@ RSpec.shared_examples 'Commands' do |cli|
 
     it 'with boolean param' do
       output = capture_output { cli.call(arguments: ['server']) }
-      expect(output).to eq("server - {:code_reloading=>true}\n")
+      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"]}\n")
 
       output = capture_output { cli.call(arguments: %w[server --no-code-reloading]) }
-      expect(output).to eq("server - {:code_reloading=>false}\n")
+      expect(output).to eq("server - {:code_reloading=>false, :deps=>[\"dep1\", \"dep2\"]}\n")
     end
 
     context 'with array param' do
@@ -123,6 +123,7 @@ RSpec.shared_examples 'Commands' do |cli|
           --daemonize=VALUE               	# Daemonize the server
           --pid=VALUE                     	# Path to write a pid file after daemonize
           --[no-]code-reloading           	# Code reloading, default: true
+          --deps=VALUE1,VALUE2,..         	# List of extra dependencies, default: ["dep1", "dep2"]
           --help, -h                      	# Print this help
 
         Examples:

@@ -28,17 +28,23 @@ RSpec.shared_examples 'Subcommands' do |cli|
 
     it 'a param using space' do
       output = capture_output { cli.call(arguments: %w[server --port 2306]) }
-      expect(output).to eq("server - {:code_reloading=>true, :port=>\"2306\"}\n")
+      expect(output).to eq(
+        "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
+      )
     end
 
     it 'a param using equal sign' do
       output = capture_output { cli.call(arguments: %w[server --port=2306]) }
-      expect(output).to eq("server - {:code_reloading=>true, :port=>\"2306\"}\n")
+      expect(output).to eq(
+        "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
+      )
     end
 
     it 'a param using alias' do
       output = capture_output { cli.call(arguments: %w[server -p 2306]) }
-      expect(output).to eq("server - {:code_reloading=>true, :port=>\"2306\"}\n")
+      expect(output).to eq(
+        "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
+      )
     end
 
     it 'with help param' do
