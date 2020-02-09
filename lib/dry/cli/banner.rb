@@ -105,6 +105,8 @@ module Dry
           name = Inflector.dasherize(option.name)
           name = if option.boolean?
                    "[no-]#{name}"
+                 elsif option.array?
+                   "#{name}=VALUE1,VALUE2,.."
                  else
                    "#{name}=VALUE"
                  end
