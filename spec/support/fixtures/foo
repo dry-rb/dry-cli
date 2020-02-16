@@ -397,6 +397,24 @@ module Foo
           end
         end
       end
+
+      class Root < Dry::CLI::Command
+        desc 'root for a subcommand'
+        argument :not_a_subcmd, desc: 'optional argument', required: false
+        option :url, desc: 'Any URL'
+
+        def call(not_a_subcmd: nil, **options)
+          puts "I am not a subcommand:#{not_a_subcmd}"
+          puts "url:#{options[:url]}"
+        end
+
+        class Leaf < Dry::CLI::Command
+          desc 'leaf subcommand'
+          def call(*)
+            puts 'I am a subcommand!'
+          end
+        end
+      end
     end
   end
 end
@@ -437,6 +455,9 @@ Foo::CLI::Commands.register 'exec',    Foo::CLI::Commands::Exec
 Foo::CLI::Commands.register 'hello',       Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register 'greeting',    Foo::CLI::Commands::Greeting
 Foo::CLI::Commands.register 'sub command', Foo::CLI::Commands::Sub::Command
+
+Foo::CLI::Commands.register 'root', Foo::CLI::Commands::Root
+Foo::CLI::Commands.register 'root leaf', Foo::CLI::Commands::Root::Leaf
 
 Foo::CLI::Commands.register 'variadic default',                    Foo::CLI::Commands::VariadicArguments
 Foo::CLI::Commands.register 'variadic with-mandatory',             Foo::CLI::Commands::MandatoryAndVariadicArguments

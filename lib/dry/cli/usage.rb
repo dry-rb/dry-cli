@@ -30,7 +30,9 @@ module Dry
       def self.commands_and_arguments(result)
         max_length = 0
         ret        = commands(result).each_with_object({}) do |(name, node), memo|
-          args = if node.leaf?
+          args = if node.leaf? && node.children?
+                   arguments(node.command) + " ||#{SUBCOMMAND_BANNER}"
+                 elsif node.leaf?
                    arguments(node.command)
                  else
                    SUBCOMMAND_BANNER
