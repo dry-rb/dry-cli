@@ -2,6 +2,6 @@
 
 RSpec.describe 'Dry::CLI::VERSION' do
   it 'exposes version' do
-    expect(Dry::CLI::VERSION).to eq('0.5.1')
+    expect(Dry::CLI::VERSION).to eq('0.6.0')
   end
 end

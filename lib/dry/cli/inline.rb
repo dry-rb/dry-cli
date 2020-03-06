@@ -33,16 +33,16 @@ module Dry
     #   # $ ls -a
     #   # $ ls somepath
     #   # $ ls somepath --all
-    # @since 0.6.x
+    # @since 0.6.0
     module Inline
       extend Forwardable
 
       # AnonymousCommand
       #
-      # @since 0.6.x
+      # @since 0.6.0
       AnonymousCommand = Class.new(Dry::CLI::Command)
 
-      # @since 0.6.x
+      # @since 0.6.0
       delegate %i[desc example argument option] => AnonymousCommand
 
       # The rule of thumb for implementation of run block
@@ -59,7 +59,7 @@ module Dry
       #     puts one, two, options.inspect
       #   end
       #
-      # @since 0.6.x
+      # @since 0.6.0
       def run(arguments: ARGV, out: $stdout)
         command = AnonymousCommand
         command.define_method(:call) do |*args|
