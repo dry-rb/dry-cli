@@ -1,8 +1,24 @@
 ---
+- version: 0.6.0
+  date: '2020-03-06'
+  added:
+    - "[Ivan Shamatov] Ability to pass command along with registry (for a singular command case)"
+    - "[Nikita Shilnikov] [Internal] Backported ability to run gem's CI against ruby 2.3"
+    - "[Ivan Shamatov] Inline syntax for commands"
+    - "[Ivan Shamatov] Introduced stderr to any diagnostic output"
+  fixed:
+    - "[John Ledbetter & Luca Guidi] Fix ruby 2.7 warnings"
+    - "[Ivan Shamatov] Fix banner, when option is a type of Array"
 - version: 0.5.1
   date: '2020-01-23'
+  added:
+    - "[Ivan Shamatov] Anonymous Registry sintax"
+    - "[Ivan Shamatov] [Internal] Specs refactored, more unit specs added"
+    - "[Luca Guidi] [Internal] removed `dry-inflector` as runtime dependency"
+    - "[Ivan Shamatov] [Internal] Refactored Command class (command_name property removed)"
+    - "[Piotr Solnica, Luca Guidi, Nikita Shilnikov & Christian Georgii] [Internal] Adapt gem to dry-rb style"
   fixed:
-    - "Added missing 'set' require (@solnic)"
+    - "[Piotr Solnica] Added missing 'set' require"
 - version: 0.5.0
   date: '2019-12-21'
   added:
