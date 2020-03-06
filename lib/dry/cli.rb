@@ -69,19 +69,19 @@ module Dry
 
     private
 
-    # @since 0.6.x
+    # @since 0.6.0
     # @api private
     attr_reader :registry
 
-    # @since 0.6.x
+    # @since 0.6.0
     # @api private
     attr_reader :kommand
 
-    # @since 0.6.x
+    # @since 0.6.0
     # @api private
     attr_reader :out
 
-    # @since 0.6.x
+    # @since 0.6.0
     # @api private
     attr_reader :err
 
@@ -90,7 +90,7 @@ module Dry
     # @param arguments [Array<string>] the command line arguments
     # @param out [IO] the standard output (defaults to `$stdout`)
     #
-    # @since 0.6.x
+    # @since 0.6.0
     # @api private
     def perform_command(arguments)
       command, args = parse(kommand, arguments, [])
@@ -102,7 +102,7 @@ module Dry
     # @param arguments [Array<string>] the command line arguments
     # @param out [IO] the standard output (defaults to `$stdout`)
     #
-    # @since 0.6.x
+    # @since 0.6.0
     # @api private
     def perform_registry(arguments)
       result = registry.get(arguments)
@@ -128,7 +128,7 @@ module Dry
     # @return [Array<Dry:CLI::Command, Array>] returns an array where the
     #   first element is a command and the second one is the list of arguments
     #
-    # @since 0.6.x
+    # @since 0.6.0
     # @api private
     def parse(command, arguments, names)
       result = Parser.call(command, arguments, names)

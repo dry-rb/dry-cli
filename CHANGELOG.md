@@ -1,10 +1,34 @@
 ## 0.5.1 2020-01-23
 
 
+### Added
+
+- [Ivan Shamatov] Ability to pass command along with registry (for a singular command case)
+- [Nikita Shilnikov] [Internal] Backported ability to run gem's CI against ruby 2.3
+- [Ivan Shamatov] Inline syntax for commands
+- [Ivan Shamatov] Introduced stderr to any diagnostic output
+
 ### Fixed
 
-- Added missing 'set' require (@solnic)
+- [John Ledbetter, Luca Guidi] Fix ruby 2.7 warnings
+- [Ivan Shamatov] Fix banner, when option is a type of Array
 
+[Compare v0.5.1...v0.6.0](https://github.com/dry-rb/dry-cli/compare/v0.5.1...v0.6.0)
+
+
+## 0.5.1 2020-01-23
+
+### Added
+
+- [Ivan Shamatov] Anonymous Registry sintax
+- [Ivan Shamatov] [Internal] Specs refactored, more unit specs added
+- [Luca Guidi] [Internal] removed `dry-inflector` as runtime dependency
+- [Ivan Shamatov] [Internal] Refactored Command class (command_name property removed)
+- [Piotr Solnica, Luca Guidi, Nikita Shilnikov, Christian Georgii] [Internal] Adapt gem to dry-rb style
+
+### Fixed
+
+- [Piotr Solnica] Added missing 'set' require
 
 [Compare v0.5.0...v0.5.1](https://github.com/dry-rb/dry-cli/compare/v0.5.0...v0.5.1)
 
