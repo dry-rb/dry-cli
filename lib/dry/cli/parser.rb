@@ -62,7 +62,7 @@ module Dry
             usage = "\nUsage: \"#{command_name} #{command.required_arguments.map(&:description_name).join(' ')} | #{command_name} SUBCOMMAND\"" # rubocop:disable Metrics/LineLength
           end
 
-          if parsed_required_params_values.empty? # rubocop:disable Style/GuardClause
+          if parsed_required_params_values.empty?
             return Result.failure("ERROR: \"#{command_name}\" was called with no arguments#{usage}") # rubocop:disable Metrics/LineLength
           else
             return Result.failure("ERROR: \"#{command_name}\" was called with arguments #{parsed_required_params_values}#{usage}") # rubocop:disable Metrics/LineLength

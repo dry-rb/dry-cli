@@ -51,7 +51,6 @@ module Foo
       register 'root-command', ::Commands::RootCommand
       register 'root-command sub-command', ::Commands::RootCommands::SubCommand
 
-
       register 'options-with-aliases',                ::Commands::OptionsWithAliases
       register 'variadic default',                    ::Commands::VariadicArguments
       register 'variadic with-mandatory',             ::Commands::MandatoryAndVariadicArguments        # rubocop:disable Metrics/LineLength
