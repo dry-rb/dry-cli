@@ -48,6 +48,9 @@ module Foo
       register 'hello',       ::Commands::Hello
       register 'greeting',    ::Commands::Greeting
       register 'sub command', ::Commands::Sub::Command
+      register 'root-command', ::Commands::RootCommand
+      register 'root-command sub-command', ::Commands::RootCommands::SubCommand
+
 
       register 'options-with-aliases',                ::Commands::OptionsWithAliases
       register 'variadic default',                    ::Commands::VariadicArguments
