@@ -28,6 +28,7 @@ module Dry
           base.class_eval do
             @description  = nil
             @examples     = Concurrent::Array.new
+            @subcommands  = Concurrent::Array.new
             @arguments    = Concurrent::Array.new
             @options      = Concurrent::Array.new
           end
@@ -48,6 +49,10 @@ module Dry
         # @since 0.1.0
         # @api private
         attr_reader :options
+
+        # @since 0.6.0
+        # @api private
+        attr_accessor :subcommands
       end
 
       # Set the description of the command
@@ -340,6 +345,10 @@ module Dry
         arguments.reject(&:required?)
       end
 
+      def self.subcommands
+        subcommands
+      end
+
       extend Forwardable
 
       delegate %i[
@@ -351,6 +360,7 @@ module Dry
         default_params
         required_arguments
         optional_arguments
+        subcommands
       ] => 'self.class'
     end
   end

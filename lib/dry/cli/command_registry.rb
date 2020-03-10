@@ -123,6 +123,7 @@ module Dry
         # @api private
         def leaf!(command)
           @command = command
+          command.subcommands = children
         end
 
         # @since 0.1.0
