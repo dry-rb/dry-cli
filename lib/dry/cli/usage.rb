@@ -12,6 +12,7 @@ module Dry
       # @since 0.1.0
       # @api private
       SUBCOMMAND_BANNER = ' [SUBCOMMAND]'
+      ROOT_COMMAND_WITH_SUBCOMMANDS_BANNER = ' [ARGUMENT|SUBCOMMAND]'
 
       # @since 0.1.0
       # @api private
@@ -30,7 +31,9 @@ module Dry
       def self.commands_and_arguments(result)
         max_length = 0
         ret        = commands(result).each_with_object({}) do |(name, node), memo|
-          args = if node.leaf?
+          args = if node.command && node.leaf? && node.children?
+                   ROOT_COMMAND_WITH_SUBCOMMANDS_BANNER
+                 elsif node.leaf?
                    arguments(node.command)
                  else
                    SUBCOMMAND_BANNER

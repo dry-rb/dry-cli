@@ -37,12 +37,16 @@ module Dry
         node   = @root
         args   = []
         names  = []
+        valid_leaf = nil
         result = LookupResult.new(node, args, names, node.leaf?)
 
         arguments.each_with_index do |token, i|
           tmp = node.lookup(token)
 
-          if tmp.nil?
+          if tmp.nil? && valid_leaf
+            result = valid_leaf
+            break
+          elsif tmp.nil?
             result = LookupResult.new(node, args, names, false)
             break
           elsif tmp.leaf?
@@ -50,7 +54,8 @@ module Dry
             names  = arguments[0..i]
             node   = tmp
             result = LookupResult.new(node, args, names, true)
-            break
+            valid_leaf = result
+            break unless tmp.children?
           else
             names  = arguments[0..i]
             node   = tmp
@@ -138,6 +143,10 @@ module Dry
         # @api private
         def leaf?
           !command.nil?
+        end
+
+        def children?
+          !children.empty?
         end
       end
 
