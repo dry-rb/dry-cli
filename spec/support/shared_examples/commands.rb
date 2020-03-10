@@ -201,5 +201,93 @@ RSpec.shared_examples 'Commands' do |cli|
       end
     end
   end
+
+  context 'works with command with arguments and subcommands' do
+    it 'shows help' do
+      output = capture_output { cli.call(arguments: %w[root-command -h]) }
+      expected = <<~DESC
+        Command:
+          #{cmd} root-command
+
+        Usage:
+          #{cmd} root-command ROOT_COMMAND_ARGUMENT | #{cmd} root-command SUBCOMMAND
+
+        Description:
+          Root command with arguments and subcommands
+
+        Subcommands:
+          sub-command                   	# Root command sub command
+
+        Arguments:
+          ROOT_COMMAND_ARGUMENT	# REQUIRED Root command argument
+
+        Options:
+          --root-command-option=VALUE     	# Root command option
+          --help, -h                      	# Print this help
+      DESC
+
+      expect(output).to eq(expected)
+
+      output = capture_output { cli.call(arguments: %w[root-command --help]) }
+      expect(output).to eq(expected)
+    end
+
+    context 'works with params' do
+      it 'without params' do
+        error = capture_error { cli.call(arguments: %w[root-command]) }
+        expected = <<~DESC
+          ERROR: "rspec root-command" was called with no arguments
+          Usage: "rspec root-command ROOT_COMMAND_ARGUMENT | rspec root-command SUBCOMMAND"
+        DESC
+
+        expect(error).to eq(expected)
+      end
+
+      it 'with params' do
+        output = capture_output {
+          cli.call(arguments: ['root-command', '"hello world"'])
+        }
+        expected = <<~DESC
+          I'm a root-command argument:"hello world"
+          I'm a root-command option:
+        DESC
+
+        expect(output).to eq(expected)
+      end
+
+      it 'with option using space' do
+        output = capture_output {
+          cli.call(arguments: [
+            'root-command',
+            '"hello world"',
+            '--root-command-option',
+            '"bye world"'
+          ])
+        }
+        expected = <<~DESC
+          I'm a root-command argument:"hello world"
+          I'm a root-command option:"bye world"
+        DESC
+
+        expect(output).to eq(expected)
+      end
+
+      it 'with option using equal sign' do
+        output = capture_output {
+          cli.call(arguments: [
+            'root-command',
+            '"hello world"',
+            '--root-command-option="bye world"'
+          ])
+        }
+        expected = <<~DESC
+          I'm a root-command argument:"hello world"
+          I'm a root-command option:"bye world"
+        DESC
+
+        expect(output).to eq(expected)
+      end
+    end
+  end
 end
 # rubocop:enable Metrics/LineLength

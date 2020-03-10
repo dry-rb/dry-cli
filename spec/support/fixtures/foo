@@ -397,6 +397,30 @@ module Foo
           end
         end
       end
+
+      class RootCommand < Dry::CLI::Command
+        desc 'Root command with arguments and subcommands'
+        argument :root_command_argument, desc: 'Root command argument', required: true
+        option :root_command_option, desc: 'Root command option'
+
+        def call(**params)
+          puts "I'm a root-command argument:#{params[:root_command_argument]}"
+          puts "I'm a root-command option:#{params[:root_command_option]}"
+        end
+      end
+
+      module RootCommands
+        class SubCommand < Dry::CLI::Command
+          desc 'Root command sub command'
+          argument :root_command_sub_command_argument, desc: 'Root command sub command argument', required: true
+          option :root_command_sub_command_option, desc: 'Root command sub command option'
+
+          def call(**params)
+            puts "I'm a root-command sub-command argument:#{params[:root_command_sub_command_argument]}"
+            puts "I'm a root-command sub-command option:#{params[:root_command_sub_command_option]}"
+          end
+        end
+      end
     end
   end
 end
@@ -437,6 +461,8 @@ Foo::CLI::Commands.register 'exec',    Foo::CLI::Commands::Exec
 Foo::CLI::Commands.register 'hello',       Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register 'greeting',    Foo::CLI::Commands::Greeting
 Foo::CLI::Commands.register 'sub command', Foo::CLI::Commands::Sub::Command
+Foo::CLI::Commands.register 'root-command', Foo::CLI::Commands::RootCommand
+Foo::CLI::Commands.register 'root-command sub-command', Foo::CLI::Commands::RootCommands::SubCommand
 
 Foo::CLI::Commands.register 'variadic default',                    Foo::CLI::Commands::VariadicArguments
 Foo::CLI::Commands.register 'variadic with-mandatory',             Foo::CLI::Commands::MandatoryAndVariadicArguments

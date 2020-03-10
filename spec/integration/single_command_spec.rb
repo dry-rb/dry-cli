@@ -54,4 +54,28 @@ RSpec.describe 'Single command' do
       )
     end
   end
+
+  context 'root command with arguments and subcommands' do
+    it 'with arguments' do
+      output = `foo root-command "hello world"`
+
+      expected = <<~DESC
+        I'm a root-command argument:hello world
+        I'm a root-command option:
+      DESC
+
+      expect(output).to eq(expected)
+    end
+
+    it 'with options' do
+      output = `foo root-command "hello world" --root-command-option="bye world"`
+
+      expected = <<~DESC
+        I'm a root-command argument:hello world
+        I'm a root-command option:bye world
+      DESC
+
+      expect(output).to eq(expected)
+    end
+  end
 end

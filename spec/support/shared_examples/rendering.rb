@@ -10,21 +10,22 @@ RSpec.shared_examples 'Rendering' do |cli|
     expected = <<~DESC
       Commands:
         #{cmd} assets [SUBCOMMAND]
-        #{cmd} callbacks DIR                       # Command with callbacks
-        #{cmd} console                             # Starts Foo console
+        #{cmd} callbacks DIR                                           # Command with callbacks
+        #{cmd} console                                                 # Starts Foo console
         #{cmd} db [SUBCOMMAND]
         #{cmd} destroy [SUBCOMMAND]
-        #{cmd} exec TASK [DIRS]                    # Execute a task
+        #{cmd} exec TASK [DIRS]                                        # Execute a task
         #{cmd} generate [SUBCOMMAND]
         #{cmd} greeting [RESPONSE]
-        #{cmd} hello                               # Print a greeting
-        #{cmd} new PROJECT                         # Generate a new Foo project
-        #{cmd} options-with-aliases                # Accepts options with aliases
-        #{cmd} routes                              # Print routes
-        #{cmd} server                              # Start Foo server (only for development)
+        #{cmd} hello                                                   # Print a greeting
+        #{cmd} new PROJECT                                             # Generate a new Foo project
+        #{cmd} options-with-aliases                                    # Accepts options with aliases
+        #{cmd} root-command [ARGUMENT|SUBCOMMAND]                      # Root command with arguments and subcommands
+        #{cmd} routes                                                  # Print routes
+        #{cmd} server                                                  # Start Foo server (only for development)
         #{cmd} sub [SUBCOMMAND]
         #{cmd} variadic [SUBCOMMAND]
-        #{cmd} version                             # Print Foo version
+        #{cmd} version                                                 # Print Foo version
     DESC
 
     expect(error).to eq(expected)
@@ -68,21 +69,22 @@ RSpec.shared_examples 'Rendering' do |cli|
     expected = <<~DESC
       Commands:
         #{cmd} assets [SUBCOMMAND]
-        #{cmd} callbacks DIR                       # Command with callbacks
-        #{cmd} console                             # Starts Foo console
+        #{cmd} callbacks DIR                                           # Command with callbacks
+        #{cmd} console                                                 # Starts Foo console
         #{cmd} db [SUBCOMMAND]
         #{cmd} destroy [SUBCOMMAND]
-        #{cmd} exec TASK [DIRS]                    # Execute a task
+        #{cmd} exec TASK [DIRS]                                        # Execute a task
         #{cmd} generate [SUBCOMMAND]
         #{cmd} greeting [RESPONSE]
-        #{cmd} hello                               # Print a greeting
-        #{cmd} new PROJECT                         # Generate a new Foo project
-        #{cmd} options-with-aliases                # Accepts options with aliases
-        #{cmd} routes                              # Print routes
-        #{cmd} server                              # Start Foo server (only for development)
+        #{cmd} hello                                                   # Print a greeting
+        #{cmd} new PROJECT                                             # Generate a new Foo project
+        #{cmd} options-with-aliases                                    # Accepts options with aliases
+        #{cmd} root-command [ARGUMENT|SUBCOMMAND]                      # Root command with arguments and subcommands
+        #{cmd} routes                                                  # Print routes
+        #{cmd} server                                                  # Start Foo server (only for development)
         #{cmd} sub [SUBCOMMAND]
         #{cmd} variadic [SUBCOMMAND]
-        #{cmd} version                             # Print Foo version
+        #{cmd} version                                                 # Print Foo version
     DESC
 
     expect(error).to eq(expected)
@@ -94,21 +96,22 @@ RSpec.shared_examples 'Rendering' do |cli|
     expected = <<~DESC
       Commands:
         #{cmd} assets [SUBCOMMAND]
-        #{cmd} callbacks DIR                       # Command with callbacks
-        #{cmd} console                             # Starts Foo console
+        #{cmd} callbacks DIR                                           # Command with callbacks
+        #{cmd} console                                                 # Starts Foo console
         #{cmd} db [SUBCOMMAND]
         #{cmd} destroy [SUBCOMMAND]
-        #{cmd} exec TASK [DIRS]                    # Execute a task
+        #{cmd} exec TASK [DIRS]                                        # Execute a task
         #{cmd} generate [SUBCOMMAND]
         #{cmd} greeting [RESPONSE]
-        #{cmd} hello                               # Print a greeting
-        #{cmd} new PROJECT                         # Generate a new Foo project
-        #{cmd} options-with-aliases                # Accepts options with aliases
-        #{cmd} routes                              # Print routes
-        #{cmd} server                              # Start Foo server (only for development)
+        #{cmd} hello                                                   # Print a greeting
+        #{cmd} new PROJECT                                             # Generate a new Foo project
+        #{cmd} options-with-aliases                                    # Accepts options with aliases
+        #{cmd} root-command [ARGUMENT|SUBCOMMAND]                      # Root command with arguments and subcommands
+        #{cmd} routes                                                  # Print routes
+        #{cmd} server                                                  # Start Foo server (only for development)
         #{cmd} sub [SUBCOMMAND]
         #{cmd} variadic [SUBCOMMAND]
-        #{cmd} version                             # Print Foo version
+        #{cmd} version                                                 # Print Foo version
     DESC
 
     expect(error).to eq(expected)
