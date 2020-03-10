@@ -32,4 +32,29 @@ RSpec.describe 'Subcommands' do
       expect(output).to eq(expected)
     end
   end
+
+  context 'works with root command subcommands' do
+    it 'with params' do
+      output = `foo root-command sub-command "hello world"`
+
+      expected = <<~DESC
+        I'm a root-command sub-command argument:hello world
+        I'm a root-command sub-command option:
+      DESC
+
+      expect(output).to eq(expected)
+    end
+
+    it 'with options' do
+      option = '--root-command-sub-command-option="bye world"'
+      output = `foo root-command sub-command "hello world" #{option}`
+
+      expected = <<~DESC
+        I'm a root-command sub-command argument:hello world
+        I'm a root-command sub-command option:bye world
+      DESC
+
+      expect(output).to eq(expected)
+    end
+  end
 end
