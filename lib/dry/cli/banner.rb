@@ -40,7 +40,7 @@ module Dry
       def self.command_name_and_arguments(command, name)
         usage = "\nUsage:\n  #{name}#{arguments(command)}"
 
-        return usage + " | #{name} SUBCOMMAND" unless command.subcommands.empty?
+        return usage + " | #{name} SUBCOMMAND" if command.subcommands.any?
 
         usage
       end

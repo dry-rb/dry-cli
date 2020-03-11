@@ -149,7 +149,7 @@ module Dry
         # @since 0.6.x
         # @api private
         def children?
-          !children.empty?
+          children.any?
         end
       end
 
