@@ -50,7 +50,7 @@ module Dry
         # @api private
         attr_reader :options
 
-        # @since 0.6.0
+        # @since 0.6.x
         # @api private
         attr_accessor :subcommands
       end
@@ -345,6 +345,8 @@ module Dry
         arguments.reject(&:required?)
       end
 
+      # @since 0.6.x
+      # @api private
       def self.subcommands
         subcommands
       end

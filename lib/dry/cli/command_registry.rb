@@ -146,6 +146,8 @@ module Dry
           !command.nil?
         end
 
+        # @since 0.6.x
+        # @api private
         def children?
           !children.empty?
         end
