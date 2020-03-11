@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'dry/effects'
 
 # Dry
 #
@@ -16,6 +17,8 @@ module Dry
     require 'dry/cli/usage'
     require 'dry/cli/banner'
     require 'dry/cli/inflector'
+
+    include Dry::Effects::Handler.Reader(:cli)
 
     # Check if command
     #
@@ -111,7 +114,7 @@ module Dry
         command, args = parse(result.command, result.arguments, result.names)
 
         result.before_callbacks.run(command, args)
-        command.call(**args)
+        with_cli(self) { command.call(**args) }
         result.after_callbacks.run(command, args)
       else
         usage(result)
