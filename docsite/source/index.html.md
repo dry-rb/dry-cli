@@ -10,7 +10,7 @@ sections:
   - arguments
   - options
   - variadic-arguments
-  - commands-with-subcommands-&-params
+  - commands-with-subcommands-and-params
   - callbacks
   - file-utilities
 ---
