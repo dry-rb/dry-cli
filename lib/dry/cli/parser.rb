@@ -56,11 +56,11 @@ module Dry
           parsed_required_params_values = parsed_required_params.values.compact
           command_name = full_command_name(names)
 
-          if command.subcommands.empty?
-            usage = "\nUsage: \"#{full_command_name(names)} #{command.required_arguments.map(&:description_name).join(' ')}\"" # rubocop:disable Metrics/LineLength
-          else
-            usage = "\nUsage: \"#{command_name} #{command.required_arguments.map(&:description_name).join(' ')} | #{command_name} SUBCOMMAND\"" # rubocop:disable Metrics/LineLength
-          end
+          usage = "\nUsage: \"#{full_command_name(names)} #{command.required_arguments.map(&:description_name).join(' ')}" # rubocop:disable Metrics/LineLength
+
+          usage += " | #{command_name} SUBCOMMAND" if command.subcommands.any?
+
+          usage += '"'
 
           if parsed_required_params_values.empty?
             return Result.failure("ERROR: \"#{command_name}\" was called with no arguments#{usage}") # rubocop:disable Metrics/LineLength
