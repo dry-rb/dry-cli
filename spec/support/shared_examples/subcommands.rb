@@ -136,4 +136,91 @@ RSpec.shared_examples 'Subcommands' do |cli|
       end
     end
   end
+
+  context 'works with root command' do
+    it 'shows help' do
+      output = capture_output { cli.call(arguments: %w[root-command sub-command -h]) }
+      expected = <<~DESC
+        Command:
+          rspec root-command sub-command
+
+        Usage:
+          rspec root-command sub-command ROOT_COMMAND_SUB_COMMAND_ARGUMENT
+
+        Description:
+          Root command sub command
+
+        Arguments:
+          ROOT_COMMAND_SUB_COMMAND_ARGUMENT	# REQUIRED Root command sub command argument
+
+        Options:
+          --root-command-sub-command-option=VALUE	# Root command sub command option
+          --help, -h                      	# Print this help
+      DESC
+
+      expect(output).to eq(expected)
+
+      output = capture_output { cli.call(arguments: %w[root-command sub-command --help]) }
+      expect(output).to eq(expected)
+    end
+
+    context 'works with params' do
+      it 'without params' do
+        error = capture_error { cli.call(arguments: %w[root-command sub-command]) }
+        expected = <<~DESC
+          ERROR: "rspec root-command sub-command" was called with no arguments
+          Usage: "rspec root-command sub-command ROOT_COMMAND_SUB_COMMAND_ARGUMENT"
+        DESC
+
+        expect(error).to eq(expected)
+      end
+
+      it 'with params' do
+        output = capture_output {
+          cli.call(arguments: ['root-command', 'sub-command', '"hello world"'])
+        }
+        expected = <<~DESC
+          I'm a root-command sub-command argument:"hello world"
+          I'm a root-command sub-command option:
+        DESC
+
+        expect(output).to eq(expected)
+      end
+
+      it 'with option using space' do
+        output = capture_output {
+          cli.call(arguments: [
+            'root-command',
+            'sub-command',
+            '"hello world"',
+            '--root-command-sub-command-option',
+            '"bye world"'
+          ])
+        }
+        expected = <<~DESC
+          I'm a root-command sub-command argument:"hello world"
+          I'm a root-command sub-command option:"bye world"
+        DESC
+
+        expect(output).to eq(expected)
+      end
+
+      it 'with option using equal sign' do
+        output = capture_output {
+          cli.call(arguments: [
+            'root-command',
+            'sub-command',
+            '"hello world"',
+            '--root-command-sub-command-option="bye world"'
+          ])
+        }
+        expected = <<~DESC
+          I'm a root-command sub-command argument:"hello world"
+          I'm a root-command sub-command option:"bye world"
+        DESC
+
+        expect(output).to eq(expected)
+      end
+    end
+  end
 end

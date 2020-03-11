@@ -22,6 +22,7 @@ module Dry
           command_name(full_command_name),
           command_name_and_arguments(command, full_command_name),
           command_description(command),
+          command_subcommands(command),
           command_arguments(command),
           command_options(command),
           command_examples(command, full_command_name)
@@ -37,7 +38,11 @@ module Dry
       # @since 0.1.0
       # @api private
       def self.command_name_and_arguments(command, name)
-        "\nUsage:\n  #{name}#{arguments(command)}"
+        usage = "\nUsage:\n  #{name}#{arguments(command)}"
+
+        return usage + " | #{name} SUBCOMMAND" if command.subcommands.any?
+
+        usage
       end
 
       # @since 0.1.0
@@ -54,6 +59,12 @@ module Dry
         return if command.description.nil?
 
         "\nDescription:\n  #{command.description}"
+      end
+
+      def self.command_subcommands(command)
+        return if command.subcommands.empty?
+
+        "\nSubcommands:\n#{build_subcommands_list(command.subcommands)}"
       end
 
       # @since 0.1.0
@@ -119,6 +130,12 @@ module Dry
 
         result << "  --#{'help, -h'.ljust(30)}\t# Print this help"
         result.join("\n")
+      end
+
+      def self.build_subcommands_list(subcommands)
+        subcommands.map do |subcommand_name, subcommand|
+          "  #{subcommand_name.ljust(30)}\t# #{subcommand.command.description}"
+        end.join("\n")
       end
     end
   end

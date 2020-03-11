@@ -402,6 +402,41 @@ module Commands
       end
     end
   end
+
+  class RootCommand < Dry::CLI::Command
+    desc 'Root command with arguments and subcommands'
+    argument :root_command_argument, desc: 'Root command argument', required: true
+    option :root_command_option, desc: 'Root command option'
+
+    def call(**params)
+      puts "I'm a root-command argument:#{params[:root_command_argument]}"
+      puts "I'm a root-command option:#{params[:root_command_option]}"
+    end
+  end
+
+  module RootCommands
+    class SubCommand < Dry::CLI::Command
+      desc 'Root command sub command'
+      argument :root_command_sub_command_argument, desc: 'Root command sub command argument', required: true
+      option :root_command_sub_command_option, desc: 'Root command sub command option'
+
+      def call(**params)
+        puts "I'm a root-command sub-command argument:#{params[:root_command_sub_command_argument]}"
+        puts "I'm a root-command sub-command option:#{params[:root_command_sub_command_option]}"
+      end
+    end
+
+    class SubCommand2 < Dry::CLI::Command
+      desc 'Root command sub command'
+      argument :root_command_sub_command_argument, desc: 'Root command sub command argument', required: true
+      option :root_command_sub_command_option, desc: 'Root command sub command option'
+
+      def call(**params)
+        puts "I'm a root-command sub-command argument:#{params[:root_command_sub_command_argument]}"
+        puts "I'm a root-command sub-command option:#{params[:root_command_sub_command_option]}"
+      end
+    end
+  end
 end
 
 module Webpack
