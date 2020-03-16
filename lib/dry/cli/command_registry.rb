@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'set'
-require 'concurrent/hash'
 
 module Dry
   class CLI
@@ -13,57 +12,62 @@ module Dry
       # @since 0.1.0
       # @api private
       def initialize
+        @_mutex = Mutex.new
         @root = Node.new
       end
 
       # @since 0.1.0
       # @api private
       def set(name, command, aliases)
-        node = @root
-        name.split(/[[:space:]]/).each do |token|
-          node = node.put(node, token)
+        @_mutex.synchronize do
+          node = @root
+          name.split(/[[:space:]]/).each do |token|
+            node = node.put(node, token)
+          end
+
+          node.aliases!(aliases)
+          node.leaf!(command) if command
+
+          nil
         end
-
-        node.aliases!(aliases)
-        node.leaf!(command) if command
-
-        nil
       end
 
       # @since 0.1.0
       # @api private
       #
       def get(arguments)
-        node   = @root
-        args   = []
-        names  = []
-        valid_leaf = nil
-        result = LookupResult.new(node, args, names, node.leaf?)
+        @_mutex.synchronize do
+          node   = @root
+          args   = []
+          names  = []
+          valid_leaf = nil
+          result = LookupResult.new(node, args, names, node.leaf?)
 
-        arguments.each_with_index do |token, i|
-          tmp = node.lookup(token)
+          arguments.each_with_index do |token, i|
+            tmp = node.lookup(token)
 
-          if tmp.nil? && valid_leaf
-            result = valid_leaf
-            break
-          elsif tmp.nil?
-            result = LookupResult.new(node, args, names, false)
-            break
-          elsif tmp.leaf?
-            args   = arguments[i + 1..-1]
-            names  = arguments[0..i]
-            node   = tmp
-            result = LookupResult.new(node, args, names, true)
-            valid_leaf = result
-            break unless tmp.children?
-          else
-            names  = arguments[0..i]
-            node   = tmp
-            result = LookupResult.new(node, args, names, node.leaf?)
+            if tmp.nil? && valid_leaf
+              result = valid_leaf
+              break
+            elsif tmp.nil?
+              result = LookupResult.new(node, args, names, false)
+              break
+            elsif tmp.leaf?
+              args   = arguments[i + 1..-1]
+              names  = arguments[0..i]
+              node   = tmp
+              result = LookupResult.new(node, args, names, true)
+              valid_leaf = result
+              break unless tmp.children?
+            else
+              names  = arguments[0..i]
+              node   = tmp
+              result = LookupResult.new(node, args, names, node.leaf?)
+            end
           end
-        end
 
-        result
+          result
+        end
       end
 
       # Node of the registry
@@ -99,8 +103,8 @@ module Dry
         # @api private
         def initialize(parent = nil)
           @parent   = parent
-          @children = Concurrent::Hash.new
-          @aliases  = Concurrent::Hash.new
+          @children = {}
+          @aliases  = {}
           @command  = nil
 
           @before_callbacks = Chain.new
