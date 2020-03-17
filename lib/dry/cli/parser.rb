@@ -32,7 +32,7 @@ module Dry
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, prog_name, parsed_options)
       rescue ::OptionParser::ParseError
-        Result.failure("Error: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(' ')}\"") # rubocop:disable Metrics/LineLength
+        Result.failure("ERROR: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(' ')}\"") # rubocop:disable Metrics/LineLength
       end
 
       # @since 0.1.0

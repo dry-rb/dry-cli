@@ -47,5 +47,5 @@ Performing a request (mode: http2)
 
 ```sh
 $ foo request --mode=unknown
-Error: "foo request" was called with arguments "--mode=unknown"
+ERROR: "foo request" was called with arguments "--mode=unknown"
 ```
