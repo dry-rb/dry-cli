@@ -115,16 +115,16 @@ RSpec.shared_examples 'Commands' do |cli|
           Start Foo server (only for development)
 
         Options:
-          --server=VALUE                  	# Force a server engine (eg, webrick, puma, thin, etc..)
-          --host=VALUE                    	# The host address to bind to
-          --port=VALUE, -p VALUE          	# The port to run the server on
-          --debug=VALUE                   	# Turn on debug output
-          --warn=VALUE                    	# Turn on warnings
-          --daemonize=VALUE               	# Daemonize the server
-          --pid=VALUE                     	# Path to write a pid file after daemonize
-          --[no-]code-reloading           	# Code reloading, default: true
-          --deps=VALUE1,VALUE2,..         	# List of extra dependencies, default: ["dep1", "dep2"]
-          --help, -h                      	# Print this help
+          --server=VALUE                    # Force a server engine (eg, webrick, puma, thin, etc..)
+          --host=VALUE                      # The host address to bind to
+          --port=VALUE, -p VALUE            # The port to run the server on
+          --debug=VALUE                     # Turn on debug output
+          --warn=VALUE                      # Turn on warnings
+          --daemonize=VALUE                 # Daemonize the server
+          --pid=VALUE                       # Path to write a pid file after daemonize
+          --[no-]code-reloading             # Code reloading, default: true
+          --deps=VALUE1,VALUE2,..           # List of extra dependencies, default: ["dep1", "dep2"]
+          --help, -h                        # Print this help
 
         Examples:
           #{cmd} server                     # Basic usage (it uses the bundled server engine)
@@ -216,14 +216,14 @@ RSpec.shared_examples 'Commands' do |cli|
           Root command with arguments and subcommands
 
         Subcommands:
-          sub-command                   	# Root command sub command
+          sub-command                       # Root command sub command
 
         Arguments:
-          ROOT_COMMAND_ARGUMENT	# REQUIRED Root command argument
+          ROOT_COMMAND_ARGUMENT             # REQUIRED Root command argument
 
         Options:
-          --root-command-option=VALUE     	# Root command option
-          --help, -h                      	# Print this help
+          --root-command-option=VALUE       # Root command option
+          --help, -h                        # Print this help
       DESC
 
       expect(output).to eq(expected)

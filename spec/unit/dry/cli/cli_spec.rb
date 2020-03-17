@@ -41,14 +41,14 @@ RSpec.describe 'CLI' do
           Baz command line interface
 
         Arguments:
-          MANDATORY_ARG       	# REQUIRED Mandatory argument
-          OPTIONAL_ARG        	# Optional argument (has to have default value in call method)
+          MANDATORY_ARG                     # REQUIRED Mandatory argument
+          OPTIONAL_ARG                      # Optional argument (has to have default value in call method)
 
         Options:
-          --option-one=VALUE, -1 VALUE    	# Option one
-          --[no-]boolean-option, -b       	# Option boolean
-          --option-with-default=VALUE, -d VALUE	# Option default, default: "test"
-          --help, -h                      	# Print this help
+          --option-one=VALUE, -1 VALUE      # Option one
+          --[no-]boolean-option, -b         # Option boolean
+          --option-with-default=VALUE, -d VALUE  # Option default, default: "test"
+          --help, -h                        # Print this help
       OUTPUT
       expect(output).to eq(expected_output)
     end
@@ -57,7 +57,7 @@ RSpec.describe 'CLI' do
       output = capture_output { cli.call(arguments: ['first_arg']) }
       expect(output).to eq(
         'mandatory_arg: first_arg. optional_arg: optional_arg. ' \
-      	"Options: {:option_with_default=>\"test\"}\n"
+        "Options: {:option_with_default=>\"test\"}\n"
       )
     end
 
@@ -65,7 +65,7 @@ RSpec.describe 'CLI' do
       output = capture_output { cli.call(arguments: %w[first_arg opt_arg]) }
       expect(output).to eq(
         'mandatory_arg: first_arg. optional_arg: opt_arg. ' \
-      	"Options: {:option_with_default=>\"test\", :args=>[\"opt_arg\"]}\n"
+        "Options: {:option_with_default=>\"test\", :args=>[\"opt_arg\"]}\n"
       )
     end
 
@@ -73,7 +73,7 @@ RSpec.describe 'CLI' do
       output = capture_output { cli.call(arguments: %w[first_arg --option-one=test2]) }
       expect(output).to eq(
         'mandatory_arg: first_arg. optional_arg: optional_arg. ' \
-      	"Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
+        "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
       )
     end
 
@@ -89,7 +89,7 @@ RSpec.describe 'CLI' do
       output = capture_output { cli.call(arguments: %w[first_arg -1 test2]) }
       expect(output).to eq(
         'mandatory_arg: first_arg. optional_arg: optional_arg. ' \
-      	"Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
+        "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
       )
     end
 
@@ -97,7 +97,7 @@ RSpec.describe 'CLI' do
       output = capture_output { cli.call(arguments: %w[first_arg --boolean-option]) }
       expect(output).to eq(
         'mandatory_arg: first_arg. optional_arg: optional_arg. ' \
-      	"Options: {:option_with_default=>\"test\", :boolean_option=>true}\n"
+        "Options: {:option_with_default=>\"test\", :boolean_option=>true}\n"
       )
     end
 
@@ -113,7 +113,7 @@ RSpec.describe 'CLI' do
       output = capture_output { cli.call(arguments: %w[first_arg -b]) }
       expect(output).to eq(
         'mandatory_arg: first_arg. optional_arg: optional_arg. ' \
-      	"Options: {:option_with_default=>\"test\", :boolean_option=>true}\n"
+        "Options: {:option_with_default=>\"test\", :boolean_option=>true}\n"
       )
     end
 
@@ -121,7 +121,7 @@ RSpec.describe 'CLI' do
       output = capture_output { cli.call(arguments: %w[first_arg --option-with-default=test3]) }
       expect(output).to eq(
         'mandatory_arg: first_arg. optional_arg: optional_arg. ' \
-      	"Options: {:option_with_default=>\"test3\"}\n"
+        "Options: {:option_with_default=>\"test3\"}\n"
       )
     end
 
@@ -137,7 +137,7 @@ RSpec.describe 'CLI' do
       output = capture_output { cli.call(arguments: %w[first_arg -bd test3]) }
       expect(output).to eq(
         'mandatory_arg: first_arg. optional_arg: optional_arg. ' \
-      	"Options: {:option_with_default=>\"test3\", :boolean_option=>true}\n"
+        "Options: {:option_with_default=>\"test3\", :boolean_option=>true}\n"
       )
     end
   end

@@ -61,11 +61,11 @@ RSpec.shared_examples 'Subcommands' do |cli|
           Generate a model
 
         Arguments:
-          MODEL               	# REQUIRED Model name (eg. `user`)
+          MODEL                             # REQUIRED Model name (eg. `user`)
 
         Options:
-          --[no-]skip-migration           	# Skip migration, default: false
-          --help, -h                      	# Print this help
+          --[no-]skip-migration             # Skip migration, default: false
+          --help, -h                        # Print this help
 
         Examples:
           #{cmd} generate model user                  # Generate `User` entity, `UserRepository` repository, and the migration
@@ -151,11 +151,11 @@ RSpec.shared_examples 'Subcommands' do |cli|
           Root command sub command
 
         Arguments:
-          ROOT_COMMAND_SUB_COMMAND_ARGUMENT	# REQUIRED Root command sub command argument
+          ROOT_COMMAND_SUB_COMMAND_ARGUMENT  # REQUIRED Root command sub command argument
 
         Options:
-          --root-command-sub-command-option=VALUE	# Root command sub command option
-          --help, -h                      	# Print this help
+          --root-command-sub-command-option=VALUE  # Root command sub command option
+          --help, -h                        # Print this help
       DESC
 
       expect(output).to eq(expected)

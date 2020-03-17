@@ -61,13 +61,13 @@ Description:
   Information about account
 
 Subcommands:
-  users                         	# Information about account users
+  users                           # Information about account users
 
 Arguments:
-  FORMAT              	# Output format: (long/short)
+  FORMAT                # Output format: (long/short)
 
 Options:
-  --help, -h                      	# Print this help
+  --help, -h                        # Print this help
 ```
 ```sh
 $ foo account
