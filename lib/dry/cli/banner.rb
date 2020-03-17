@@ -104,7 +104,7 @@ module Dry
       # @api private
       def self.extended_command_arguments(command)
         command.arguments.map do |argument|
-          "  #{argument.name.to_s.upcase.ljust(20)}\t# #{'REQUIRED ' if argument.required?}#{argument.desc}" # rubocop:disable Metrics/LineLength
+          "  #{argument.name.to_s.upcase.ljust(32)}  # #{'REQUIRED ' if argument.required?}#{argument.desc}" # rubocop:disable Metrics/LineLength
         end.join("\n")
       end
 
@@ -123,18 +123,18 @@ module Dry
                  end
           name = "#{name}, #{option.alias_names.join(', ')}" if option.aliases.any?
           name = "  --#{name.ljust(30)}"
-          name = "#{name}\t# #{option.desc}"
+          name = "#{name}  # #{option.desc}"
           name = "#{name}, default: #{option.default.inspect}" unless option.default.nil?
           name
         end
 
-        result << "  --#{'help, -h'.ljust(30)}\t# Print this help"
+        result << "  --#{'help, -h'.ljust(30)}  # Print this help"
         result.join("\n")
       end
 
       def self.build_subcommands_list(subcommands)
         subcommands.map do |subcommand_name, subcommand|
-          "  #{subcommand_name.ljust(30)}\t# #{subcommand.command.description}"
+          "  #{subcommand_name.ljust(32)}  # #{subcommand.command.description}"
         end.join("\n")
       end
     end

@@ -165,10 +165,10 @@ Description:
   Print input
 
 Arguments:
-  INPUT               	# Input to print
+  INPUT                 # Input to print
 
 Options:
-  --help, -h                      	# Print this help
+  --help, -h                        # Print this help
 
 Examples:
   foo echo              # Prints 'wuh?'
