@@ -233,7 +233,7 @@ generated tests - framework: rspec
 
 ```sh
 $ foo generate test --framework=unknown
-Error: "test" was called with arguments "--framework=unknown"
+ERROR: "foo generate test" was called with arguments "--framework=unknown"
 ```
 
 ### Boolean options

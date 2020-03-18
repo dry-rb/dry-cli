@@ -16,16 +16,15 @@ module Dry
       #
       # @since 0.1.0
       # @api private
-      def self.call(command, names)
-        full_command_name = full_command_name(names)
+      def self.call(command, name)
         [
-          command_name(full_command_name),
-          command_name_and_arguments(command, full_command_name),
+          command_name(name),
+          command_name_and_arguments(command, name),
           command_description(command),
           command_subcommands(command),
           command_arguments(command),
           command_options(command),
-          command_examples(command, full_command_name)
+          command_examples(command, name)
         ].compact.join("\n")
       end
 
@@ -79,12 +78,6 @@ module Dry
       # @api private
       def self.command_options(command)
         "\nOptions:\n#{extended_command_options(command)}"
-      end
-
-      # @since 0.1.0
-      # @api private
-      def self.full_command_name(names)
-        ProgramName.call(names)
       end
 
       # @since 0.1.0

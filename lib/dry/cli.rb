@@ -131,10 +131,12 @@ module Dry
     # @since 0.6.0
     # @api private
     def parse(command, arguments, names)
-      result = Parser.call(command, arguments, names)
+      prog_name = ProgramName.call(names)
+
+      result = Parser.call(command, arguments, prog_name)
 
       if result.help?
-        out.puts Banner.call(command, names)
+        out.puts Banner.call(command, prog_name)
         exit(0)
       end
 

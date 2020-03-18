@@ -247,7 +247,7 @@ module Dry
       #   # starting console (engine: pry)
       #
       #   # $ foo console --engine=foo
-      #   # Error: Invalid param provided
+      #   # ERROR: Invalid param provided
       #
       # @example Description
       #   require "dry/cli"
