@@ -12,6 +12,7 @@ module Dry
       # @api private
       def self.extended(base)
         base.class_eval do
+          @_mutex = Mutex.new
           @commands = CommandRegistry.new
         end
       end
@@ -170,7 +171,9 @@ module Dry
       #     end
       #   end
       def before(command_name, callback = nil, &blk)
-        command(command_name).before_callbacks.append(&_callback(callback, blk))
+        @_mutex.synchronize do
+          command(command_name).before_callbacks.append(&_callback(callback, blk))
+        end
       end
 
       # Register an after callback.
@@ -256,7 +259,9 @@ module Dry
       #     end
       #   end
       def after(command_name, callback = nil, &blk)
-        command(command_name).after_callbacks.append(&_callback(callback, blk))
+        @_mutex.synchronize do
+          command(command_name).after_callbacks.append(&_callback(callback, blk))
+        end
       end
 
       # @since 0.1.0
