@@ -36,51 +36,27 @@ module Dry
 
         # @since 0.1.0
         # @api private
-        def description
-          @_mutex.synchronize do
-            @description
-          end
-        end
+        attr_reader :description
 
         # @since 0.1.0
         # @api private
-        def examples
-          @_mutex.synchronize do
-            @examples
-          end
-        end
+        attr_reader :examples
 
         # @since 0.1.0
         # @api private
-        def arguments
-          @_mutex.synchronize do
-            @arguments
-          end
-        end
+        attr_reader :arguments
 
         # @since 0.1.0
         # @api private
-        def options
-          @_mutex.synchronize do
-            @options
-          end
-        end
+        attr_reader :options
 
         # @since 0.6.x
         # @api private
-        def subcommands
-          @_mutex.synchronize do
-            @subcommands
-          end
-        end
+        attr_reader :subcommands
 
         # @since 0.6.x
         # @api private
-        def subcommands=(value)
-          @_mutex.synchronize do
-            @subcommands = value
-          end
-        end
+        attr_writer :subcommands
       end
 
       # Set the description of the command
@@ -100,9 +76,7 @@ module Dry
       #     end
       #   end
       def self.desc(description)
-        @_mutex.synchronize do
-          @description = description
-        end
+        @description = description
       end
 
       # Describe the usage of the command
@@ -138,9 +112,7 @@ module Dry
       #   #     foo server --port=2306         # Bind to a port
       #   #     foo server --no-code-reloading # Disable code reloading
       def self.example(*examples)
-        @_mutex.synchronize do
-          @examples += examples.flatten
-        end
+        @examples += examples.flatten(1)
       end
 
       # Specify an argument
@@ -234,9 +206,7 @@ module Dry
       #   #   Options:
       #   #     --help, -h          # Print this help
       def self.argument(name, options = {})
-        @_mutex.synchronize do
-          @arguments << Argument.new(name, options)
-        end
+        @arguments << Argument.new(name, options)
       end
 
       # Command line option (aka optional argument)
@@ -350,9 +320,7 @@ module Dry
       #   # Options:
       #   #   --port=VALUE, -p VALUE
       def self.option(name, options = {})
-        @_mutex.synchronize do
-          @options << Option.new(name, options)
-        end
+        @options << Option.new(name, options)
       end
 
       # @since 0.1.0
