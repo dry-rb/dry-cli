@@ -106,16 +106,13 @@ module Dry
     # @api private
     def perform_registry(arguments)
       result = registry.get(arguments)
+      return usage(result) unless result.found?
 
-      if result.found?
-        command, args = parse(result.command, result.arguments, result.names)
+      command, args = parse(result.command, result.arguments, result.names)
 
-        result.before_callbacks.run(command, args)
-        command.call(**args)
-        result.after_callbacks.run(command, args)
-      else
-        usage(result)
-      end
+      result.before_callbacks.run(command, args)
+      command.call(**args)
+      result.after_callbacks.run(command, args)
     end
 
     # Parse arguments for a command.
@@ -135,24 +132,33 @@ module Dry
 
       result = Parser.call(command, arguments, prog_name)
 
-      if result.help?
-        out.puts Banner.call(command, prog_name)
-        exit(0)
-      end
+      return help(command, prog_name) if result.help?
 
-      if result.error?
-        err.puts(result.error)
-        exit(1)
-      end
+      return error(result) if result.error?
 
-      [command.new, result.arguments]
+      [build_command(command), result.arguments]
     end
 
-    # Prints the command usage and exit.
-    #
-    # @param result [Dry::CLI::CommandRegistry::LookupResult]
-    # @param out [IO] sta output
-    #
+    # @since x.x.x
+    # @api private
+    def build_command(command)
+      command.is_a?(Class) ? command.new : command
+    end
+
+    # @since x.x.x
+    # @api private
+    def help(command, prog_name)
+      out.puts Banner.call(command, prog_name)
+      exit(0)
+    end
+
+    # @since x.x.x
+    # @api private
+    def error(result)
+      err.puts(result.error)
+      exit(1)
+    end
+
     # @since 0.1.0
     # @api private
     def usage(result)

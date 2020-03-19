@@ -50,11 +50,11 @@ module Dry
         # @api private
         attr_reader :options
 
-        # @since 0.6.x
+        # @since x.x.x
         # @api private
         attr_reader :subcommands
 
-        # @since 0.6.x
+        # @since x.x.x
         # @api private
         attr_writer :subcommands
       end
@@ -351,7 +351,7 @@ module Dry
         arguments.reject(&:required?)
       end
 
-      # @since 0.6.x
+      # @since x.x.x
       # @api private
       def self.subcommands
         subcommands

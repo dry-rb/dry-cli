@@ -18,6 +18,7 @@ WithBlock = Dry::CLI.new do |cli|
   cli.register 'hello',       Commands::Hello
   cli.register 'greeting',    Commands::Greeting
   cli.register 'sub command', Commands::Sub::Command
+  cli.register 'with-initializer', Commands::InitializedCommand.new(prop: 'prop_val')
   cli.register 'root-command', Commands::RootCommand do |prefix|
     prefix.register 'sub-command', Commands::RootCommands::SubCommand
   end

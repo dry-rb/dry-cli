@@ -289,5 +289,12 @@ RSpec.shared_examples 'Commands' do |cli|
       end
     end
   end
+
+  context 'works with instances of commands' do
+    it 'executes instance' do
+      output = capture_output { cli.call(arguments: %w[with-initializer]) }
+      expect(output).to eq("The value of prop is prop_val\n")
+    end
+  end
 end
 # rubocop:enable Metrics/LineLength

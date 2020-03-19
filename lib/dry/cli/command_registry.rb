@@ -26,7 +26,10 @@ module Dry
           end
 
           node.aliases!(aliases)
-          node.leaf!(command) if command
+          if command
+            node.leaf!(command)
+            node.subcommands!(command)
+          end
 
           nil
         end
@@ -127,7 +130,13 @@ module Dry
         # @api private
         def leaf!(command)
           @command = command
-          command.subcommands = children
+        end
+
+        # @since x.x.x
+        # @api private
+        def subcommands!(command)
+          command_class = command.is_a?(Class) ? command : command.class
+          command_class.subcommands = children
         end
 
         # @since 0.1.0
@@ -150,7 +159,7 @@ module Dry
           !command.nil?
         end
 
-        # @since 0.6.x
+        # @since x.x.x
         # @api private
         def children?
           children.any?
