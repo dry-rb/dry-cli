@@ -10,4 +10,3 @@ gemspec:
     - [rake, "~> 13.0"]
     - [rspec, "~> 3.7"]
     - [simplecov, "~> 0.17.1"]
-  runtime_dependencies:
