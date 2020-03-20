@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'forwardable'
-require 'concurrent/array'
 require 'dry/cli/option'
 
 module Dry
@@ -26,11 +25,12 @@ module Dry
           super
 
           base.class_eval do
+            @_mutex       = Mutex.new
             @description  = nil
-            @examples     = Concurrent::Array.new
-            @subcommands  = Concurrent::Array.new
-            @arguments    = Concurrent::Array.new
-            @options      = Concurrent::Array.new
+            @examples     = []
+            @arguments    = []
+            @options      = []
+            @subcommands  = []
           end
         end
 
@@ -52,7 +52,11 @@ module Dry
 
         # @since 0.6.x
         # @api private
-        attr_accessor :subcommands
+        attr_reader :subcommands
+
+        # @since 0.6.x
+        # @api private
+        attr_writer :subcommands
       end
 
       # Set the description of the command
@@ -108,7 +112,7 @@ module Dry
       #   #     foo server --port=2306         # Bind to a port
       #   #     foo server --no-code-reloading # Disable code reloading
       def self.example(*examples)
-        @examples += examples.flatten
+        @examples += examples.flatten(1)
       end
 
       # Specify an argument
@@ -322,7 +326,9 @@ module Dry
       # @since 0.1.0
       # @api private
       def self.params
-        (@arguments + @options).uniq
+        @_mutex.synchronize do
+          (@arguments + @options).uniq
+        end
       end
 
       # @since 0.1.0
