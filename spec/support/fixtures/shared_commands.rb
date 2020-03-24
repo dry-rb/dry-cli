@@ -437,6 +437,18 @@ module Commands
       end
     end
   end
+
+  class InitializedCommand < Dry::CLI::Command
+    attr_reader :prop
+
+    def initialize(prop:)
+      @prop = prop
+    end
+
+    def call(**_params)
+      puts "The value of prop is #{prop}"
+    end
+  end
 end
 
 module Webpack

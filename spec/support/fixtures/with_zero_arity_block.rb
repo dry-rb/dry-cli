@@ -18,6 +18,7 @@ WithZeroArityBlock = Dry.CLI do
   register 'hello',       Commands::Hello
   register 'greeting',    Commands::Greeting
   register 'sub command', Commands::Sub::Command
+  register 'with-initializer', Commands::InitializedCommand.new(prop: 'prop_val')
   register 'root-command', Commands::RootCommand
   register 'root-command' do
     register 'sub-command', Commands::RootCommands::SubCommand

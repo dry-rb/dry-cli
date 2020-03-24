@@ -26,6 +26,7 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} sub [SUBCOMMAND]
         #{cmd} variadic [SUBCOMMAND]
         #{cmd} version                                                 # Print Foo version
+        #{cmd} with-initializer
     DESC
 
     expect(error).to eq(expected)
@@ -85,6 +86,7 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} sub [SUBCOMMAND]
         #{cmd} variadic [SUBCOMMAND]
         #{cmd} version                                                 # Print Foo version
+        #{cmd} with-initializer
     DESC
 
     expect(error).to eq(expected)
@@ -112,6 +114,7 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} sub [SUBCOMMAND]
         #{cmd} variadic [SUBCOMMAND]
         #{cmd} version                                                 # Print Foo version
+        #{cmd} with-initializer
     DESC
 
     expect(error).to eq(expected)
