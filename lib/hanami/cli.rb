@@ -56,7 +56,7 @@ module Hanami
         command, args = parse(result, out)
 
         result.before_callbacks.run(command, args)
-        command.call(args)
+        command.call(**args)
         result.after_callbacks.run(command, args)
       else
         usage(result, out)
