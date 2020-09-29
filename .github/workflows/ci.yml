@@ -23,6 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby:
+        - head
         - 2.7.0
         - '2.6'
         - '2.5'
@@ -31,7 +32,7 @@ jobs:
         - '2.7'
         - '2.3'
         include:
-        - ruby: '2.6'
+        - ruby: 2.7.0
           coverage: 'true'
     env:
       COVERAGE: "${{matrix.coverage}}"
