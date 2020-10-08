@@ -62,8 +62,8 @@ module Dry
       # @since 0.6.0
       def run(arguments: ARGV, out: $stdout)
         command = AnonymousCommand
-        command.define_method(:call) do |*args|
-          yield(*args)
+        command.define_method(:call) do |**args|
+          yield(**args)
         end
 
         Dry.CLI(command).call(arguments: arguments, out: out)
