@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require "open3"
+require 'open3'
 
-RSpec.describe "Inline" do
-  context "with command" do
-    let(:cmd) { "inline" }
+RSpec.describe 'Inline' do
+  context 'with command' do
+    let(:cmd) { 'inline' }
 
-    it "shows help" do
+    it 'shows help' do
       output = `inline -h`
       expected_output = <<~OUTPUT
         Command:
@@ -31,19 +31,19 @@ RSpec.describe "Inline" do
       expect(output).to eq(expected_output)
     end
 
-    it "with option_one", if: RUBY_VERSION < "2.4" do
+    it 'with option_one', if: RUBY_VERSION < '2.4' do
       output = `inline first_arg --option-one=test2 -bd test3`
       expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+        'mandatory_arg: first_arg. optional_arg: optional_arg. ' \
         'Options: {:option_with_default=>"test3", :option_one=>"test2", :boolean_option=>true}' \
         "\n"
       )
     end
 
-    it "with underscored option_one", if: RUBY_VERSION >= "2.4" do
+    it 'with underscored option_one', if: RUBY_VERSION >= '2.4' do
       output = `inline first_arg -1 test2 -bd test3`
       expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+        'mandatory_arg: first_arg. optional_arg: optional_arg. ' \
         'Options: {:option_with_default=>"test3", :option_one=>"test2", :boolean_option=>true}' \
         "\n"
       )

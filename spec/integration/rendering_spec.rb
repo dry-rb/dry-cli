@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require "open3"
+require 'open3'
 
-RSpec.describe "Rendering" do
-  it "prints available commands for unknown command" do
-    _, stderr, = Open3.capture3("foo unknown")
+RSpec.describe 'Rendering' do
+  it 'prints available commands for unknown command' do
+    _, stderr, = Open3.capture3('foo unknown')
 
     expected = <<~DESC
       Commands:

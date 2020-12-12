@@ -4,7 +4,7 @@ module RSpec
   module Support
     module Helpers
       def capture_output
-        require "stringio"
+        require 'stringio'
         output = StringIO.new
         original_stdout = $stdout
         $stdout = output
@@ -17,7 +17,7 @@ module RSpec
       end
 
       def capture_error
-        require "stringio"
+        require 'stringio'
         error = StringIO.new
         original_stderr = $stderr
         $stderr = error

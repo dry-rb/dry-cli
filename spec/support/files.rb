@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "rspec/expectations"
+require 'rspec/expectations'
 
 RSpec::Matchers.define :have_content do |expected|
   match do |actual|

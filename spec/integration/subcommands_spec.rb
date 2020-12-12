@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require "open3"
+require 'open3'
 
-RSpec.describe "Subcommands" do
-  context "works with params" do
-    it "with help param" do
+RSpec.describe 'Subcommands' do
+  context 'works with params' do
+    it 'with help param' do
       output = `foo generate model --help`
 
       expected = <<~DESC
@@ -33,8 +33,8 @@ RSpec.describe "Subcommands" do
     end
   end
 
-  context "works with root command subcommands" do
-    it "with params" do
+  context 'works with root command subcommands' do
+    it 'with params' do
       output = `foo root-command sub-command "hello world"`
 
       expected = <<~DESC
@@ -45,7 +45,7 @@ RSpec.describe "Subcommands" do
       expect(output).to eq(expected)
     end
 
-    it "with options" do
+    it 'with options' do
       option = '--root-command-sub-command-option="bye world"'
       output = `foo root-command sub-command "hello world" #{option}`
 
