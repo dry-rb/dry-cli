@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Third-party gems' do
-  it 'allows to add callbacks as a block' do
+RSpec.describe "Third-party gems" do
+  it "allows to add callbacks as a block" do
     output = `foo callbacks . --url=https://hanamirb.test`
 
     expected = <<~OUTPUT
