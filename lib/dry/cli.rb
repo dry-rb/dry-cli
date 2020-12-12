@@ -8,14 +8,14 @@ module Dry
   #
   # @since 0.1.0
   class CLI
-    require 'dry/cli/version'
-    require 'dry/cli/errors'
-    require 'dry/cli/command'
-    require 'dry/cli/registry'
-    require 'dry/cli/parser'
-    require 'dry/cli/usage'
-    require 'dry/cli/banner'
-    require 'dry/cli/inflector'
+    require "dry/cli/version"
+    require "dry/cli/errors"
+    require "dry/cli/command"
+    require "dry/cli/registry"
+    require "dry/cli/parser"
+    require "dry/cli/usage"
+    require "dry/cli/banner"
+    require "dry/cli/inflector"
 
     # Check if command
     #
