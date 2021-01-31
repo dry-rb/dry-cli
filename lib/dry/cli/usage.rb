@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'dry/cli/program_name'
+require "dry/cli/program_name"
 
 module Dry
   class CLI
@@ -11,13 +11,13 @@ module Dry
     module Usage
       # @since 0.1.0
       # @api private
-      SUBCOMMAND_BANNER = ' [SUBCOMMAND]'
-      ROOT_COMMAND_WITH_SUBCOMMANDS_BANNER = ' [ARGUMENT|SUBCOMMAND]'
+      SUBCOMMAND_BANNER = " [SUBCOMMAND]"
+      ROOT_COMMAND_WITH_SUBCOMMANDS_BANNER = " [ARGUMENT|SUBCOMMAND]"
 
       # @since 0.1.0
       # @api private
       def self.call(result)
-        header = 'Commands:'
+        header = "Commands:"
         max_length, commands = commands_and_arguments(result)
 
         commands.map do |banner, node|
@@ -55,11 +55,11 @@ module Dry
         required_arguments = command.required_arguments
         optional_arguments = command.optional_arguments
 
-        required = required_arguments.map { |arg| arg.name.upcase }.join(' ') if required_arguments.any? # rubocop:disable Metrics/LineLength
-        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(' ') if optional_arguments.any? # rubocop:disable Metrics/LineLength
+        required = required_arguments.map { |arg| arg.name.upcase }.join(" ") if required_arguments.any? # rubocop:disable Layout/LineLength
+        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(" ") if optional_arguments.any? # rubocop:disable Layout/LineLength
         result = [required, optional].compact
 
-        " #{result.join(' ')}" unless result.empty?
+        " #{result.join(" ")}" unless result.empty?
       end
 
       # @since 0.1.0
@@ -73,7 +73,7 @@ module Dry
       # @since 0.1.0
       # @api private
       def self.justify(string, padding, usage)
-        return string.chomp(' ') if usage.nil?
+        return string.chomp(" ") if usage.nil?
 
         string.ljust(padding + padding / 2)
       end

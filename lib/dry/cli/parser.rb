@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'optparse'
-require 'dry/cli/program_name'
+require "optparse"
+require "dry/cli/program_name"
 
 module Dry
   class CLI
@@ -24,7 +24,7 @@ module Dry
             end
           end
 
-          opts.on_tail('-h', '--help') do
+          opts.on_tail("-h", "--help") do
             return Result.help
           end
         end.parse!(arguments)
@@ -32,7 +32,7 @@ module Dry
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, prog_name, parsed_options)
       rescue ::OptionParser::ParseError
-        Result.failure("ERROR: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(' ')}\"") # rubocop:disable Metrics/LineLength
+        Result.failure("ERROR: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(" ")}\"") # rubocop:disable Layout/LineLength
       end
 
       # @since 0.1.0
@@ -42,23 +42,23 @@ module Dry
       def self.parse_required_params(command, arguments, prog_name, parsed_options)
         parsed_params          = match_arguments(command.arguments, arguments)
         parsed_required_params = match_arguments(command.required_arguments, arguments)
-        all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? } # rubocop:disable Metrics/LineLength
+        all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? } # rubocop:disable Layout/LineLength
 
         unused_arguments = arguments.drop(command.required_arguments.length)
 
         unless all_required_params_satisfied
           parsed_required_params_values = parsed_required_params.values.compact
 
-          usage = "\nUsage: \"#{prog_name} #{command.required_arguments.map(&:description_name).join(' ')}" # rubocop:disable Metrics/LineLength
+          usage = "\nUsage: \"#{prog_name} #{command.required_arguments.map(&:description_name).join(" ")}" # rubocop:disable Layout/LineLength
 
           usage += " | #{prog_name} SUBCOMMAND" if command.subcommands.any?
 
           usage += '"'
 
           if parsed_required_params_values.empty?
-            return Result.failure("ERROR: \"#{prog_name}\" was called with no arguments#{usage}") # rubocop:disable Metrics/LineLength
+            return Result.failure("ERROR: \"#{prog_name}\" was called with no arguments#{usage}")
           else
-            return Result.failure("ERROR: \"#{prog_name}\" was called with arguments #{parsed_required_params_values}#{usage}") # rubocop:disable Metrics/LineLength
+            return Result.failure("ERROR: \"#{prog_name}\" was called with arguments #{parsed_required_params_values}#{usage}") # rubocop:disable Layout/LineLength
           end
         end
 
@@ -101,7 +101,7 @@ module Dry
 
         # @since 0.1.0
         # @api private
-        def self.failure(error = 'Error: Invalid param provided')
+        def self.failure(error = "Error: Invalid param provided")
           new(error: error)
         end
 
