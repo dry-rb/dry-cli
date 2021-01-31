@@ -18,6 +18,7 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} generate [SUBCOMMAND]
         #{cmd} greeting [RESPONSE]
         #{cmd} hello                                                   # Print a greeting
+        #{cmd} inherited [SUBCOMMAND]
         #{cmd} new PROJECT                                             # Generate a new Foo project
         #{cmd} options-with-aliases                                    # Accepts options with aliases
         #{cmd} root-command [ARGUMENT|SUBCOMMAND]                      # Root command with arguments and subcommands
@@ -78,6 +79,7 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} generate [SUBCOMMAND]
         #{cmd} greeting [RESPONSE]
         #{cmd} hello                                                   # Print a greeting
+        #{cmd} inherited [SUBCOMMAND]
         #{cmd} new PROJECT                                             # Generate a new Foo project
         #{cmd} options-with-aliases                                    # Accepts options with aliases
         #{cmd} root-command [ARGUMENT|SUBCOMMAND]                      # Root command with arguments and subcommands
@@ -106,6 +108,7 @@ RSpec.shared_examples 'Rendering' do |cli|
         #{cmd} generate [SUBCOMMAND]
         #{cmd} greeting [RESPONSE]
         #{cmd} hello                                                   # Print a greeting
+        #{cmd} inherited [SUBCOMMAND]
         #{cmd} new PROJECT                                             # Generate a new Foo project
         #{cmd} options-with-aliases                                    # Accepts options with aliases
         #{cmd} root-command [ARGUMENT|SUBCOMMAND]                      # Root command with arguments and subcommands

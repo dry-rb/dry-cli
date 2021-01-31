@@ -39,6 +39,13 @@ module Foo
         prefix.register 'secret',    ::Commands::Generate::Secret
       end
 
+      register 'inherited', aliases: ['i'] do |prefix|
+        prefix.register 'run',    ::InheritedCommands::Run
+        prefix.register 'subrun', ::InheritedCommands::SubRun
+        prefix.register 'logs',   ::InheritedCommands::Logs
+        prefix.register 'addons', ::InheritedCommands::Addons
+      end
+
       register 'new',     ::Commands::New
       register 'routes',  ::Commands::Routes
       register 'server',  ::Commands::Server,  aliases: ['s']

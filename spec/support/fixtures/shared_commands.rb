@@ -540,4 +540,57 @@ module Callbacks
     end
   end
 end
+
+module InheritedCommands
+  class Base < Dry::CLI::Command
+    desc 'Base description'
+    argument :app, desc: 'Application name', type: :string, required: true
+    option :verbosity, desc: 'Verbosity level', type: :string, default: 'INFO'
+    example 'Base example'
+
+    def call(app:, **options)
+      puts "Base - App: #{app} - Options: #{options.inspect}"
+    end
+  end
+
+  class Run < Base
+    desc 'Run a one-off process inside your app'
+    argument :cmd, desc: 'Command to execute', required: true
+
+    def call(app:, cmd:, **options)
+      puts "#{self.class} - App: #{app} - Command: #{cmd} - Options: #{options.inspect}"
+    end
+  end
+
+  class SubRun < Run
+  end
+
+  class Logs < Base
+    desc 'Display recent log output'
+
+    option :num, desc: 'number of lines to display'
+    option :tail, desc: 'continually stream log', type: :boolean
+
+    example [
+      'APP_NAME',
+      'APP_NAME --num=50',
+      'APP_NAME --tail'
+    ]
+
+    def call(app:, **options)
+      puts "Logs - App: #{app} - Options: #{options.inspect}"
+    end
+  end
+
+  class Addons < Base
+    desc 'Lists your add-ons and attachments'
+
+    option :json, desc: 'return add-ons in json format', type: :boolean, default: false
+
+    example [
+      'APP_NAME',
+      'APP_NAME --json'
+    ]
+  end
+end
 # rubocop:enable Metrics/LineLength

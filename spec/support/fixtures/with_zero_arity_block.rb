@@ -62,6 +62,13 @@ WithZeroArityBlock = Dry.CLI do
     register 'secret',    Commands::Generate::Secret
   end
 
+  register 'inherited', aliases: ['i'] do
+    register 'run',    InheritedCommands::Run
+    register 'subrun', InheritedCommands::SubRun
+    register 'logs',   InheritedCommands::Logs
+    register 'addons', InheritedCommands::Addons
+  end
+
   # we need to be sure that command will not override with nil command
   register 'generate webpack', nil
 

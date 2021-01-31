@@ -6,6 +6,7 @@ RSpec.describe 'CLI' do
       include_examples 'Commands', WithRegistry
       include_examples 'Rendering', WithRegistry
       include_examples 'Subcommands', WithRegistry
+      include_examples 'Inherited commands', WithRegistry
       include_examples 'Third-party gems', WithRegistry
     end
 
@@ -13,6 +14,7 @@ RSpec.describe 'CLI' do
       include_examples 'Commands', WithBlock
       include_examples 'Rendering', WithBlock
       include_examples 'Subcommands', WithBlock
+      include_examples 'Inherited commands', WithBlock
       include_examples 'Third-party gems', WithBlock
     end
 
@@ -20,6 +22,7 @@ RSpec.describe 'CLI' do
       include_examples 'Commands', WithZeroArityBlock
       include_examples 'Rendering', WithZeroArityBlock
       include_examples 'Subcommands', WithZeroArityBlock
+      include_examples 'Inherited commands', WithZeroArityBlock
       include_examples 'Third-party gems', WithZeroArityBlock
     end
   end

@@ -76,4 +76,11 @@ WithBlock = Dry::CLI.new do |cli|
   cli.after 'callbacks',  Callbacks::AfterClass
   cli.before 'callbacks', Callbacks::Before.new
   cli.after 'callbacks',  Callbacks::After.new
+
+  cli.register 'inherited', aliases: ['i'] do |prefix|
+    prefix.register 'run',    InheritedCommands::Run
+    prefix.register 'subrun', InheritedCommands::SubRun
+    prefix.register 'logs',   InheritedCommands::Logs
+    prefix.register 'addons', InheritedCommands::Addons
+  end
 end
