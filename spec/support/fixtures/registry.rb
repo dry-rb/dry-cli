@@ -9,7 +9,7 @@ module Bar
         def call(*); end
       end
 
-      register 'alpha', Alpha
+      register "alpha", Alpha
     end
   end
 end

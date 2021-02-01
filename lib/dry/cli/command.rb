@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'forwardable'
-require 'dry/cli/option'
+require "forwardable"
+require "dry/cli/option"
 
 module Dry
   class CLI
@@ -369,7 +369,7 @@ module Dry
         required_arguments
         optional_arguments
         subcommands
-      ] => 'self.class'
+      ] => "self.class"
     end
   end
 end

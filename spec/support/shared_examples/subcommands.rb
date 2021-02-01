@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'Subcommands' do |cli|
+RSpec.shared_examples "Subcommands" do |cli|
   let(:cli) { cli }
 
   let(:cmd) { File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME)) }
 
-  it 'calls subcommand' do
+  it "calls subcommand" do
     error = capture_error { cli.call(arguments: %w[generate model]) }
     expected = <<~DESC
       ERROR: "#{cmd} generate model" was called with no arguments
@@ -15,8 +15,8 @@ RSpec.shared_examples 'Subcommands' do |cli|
     expect(error).to eq(expected)
   end
 
-  context 'works with params' do
-    it 'without params' do
+  context "works with params" do
+    it "without params" do
       error = capture_error { cli.call(arguments: %w[generate model]) }
       expected = <<~DESC
         ERROR: "#{cmd} generate model" was called with no arguments
@@ -26,28 +26,28 @@ RSpec.shared_examples 'Subcommands' do |cli|
       expect(error).to eq(expected)
     end
 
-    it 'a param using space' do
+    it "a param using space" do
       output = capture_output { cli.call(arguments: %w[server --port 2306]) }
       expect(output).to eq(
         "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
       )
     end
 
-    it 'a param using equal sign' do
+    it "a param using equal sign" do
       output = capture_output { cli.call(arguments: %w[server --port=2306]) }
       expect(output).to eq(
         "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
       )
     end
 
-    it 'a param using alias' do
+    it "a param using alias" do
       output = capture_output { cli.call(arguments: %w[server -p 2306]) }
       expect(output).to eq(
         "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
       )
     end
 
-    it 'with help param' do
+    it "with help param" do
       output = capture_output { cli.call(arguments: %w[generate model --help]) }
 
       expected = <<~DESC
@@ -75,28 +75,28 @@ RSpec.shared_examples 'Subcommands' do |cli|
       expect(output).to eq(expected)
     end
 
-    context 'with required params' do
-      it 'only one param' do
+    context "with required params" do
+      it "only one param" do
         output = capture_output { cli.call(arguments: %w[generate model user]) }
         expect(output).to eq("generate model - model: user\n")
       end
 
-      it 'more than one param' do
+      it "more than one param" do
         output = capture_output { cli.call(arguments: %w[destroy action web users#index]) }
         expect(output).to eq("destroy action - app: web, action: users#index\n")
       end
 
-      it 'more than one param and with optional params' do
+      it "more than one param and with optional params" do
         output = capture_output { cli.call(arguments: %w[generate action web users#index --url=/signin]) } # rubocop:disable Metrics/LineLength
         expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>false, :url=>\"/signin\"}\n") # rubocop:disable Metrics/LineLength
       end
 
-      it 'more than one param and with boolean params' do
+      it "more than one param and with boolean params" do
         output = capture_output { cli.call(arguments: %w[generate action web users#index --skip-view --url=/signin]) } # rubocop:disable Metrics/LineLength
         expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>true, :url=>\"/signin\"}\n") # rubocop:disable Metrics/LineLength
       end
 
-      it 'more than required params' do
+      it "more than required params" do
         output = capture_output { cli.call(arguments: %w[destroy action web users#index unexpected_param]) } # rubocop:disable Metrics/LineLength
         expect(output).to eq("destroy action - app: web, action: users#index\n")
       end
@@ -111,7 +111,7 @@ RSpec.shared_examples 'Subcommands' do |cli|
         expect(error).to eq(expected)
       end
 
-      it 'an error is displayed if there are some required params' do
+      it "an error is displayed if there are some required params" do
         error = capture_error { cli.call(arguments: %w[destroy action web]) }
         expected = <<~DESC
           ERROR: "#{cmd} destroy action" was called with arguments [\"web\"]
@@ -121,14 +121,14 @@ RSpec.shared_examples 'Subcommands' do |cli|
         expect(error).to eq(expected)
       end
 
-      context 'and a default value' do
-        it 'returns the default value if nothing is passed' do
+      context "and a default value" do
+        it "returns the default value if nothing is passed" do
           output = capture_output { cli.call(arguments: %w[db rollback]) }
 
           expect(output).to eq("1\n")
         end
 
-        it 'returns the passed value' do
+        it "returns the passed value" do
           output = capture_output { cli.call(arguments: %w[db rollback 3]) }
 
           expect(output).to eq("3\n")
@@ -137,8 +137,8 @@ RSpec.shared_examples 'Subcommands' do |cli|
     end
   end
 
-  context 'works with root command' do
-    it 'shows help' do
+  context "works with root command" do
+    it "shows help" do
       output = capture_output { cli.call(arguments: %w[root-command sub-command -h]) }
       expected = <<~DESC
         Command:
@@ -164,8 +164,8 @@ RSpec.shared_examples 'Subcommands' do |cli|
       expect(output).to eq(expected)
     end
 
-    context 'works with params' do
-      it 'without params' do
+    context "works with params" do
+      it "without params" do
         error = capture_error { cli.call(arguments: %w[root-command sub-command]) }
         expected = <<~DESC
           ERROR: "rspec root-command sub-command" was called with no arguments
@@ -175,9 +175,9 @@ RSpec.shared_examples 'Subcommands' do |cli|
         expect(error).to eq(expected)
       end
 
-      it 'with params' do
+      it "with params" do
         output = capture_output {
-          cli.call(arguments: ['root-command', 'sub-command', '"hello world"'])
+          cli.call(arguments: ["root-command", "sub-command", '"hello world"'])
         }
         expected = <<~DESC
           I'm a root-command sub-command argument:"hello world"
@@ -187,13 +187,13 @@ RSpec.shared_examples 'Subcommands' do |cli|
         expect(output).to eq(expected)
       end
 
-      it 'with option using space' do
+      it "with option using space" do
         output = capture_output {
           cli.call(arguments: [
-            'root-command',
-            'sub-command',
+            "root-command",
+            "sub-command",
             '"hello world"',
-            '--root-command-sub-command-option',
+            "--root-command-sub-command-option",
             '"bye world"'
           ])
         }
@@ -205,11 +205,11 @@ RSpec.shared_examples 'Subcommands' do |cli|
         expect(output).to eq(expected)
       end
 
-      it 'with option using equal sign' do
+      it "with option using equal sign" do
         output = capture_output {
           cli.call(arguments: [
-            'root-command',
-            'sub-command',
+            "root-command",
+            "sub-command",
             '"hello world"',
             '--root-command-sub-command-option="bye world"'
           ])

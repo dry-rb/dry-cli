@@ -32,7 +32,7 @@ module Dry
       # @api private
       def desc
         desc = options[:desc]
-        values ? "#{desc}: (#{values.join('/')})" : desc
+        values ? "#{desc}: (#{values.join("/")})" : desc
       end
 
       # @since 0.1.0
@@ -108,7 +108,7 @@ module Dry
       # @api private
       def alias_names
         aliases
-          .map { |name| name.gsub(/^-{1,2}/, '') }
+          .map { |name| name.gsub(/^-{1,2}/, "") }
           .compact
           .uniq
           .map { |name| name.size == 1 ? "-#{name}" : "--#{name}" }
