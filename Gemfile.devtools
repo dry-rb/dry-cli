@@ -8,7 +8,8 @@ group :test do
   gem "simplecov", require: false, platforms: :ruby
   gem "simplecov-cobertura", require: false, platforms: :ruby
   gem "rexml", require: false
-  gem "warning"
+
+  gem "warning" if RUBY_VERSION >= "2.4.0"
 end
 
 group :tools do
