@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'Rendering' do |cli|
+RSpec.shared_examples "Rendering" do |cli|
   let(:cli) { cli }
 
   let(:cmd) { File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME)) }
 
-  it 'prints required params' do
+  it "prints required params" do
     error = capture_error { cli.call }
     expected = <<~DESC
       Commands:
@@ -32,8 +32,8 @@ RSpec.shared_examples 'Rendering' do |cli|
     expect(error).to eq(expected)
   end
 
-  it 'prints required params with labels' do
-    error = capture_error { cli.call(arguments: ['destroy']) }
+  it "prints required params with labels" do
+    error = capture_error { cli.call(arguments: ["destroy"]) }
 
     expected = <<~DESC
       Commands:
@@ -47,7 +47,7 @@ RSpec.shared_examples 'Rendering' do |cli|
     expect(error).to eq(expected)
   end
 
-  it 'prints available commands for unknown subcommand' do
+  it "prints available commands for unknown subcommand" do
     error = capture_error { cli.call(arguments: %w[generate unknown]) }
 
     expected = <<~DESC
@@ -64,8 +64,8 @@ RSpec.shared_examples 'Rendering' do |cli|
     expect(error).to eq(expected)
   end
 
-  it 'prints available commands for unknown command' do
-    error = capture_error { cli.call(arguments: ['unknown']) }
+  it "prints available commands for unknown command" do
+    error = capture_error { cli.call(arguments: ["unknown"]) }
 
     expected = <<~DESC
       Commands:
@@ -92,7 +92,7 @@ RSpec.shared_examples 'Rendering' do |cli|
     expect(error).to eq(expected)
   end
 
-  it 'prints first level' do
+  it "prints first level" do
     error = capture_error { cli.call }
 
     expected = <<~DESC
@@ -121,7 +121,7 @@ RSpec.shared_examples 'Rendering' do |cli|
   end
 
   it "prints subcommand's commands" do
-    error = capture_error { cli.call(arguments: ['generate']) }
+    error = capture_error { cli.call(arguments: ["generate"]) }
 
     expected = <<~DESC
       Commands:
@@ -153,7 +153,7 @@ RSpec.shared_examples 'Rendering' do |cli|
     expect(error).to eq(expected)
   end
 
-  it 'prints list options when calling help' do
+  it "prints list options when calling help" do
     output = capture_output { cli.call(arguments: %w[options-with-aliases --help]) }
 
     expected = <<~DESC
