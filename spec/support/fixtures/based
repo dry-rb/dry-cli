@@ -1,19 +1,19 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift __dir__ + '/../../lib'
-require 'dry/cli'
-require_relative '../../../lib/dry/cli/command'
+$LOAD_PATH.unshift __dir__ + "/../../lib"
+require "dry/cli"
+require_relative "../../../lib/dry/cli/command"
 
 module Based
   extend Dry::CLI::Registry
 
   class Base < Dry::CLI::Command
-    desc 'Base description'
-    argument :app, desc: 'Application name', type: :string, required: true
-    option :verbosity, desc: 'Verbosity level', type: :string, default: 'INFO'
+    desc "Base description"
+    argument :app, desc: "Application name", type: :string, required: true
+    option :verbosity, desc: "Verbosity level", type: :string, default: "INFO"
 
-    example 'Base example'
+    example "Base example"
 
     def call(app:, **options)
       puts "#{self.class} - App: #{app} - Options: #{options.inspect}"
@@ -21,8 +21,8 @@ module Based
   end
 
   class Run < Base
-    desc 'Run a one-off process inside your app'
-    argument :cmd, desc: 'Command to execute', required: true
+    desc "Run a one-off process inside your app"
+    argument :cmd, desc: "Command to execute", required: true
 
     def call(app:, cmd:, **options)
       puts "Run - App: #{app} - Command: #{cmd} - Options: #{options.inspect}"
@@ -33,33 +33,33 @@ module Based
   end
 
   class Logs < Base
-    desc 'Display recent log output'
+    desc "Display recent log output"
 
-    option :num, desc: 'number of lines to display'
-    option :tail, desc: 'continually stream log', type: :boolean
+    option :num, desc: "number of lines to display"
+    option :tail, desc: "continually stream log", type: :boolean
 
     example [
-      'APP_NAME',
-      'APP_NAME --num=50',
-      'APP_NAME --tail'
+      "APP_NAME",
+      "APP_NAME --num=50",
+      "APP_NAME --tail"
     ]
   end
 
   class Addons < Base
-    desc 'Lists your add-ons and attachments'
+    desc "Lists your add-ons and attachments"
 
-    option :json, desc: 'return add-ons in json format', type: :boolean, default: false
+    option :json, desc: "return add-ons in json format", type: :boolean, default: false
 
     example [
-      'APP_NAME',
-      'APP_NAME --json'
+      "APP_NAME",
+      "APP_NAME --json"
     ]
   end
 
-  register 'run', Run
-  register 'subrun', SubRun
-  register 'logs', Logs
-  register 'addons', Addons
+  register "run", Run
+  register "subrun", SubRun
+  register "logs", Logs
+  register "addons", Addons
 end
 
 Dry.CLI(Based).call

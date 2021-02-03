@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'backports/2.5.0/module/define_method' if RUBY_VERSION < '2.5'
+require "backports/2.5.0/module/define_method" if RUBY_VERSION < "2.5"
 
 module Dry
   class CLI
-    require 'dry/cli'
+    require "dry/cli"
     # Inline Syntax (aka DSL) to implement one-file applications
     #
     # `dry/cli/inline` is not required by default

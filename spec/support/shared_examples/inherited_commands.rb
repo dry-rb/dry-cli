@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'Inherited commands' do |cli|
+RSpec.shared_examples "Inherited commands" do |cli|
   let(:cli) { cli }
 
   let(:cmd) { File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME)) }
 
-  context 'with help flag' do
-    it 'shows subcommands ' do
+  context "with help flag" do
+    it "shows subcommands " do
       error = capture_error { cli.call(arguments: %w[i]) }
       expected = <<~DESC
         Commands:
@@ -18,7 +18,7 @@ RSpec.shared_examples 'Inherited commands' do |cli|
       expect(error).to eq(expected)
     end
 
-    it 'shows run\'s help' do
+    it "shows run's help" do
       output = capture_output { cli.call(arguments: %w[i run --help]) }
       expected = <<~DESC
         Command:
@@ -41,7 +41,7 @@ RSpec.shared_examples 'Inherited commands' do |cli|
       expect(output).to eq(expected)
     end
 
-    it 'shows subrun\'s help' do
+    it "shows subrun's help" do
       output = capture_output { cli.call(arguments: %w[i subrun --help]) }
       expected = <<~DESC
         Command:
@@ -61,7 +61,7 @@ RSpec.shared_examples 'Inherited commands' do |cli|
       expect(output).to eq(expected)
     end
 
-    it 'shows addon\'s help' do
+    it "shows addon's help" do
       output = capture_output { cli.call(arguments: %w[i addons --help]) }
       expected = <<~DESC
         Command:
@@ -88,7 +88,7 @@ RSpec.shared_examples 'Inherited commands' do |cli|
       expect(output).to eq(expected)
     end
 
-    it 'shows log\'s help' do
+    it "shows log's help" do
       output = capture_output { cli.call(arguments: %w[i logs --help]) }
       expected = <<~DESC
         Command:
@@ -118,47 +118,47 @@ RSpec.shared_examples 'Inherited commands' do |cli|
     end
   end
 
-  context 'with inherited arguments' do
-    it 'run expects APP_NAME and CMD_NAME' do
+  context "with inherited arguments" do
+    it "run expects APP_NAME and CMD_NAME" do
       output = capture_output { cli.call(arguments: %w[i run application_name command_name]) }
-      expect(output).to include('App: application_name - Command: command_name')
+      expect(output).to include("App: application_name - Command: command_name")
     end
 
-    it 'subrun expects APP_NAME and CMD_NAME' do
+    it "subrun expects APP_NAME and CMD_NAME" do
       output = capture_output { cli.call(arguments: %w[i subrun application_name command_name]) }
-      expect(output).to include('App: application_name - Command: command_name')
+      expect(output).to include("App: application_name - Command: command_name")
     end
 
-    it 'addons expects APP_NAME' do
+    it "addons expects APP_NAME" do
       output = capture_output { cli.call(arguments: %w[i addons application_name]) }
-      expect(output).to include('App: application_name')
+      expect(output).to include("App: application_name")
     end
 
-    it 'logs expects APP_NAME' do
+    it "logs expects APP_NAME" do
       output = capture_output { cli.call(arguments: %w[i logs application_name]) }
-      expect(output).to include('App: application_name')
+      expect(output).to include("App: application_name")
     end
   end
 
-  context 'with inherited options' do
-    it 'run has default verbosity_level' do
+  context "with inherited options" do
+    it "run has default verbosity_level" do
       output = capture_output { cli.call(arguments: %w[i run application_name command_name]) }
       expect(output).to include('Options: {:verbosity=>"INFO"}')
     end
 
-    it 'subrun has default verbosity_level too' do
+    it "subrun has default verbosity_level too" do
       output = capture_output { cli.call(arguments: %w[i subrun application_name command_name]) }
       expect(output).to include('Options: {:verbosity=>"INFO"}')
     end
 
-    it 'addons has verbosity_level set to debug' do
+    it "addons has verbosity_level set to debug" do
       output = capture_output do
         cli.call(arguments: %w[i addons application_name --verbosity=DEBUG])
       end
       expect(output).to include("Options: {:verbosity=>\"DEBUG\", :json=>false}")
     end
 
-    it 'logs has verbosity_level set to WARNING' do
+    it "logs has verbosity_level set to WARNING" do
       output = capture_output do
         cli.call(arguments: %w[i logs application_name --verbosity=WARNING])
       end

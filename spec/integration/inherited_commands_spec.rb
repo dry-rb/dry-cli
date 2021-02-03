@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Inherited commands' do
-  context 'when --help flag' do
-    it 'subclass do not' do
+RSpec.describe "Inherited commands" do
+  context "when --help flag" do
+    it "subclass do not" do
       output = `based --help 2>&1`
       expected = <<~OUT
         Commands:
@@ -15,7 +15,7 @@ RSpec.describe 'Inherited commands' do
     end
   end
 
-  it 'works for subclasses' do
+  it "works for subclasses" do
     output = `based subrun application_name command_to_run`
     expect(output).to eq(
       "Run - App: application_name - Command: command_to_run - Options: {:verbosity=>\"INFO\"}\n"
