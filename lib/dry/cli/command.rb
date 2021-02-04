@@ -23,14 +23,24 @@ module Dry
         # @api private
         def self.extended(base)
           super
-
           base.class_eval do
             @_mutex       = Mutex.new
             @description  = nil
             @examples     = []
-            @arguments    = []
-            @options      = []
             @subcommands  = []
+            @arguments =
+              if base.superclass.instance_variable_defined?(:@arguments)
+                base.superclass.instance_variable_get(:@arguments).dup
+              else
+                []
+              end
+
+            @options =
+              if base.superclass.instance_variable_defined?(:@options)
+                base.superclass.instance_variable_get(:@options).dup
+              else
+                []
+              end
           end
         end
 
