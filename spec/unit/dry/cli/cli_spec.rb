@@ -22,7 +22,7 @@ RSpec.describe "CLI" do
       include_examples "Commands", WithZeroArityBlock
       include_examples "Rendering", WithZeroArityBlock
       include_examples "Subcommands", WithZeroArityBlock
-      include_examples "Inherited commands", WithBlock
+      include_examples "Inherited commands", WithZeroArityBlock
       include_examples "Third-party gems", WithZeroArityBlock
     end
   end
