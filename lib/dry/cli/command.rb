@@ -13,37 +13,20 @@ module Dry
       # @api private
       def self.inherited(base)
         super
+        base.class_eval do
+          @_mutex       = Mutex.new
+          @description  = nil
+          @examples     = []
+          @subcommands  = []
+          @arguments = base.superclass_arguments || []
+          @options = base.superclass_options || []
+        end
         base.extend ClassMethods
       end
 
       # @since 0.1.0
       # @api private
       module ClassMethods
-        # @since 0.1.0
-        # @api private
-        def self.extended(base)
-          super
-          base.class_eval do
-            @_mutex       = Mutex.new
-            @description  = nil
-            @examples     = []
-            @subcommands  = []
-            @arguments =
-              if base.superclass.instance_variable_defined?(:@arguments)
-                base.superclass.instance_variable_get(:@arguments).dup
-              else
-                []
-              end
-
-            @options =
-              if base.superclass.instance_variable_defined?(:@options)
-                base.superclass.instance_variable_get(:@options).dup
-              else
-                []
-              end
-          end
-        end
-
         # @since 0.1.0
         # @api private
         attr_reader :description
@@ -365,6 +348,26 @@ module Dry
       # @api private
       def self.subcommands
         subcommands
+      end
+
+      # @since 0.7.0
+      # @api private
+      def self.superclass_variable_dup(var)
+        if superclass.instance_variable_defined?(var)
+          superclass.instance_variable_get(var).dup
+        end
+      end
+
+      # @since 0.7.0
+      # @api private
+      def self.superclass_arguments
+        superclass_variable_dup(:@arguments)
+      end
+
+      # @since 0.7.0
+      # @api private
+      def self.superclass_options
+        superclass_variable_dup(:@options)
       end
 
       extend Forwardable
