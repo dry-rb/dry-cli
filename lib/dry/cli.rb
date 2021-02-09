@@ -62,9 +62,9 @@ module Dry
     # @since 0.1.0
     def call(arguments: ARGV, out: $stdout, err: $stderr)
       @out, @err = out, err
-      return perform_command(arguments) if kommand
-
-      perform_registry(arguments)
+      kommand ? perform_command(arguments) : perform_registry(arguments)
+    rescue SignalException => e
+      signal_exception(e)
     end
 
     private
@@ -139,20 +139,20 @@ module Dry
       [build_command(command), result.arguments]
     end
 
-    # @since x.x.x
+    # @since 0.6.0
     # @api private
     def build_command(command)
       command.is_a?(Class) ? command.new : command
     end
 
-    # @since x.x.x
+    # @since 0.6.0
     # @api private
     def help(command, prog_name)
       out.puts Banner.call(command, prog_name)
-      exit(0)
+      exit(0) # Successful exit
     end
 
-    # @since x.x.x
+    # @since 0.6.0
     # @api private
     def error(result)
       err.puts(result.error)
@@ -164,6 +164,15 @@ module Dry
     def usage(result)
       err.puts Usage.call(result)
       exit(1)
+    end
+
+    # Handles Exit codes for signals
+    # Fatal error signal "n". Say 130 = 128 + 2 (SIGINT) or 137 = 128 + 9 (SIGKILL)
+    #
+    # @since 0.7.0
+    # @api private
+    def signal_exception(exception)
+      exit(128 + exception.signo)
     end
 
     # Check if command

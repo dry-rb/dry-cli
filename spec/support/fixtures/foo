@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/LineLength
-$LOAD_PATH.unshift __dir__ + "/../../lib"
+# rubocop:disable Layout/LineLength
+$LOAD_PATH.unshift __dir__ + "/../../../lib"
 require "dry/cli"
 
 module Foo
@@ -200,7 +200,9 @@ module Foo
             "api --application-base-url=/api/v1 # Generate `api` app and mount at `/api/v1`"
           ]
 
-          def call(*); end
+          def call(*)
+            loop { sleep(0.1) }
+          end
         end
 
         class Mailer < Dry::CLI::Command
@@ -575,7 +577,7 @@ module Callbacks
     end
   end
 end
-# rubocop:enable Metrics/LineLength
+# rubocop:enable Layout/LineLength
 
 Foo::CLI::Commands.before("callbacks", Callbacks::BeforeClass)
 Foo::CLI::Commands.after("callbacks",  Callbacks::AfterClass)
