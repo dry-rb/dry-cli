@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "pathname"
 require "fileutils"
 
 module Dry
@@ -14,15 +13,13 @@ module Dry
         #
         # @param file [Class]
         # @param file_utils [Class]
-        # @param pathname [Method]
         #
         # @return [Dry::CLI::Utils::Files]
         #
         # @since x.x.x
-        def initialize(file: File, file_utils: FileUtils, pathname: Kernel.method(:Pathname))
+        def initialize(file: File, file_utils: FileUtils)
           @file = file
           @file_utils = file_utils
-          @pathname = pathname
         end
 
         # Creates an empty file for the given path.
@@ -107,7 +104,9 @@ module Dry
         #   Dry::CLI::Utils::Files.new.mkdir_p("path/to/directory")
         #     # => creates the `path/to` directory
         def mkdir_p(path)
-          pathname(path).dirname.mkpath
+          file_utils.mkpath(
+            file.dirname(path)
+          )
         end
 
         # Deletes given path (file).
@@ -389,12 +388,6 @@ module Dry
         # @since x.x.x
         # @api private
         attr_reader :file_utils
-
-        # @since x.x.x
-        # @api private
-        def pathname(path)
-          @pathname.(path)
-        end
 
         # @since x.x.x
         # @api private
