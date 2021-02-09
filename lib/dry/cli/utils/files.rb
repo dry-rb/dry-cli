@@ -10,14 +10,20 @@ module Dry
       #
       # @since 0.3.1
       class Files
+        # Creates a new instance
+        #
+        # @param file [Class]
+        # @param file_utils [Class]
+        # @param pathname [Method]
+        #
+        # @return [Dry::CLI::Utils::Files]
+        #
+        # @since x.x.x
         def initialize(file: File, file_utils: FileUtils, pathname: Kernel.method(:Pathname))
           @file = file
           @file_utils = file_utils
           @pathname = pathname
         end
-
-        attr_reader :file
-        attr_reader :file_utils
 
         # Creates an empty file for the given path.
         # All the intermediate directories are created.
@@ -30,9 +36,6 @@ module Dry
           mkdir_p(path)
           file_utils.touch(path)
         end
-
-        WRITE_MODE = (::File::CREAT | ::File::WRONLY | ::File::TRUNC).freeze
-        private_constant :WRITE_MODE
 
         # Creates a new file or rewrites the contents
         # of an existing file for the given path and content
@@ -376,6 +379,19 @@ module Dry
 
         # @since x.x.x
         # @api private
+        WRITE_MODE = (::File::CREAT | ::File::WRONLY | ::File::TRUNC).freeze
+        private_constant :WRITE_MODE
+
+        # @since x.x.x
+        # @api private
+        attr_reader :file
+
+        # @since x.x.x
+        # @api private
+        attr_reader :file_utils
+
+        # @since x.x.x
+        # @api private
         def pathname(path)
           @pathname.(path)
         end
@@ -401,7 +417,7 @@ module Dry
             raise(ArgumentError, "Cannot find `#{target}' inside `#{path}'.")
         end
 
-        # @since 1.3.0
+        # @since x.x.x
         # @api private
         def rindex(content, path, target)
           line_number(content, target, finder: content.method(:rindex)) ||
