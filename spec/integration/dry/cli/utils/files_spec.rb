@@ -4,7 +4,6 @@ require "dry/cli/utils/files"
 require "securerandom"
 
 RSpec.describe Dry::CLI::Utils::Files do
-  subject { described_class.new }
   let(:root) { Pathname.new(Dir.pwd).join("tmp", SecureRandom.uuid).tap(&:mkpath) }
 
   after do
