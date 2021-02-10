@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift __dir__ + "/../../lib"
+require "dry/cli"
+
+module Infinites
+  extend Dry::CLI::Registry
+
+  class Reader < Dry::CLI::Command
+    def call(*)
+      while (a = $stdin.gets)
+        puts "From stdin: #{a}"
+        sleep 2
+      end
+    end
+  end
+
+  class Writer < Dry::CLI::Command
+    def call(*)
+      (0..Float::INFINITY).each do |i|
+        $stdout.puts i
+      end
+    end
+  end
+
+  register "reader", Reader
+  register "writer", Writer
+end
+
+Dry.CLI(Infinites).call
