@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "fileutils"
-
 module Dry
   class CLI
     module Utils
@@ -9,6 +7,8 @@ module Dry
       #
       # @since 0.3.1
       class Files
+        require_relative "./files/file_system"
+
         # Creates a new instance
         #
         # @param file [Class]
@@ -17,9 +17,8 @@ module Dry
         # @return [Dry::CLI::Utils::Files]
         #
         # @since x.x.x
-        def initialize(file: File, file_utils: FileUtils)
-          @file = file
-          @file_utils = file_utils
+        def initialize(file_system: FileSystem.new)
+          @file_system = file_system
         end
 
         # Creates an empty file for the given path.
@@ -31,7 +30,7 @@ module Dry
         # @since x.x.x
         def touch(path)
           mkdir_p(path)
-          file_utils.touch(path)
+          file_system.touch(path)
         end
 
         # Creates a new file or rewrites the contents
@@ -57,7 +56,7 @@ module Dry
         # @since x.x.x
         def cp(source, destination)
           mkdir_p(destination)
-          file_utils.cp(source, destination)
+          file_system.cp(source, destination)
         end
 
         # Creates a directory for the given path.
@@ -80,7 +79,7 @@ module Dry
         #   Dry::CLI::Utils::Files.new.mkdir("path/to/file.rb")
         #     # => creates the `path/to/file.rb` directory
         def mkdir(path)
-          file_utils.mkdir_p(path)
+          file_system.mkdir(path)
         end
 
         # Creates a directory for the given path.
@@ -104,9 +103,7 @@ module Dry
         #   Dry::CLI::Utils::Files.new.mkdir_p("path/to/directory")
         #     # => creates the `path/to` directory
         def mkdir_p(path)
-          file_utils.mkpath(
-            file.dirname(path)
-          )
+          file_system.mkdir_p(path)
         end
 
         # Deletes given path (file).
@@ -117,7 +114,7 @@ module Dry
         #
         # @since x.x.x
         def delete(path)
-          file_utils.rm(path)
+          file_system.rm(path)
         end
 
         # Deletes given path (directory).
@@ -128,7 +125,7 @@ module Dry
         #
         # @since x.x.x
         def delete_directory(path)
-          file_utils.remove_entry_secure(path)
+          file_system.rm_rf(path)
         end
 
         # Adds a new line at the top of the file
@@ -142,8 +139,8 @@ module Dry
         #
         # @since x.x.x
         def unshift(path, line)
-          content = file.readlines(path)
-          content.unshift("#{line}\n")
+          content = file_system.readlines(path)
+          content.unshift(newline(line))
 
           write(path, content)
         end
@@ -161,9 +158,9 @@ module Dry
         def append(path, contents)
           mkdir_p(path)
 
-          content = file.readlines(path)
-          content << "\n" unless content.last.end_with?("\n")
-          content << "#{contents}\n"
+          content = file_system.readlines(path)
+          content << newline unless newline?(content.last)
+          content << newline(contents)
 
           write(path, content)
         end
@@ -181,8 +178,8 @@ module Dry
         #
         # @since x.x.x
         def replace_first_line(path, target, replacement)
-          content = file.readlines(path)
-          content[index(content, path, target)] = "#{replacement}\n"
+          content = file_system.readlines(path)
+          content[index(content, path, target)] = newline(replacement)
 
           write(path, content)
         end
@@ -200,8 +197,8 @@ module Dry
         #
         # @since x.x.x
         def replace_last_line(path, target, replacement)
-          content = file.readlines(path)
-          content[-index(content.reverse, path, target) - 1] = "#{replacement}\n"
+          content = file_system.readlines(path)
+          content[-index(content.reverse, path, target) - CONTENT_OFFSET] = newline(replacement)
 
           write(path, content)
         end
@@ -288,7 +285,7 @@ module Dry
         #
         # @since x.x.x
         def remove_line(path, target)
-          content = file.readlines(path)
+          content = file_system.readlines(path)
           i       = index(content, path, target)
 
           content.delete_at(i)
@@ -323,12 +320,13 @@ module Dry
         #   # class App
         #   # end
         def remove_block(path, target)
-          content  = file.readlines(path)
+          content  = file_system.readlines(path)
           starting = index(content, path, target)
           line     = content[starting]
-          size     = line[/\A[[:space:]]*/].bytesize
-          closing  = (" " * size) + (target.match?(/{/) ? "}" : "end")
-          ending   = starting + index(content[starting..-1], path, closing)
+          size     = line[SPACE_MATCHER].bytesize
+          closing  = (SPACE * size) +
+                     (target.match?(INLINE_OPEN_BLOCK_MATCHER) ? INLINE_CLOSE_BLOCK : CLOSE_BLOCK)
+          ending   = starting + index(content[starting..-CONTENT_OFFSET], path, closing)
 
           content.slice!(starting..ending)
           write(path, content)
@@ -352,7 +350,7 @@ module Dry
         #
         #   Dry::CLI::Utils::Files.new.exist?("missing_file") # => false
         def exist?(path)
-          file.exist?(path)
+          file_system.exist?(path)
         end
 
         # Checks if `path` is a directory
@@ -371,10 +369,15 @@ module Dry
         #
         #   Dry::CLI::Utils::Files.new.directory?("missing_directory") # => false
         def directory?(path)
-          file.directory?(path)
+          file_system.directory?(path)
         end
 
         private
+
+        # @since x.x.x
+        # @api private
+        NEW_LINE = $/ # rubocop:disable Style/SpecialGlobalVars
+        private_constant :NEW_LINE
 
         # @since x.x.x
         # @api private
@@ -383,11 +386,49 @@ module Dry
 
         # @since x.x.x
         # @api private
-        attr_reader :file
+        CONTENT_OFFSET = 1
+        private_constant :CONTENT_OFFSET
 
         # @since x.x.x
         # @api private
-        attr_reader :file_utils
+        SPACE = " "
+        private_constant :SPACE
+
+        # @since x.x.x
+        # @api private
+        SPACE_MATCHER = /\A[[:space:]]*/.freeze
+        private_constant :SPACE_MATCHER
+
+        # @since x.x.x
+        # @api private
+        INLINE_OPEN_BLOCK_MATCHER = /{/.freeze
+        private_constant :INLINE_OPEN_BLOCK_MATCHER
+
+        # @since x.x.x
+        # @api private
+        INLINE_CLOSE_BLOCK = "}"
+        private_constant :INLINE_CLOSE_BLOCK
+
+        # @since x.x.x
+        # @api private
+        CLOSE_BLOCK = "end"
+        private_constant :CLOSE_BLOCK
+
+        # @since x.x.x
+        # @api private
+        attr_reader :file_system
+
+        # @since x.x.x
+        # @api private
+        def newline(line = nil)
+          "#{line}#{NEW_LINE}"
+        end
+
+        # @since x.x.x
+        # @api private
+        def newline?(content)
+          content.end_with?(NEW_LINE)
+        end
 
         # @since x.x.x
         # @api private
@@ -398,7 +439,7 @@ module Dry
         # @since x.x.x
         # @api private
         def open(path, mode, *content)
-          file.open(path, mode) do |f|
+          file_system.open(path, mode) do |f|
             f.write(Array(content).flatten.join)
           end
         end
@@ -420,20 +461,20 @@ module Dry
         # @since x.x.x
         # @api private
         def _inject_line_before(path, target, contents, finder)
-          content = file.readlines(path)
+          content = file_system.readlines(path)
           i       = finder.call(content, path, target)
 
-          content.insert(i, "#{contents}\n")
+          content.insert(i, newline(contents))
           write(path, content)
         end
 
         # @since x.x.x
         # @api private
         def _inject_line_after(path, target, contents, finder)
-          content = file.readlines(path)
+          content = file_system.readlines(path)
           i       = finder.call(content, path, target)
 
-          content.insert(i + 1, "#{contents}\n")
+          content.insert(i + CONTENT_OFFSET, newline(contents))
           write(path, content)
         end
 

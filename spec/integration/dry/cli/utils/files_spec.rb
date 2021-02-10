@@ -2,9 +2,11 @@
 
 require "dry/cli/utils/files"
 require "securerandom"
+require "English"
 
 RSpec.describe Dry::CLI::Utils::Files do
   let(:root) { Pathname.new(Dir.pwd).join("tmp", SecureRandom.uuid).tap(&:mkpath) }
+  let(:newline) { $INPUT_RECORD_SEPARATOR }
 
   after do
     FileUtils.remove_entry_secure(root)
@@ -40,10 +42,10 @@ RSpec.describe Dry::CLI::Utils::Files do
   describe "#write" do
     it "creates an file with given contents" do
       path = root.join("write")
-      subject.write(path, "Hello\nWorld")
+      subject.write(path, "Hello#{newline}World")
 
       expect(path).to exist
-      expect(path).to have_content("Hello\nWorld")
+      expect(path).to have_content("Hello#{newline}World")
     end
 
     it "creates intermediate directories" do
@@ -211,7 +213,7 @@ RSpec.describe Dry::CLI::Utils::Files do
       subject.write(path, content)
       subject.unshift(path, "root to: 'home#index'")
 
-      expected = "root to: 'home#index'\nget '/tires', to: 'sunshine#index'"
+      expected = "root to: 'home#index'#{newline}get '/tires', to: 'sunshine#index'"
 
       expect(path).to have_content(expected)
     end
@@ -237,7 +239,7 @@ RSpec.describe Dry::CLI::Utils::Files do
       CONTENT
 
       subject.write(path, content)
-      subject.append(path, "\nFoo.register Append")
+      subject.append(path, "#{newline}Foo.register Append")
 
       expected = <<~CONTENT
         class Append
@@ -268,7 +270,7 @@ RSpec.describe Dry::CLI::Utils::Files do
     it "raises error if path doesn't exist" do
       path = root.join("append_no_exist.rb")
 
-      expect { subject.append(path, "\n Foo.register Append") }.to raise_error do |exception|
+      expect { subject.append(path, "#{newline} Foo.register Append") }.to raise_error do |exception|
         expect(exception).to be_kind_of(Errno::ENOENT)
         expect(exception.message).to match("No such file or directory")
       end
