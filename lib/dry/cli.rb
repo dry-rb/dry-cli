@@ -65,6 +65,8 @@ module Dry
       kommand ? perform_command(arguments) : perform_registry(arguments)
     rescue SignalException => e
       signal_exception(e)
+    rescue Errno::EPIPE
+      # no op
     end
 
     private
