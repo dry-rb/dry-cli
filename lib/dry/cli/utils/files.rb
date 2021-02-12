@@ -11,8 +11,7 @@ module Dry
 
         # Creates a new instance
         #
-        # @param file [Class]
-        # @param file_utils [Class]
+        # @param file_system [Dry::CLI::Utils::FileSystem]
         #
         # @return [Dry::CLI::Utils::Files]
         #
