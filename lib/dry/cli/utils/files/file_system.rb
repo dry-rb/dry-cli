@@ -11,6 +11,14 @@ module Dry
         # @since x.x.x
         # @api private
         class FileSystem
+          # @since x.x.x
+          # @api private
+          attr_reader :file
+
+          # @since x.x.x
+          # @api private
+          attr_reader :file_utils
+
           # Creates a new instance
           #
           # @param file [Class]
@@ -173,16 +181,6 @@ module Dry
           def open(path, *args, &blk)
             file.open(path, *args, &blk)
           end
-
-          private
-
-          # @since x.x.x
-          # @api private
-          attr_reader :file
-
-          # @since x.x.x
-          # @api private
-          attr_reader :file_utils
         end
       end
     end
