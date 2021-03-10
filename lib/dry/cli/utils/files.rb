@@ -58,6 +58,53 @@ module Dry
           file_system.cp(source, destination)
         end
 
+        # Returns a new string formed by joining the strings using Operating
+        # System path separator
+        #
+        # @param path [Array<String,Pathname>] path tokens
+        #
+        # @return [String] the joined path
+        #
+        # @since x.x.x
+        def join(*path)
+          file_system.join(*path)
+        end
+
+        # Converts a path to an absolute path.
+        #
+        # Relative paths are referenced from the current working directory of
+        # the process unless `dir` is given.
+        #
+        # @param source [String,Pathname] the path to the file
+        # @param dir [String,Pathname] the base directory
+        #
+        # @return [String] the expanded path
+        #
+        # @since x.x.x
+        def expand_path(path, dir = pwd)
+          file_system.expand_path(path, dir)
+        end
+
+        # Returns the name of the current working directory.
+        #
+        # @return [String] the current working directory.
+        #
+        # @since x.x.x
+        def pwd
+          file_system.pwd
+        end
+
+        # Temporary changes the current working directory of the process to the
+        # given path and yield the given block.
+        #
+        # @param path [String,Pathname] the target directory
+        # @param blk [Proc] the code to execute with the target directory
+        #
+        # @since x.x.x
+        def chdir(path, &blk)
+          file_system.chdir(path, &blk)
+        end
+
         # Creates a directory for the given path.
         # It assumes that all the tokens in `path` are meant to be a directory.
         # All the intermediate directories are created.
@@ -369,6 +416,25 @@ module Dry
         #   Dry::CLI::Utils::Files.new.directory?("missing_directory") # => false
         def directory?(path)
           file_system.directory?(path)
+        end
+
+        # Checks if `path` is an executable
+        #
+        # @param path [String,Pathname] the path to file
+        #
+        # @return [TrueClass,FalseClass] the result of the check
+        #
+        # @since x.x.x
+        #
+        # @example
+        #   require "dry/cli/utils/files"
+        #
+        #   Dry::CLI::Utils::Files.new.executable?("/path/to/ruby") # => true
+        #   Dry::CLI::Utils::Files.new.executable?(__FILE__)        # => false
+        #
+        #   Dry::CLI::Utils::Files.new.directory?("missing_file") # => false
+        def executable?(path)
+          file_system.executable?(path)
         end
 
         private

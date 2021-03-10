@@ -60,6 +60,60 @@ module Dry
             file_utils.cp(source, destination, **kwargs)
           end
 
+          # Returns a new string formed by joining the strings using Operating
+          # System path separator
+          #
+          # @see https://ruby-doc.org/core/File.html#method-c-join
+          #
+          # @param path [Array<String,Pathname>] path tokens
+          #
+          # @since x.x.x
+          # @api private
+          def join(*path)
+            file.join(*path)
+          end
+
+          # Converts a path to an absolute path.
+          #
+          # @see https://ruby-doc.org/core/File.html#method-c-expand_path
+          #
+          # @param source [String,Pathname] the path to the file
+          # @param dir [String,Pathname] the base directory
+          #
+          # @since x.x.x
+          # @api private
+          def expand_path(path, dir)
+            file.expand_path(path, dir)
+          end
+
+          # Returns the name of the current working directory.
+          #
+          # @see https://ruby-doc.org/stdlib/libdoc/fileutils/rdoc/FileUtils.html#method-c-pwd
+          #
+          # @return [String] the current working directory.
+          #
+          # @since x.x.x
+          # @api private
+          def pwd
+            file_utils.pwd
+          end
+
+          # Temporary changes the current working directory of the process to the
+          # given path and yield the given block.
+          #
+          # The argument `path` is intended to be a **directory**.
+          #
+          # @see https://ruby-doc.org/stdlib-3.0.0/libdoc/fileutils/rdoc/FileUtils.html#method-i-cd
+          #
+          # @param path [String,Pathname] the target directory
+          # @param blk [Proc] the code to execute with the target directory
+          #
+          # @since x.x.x
+          # @api private
+          def chdir(path, &blk)
+            file_utils.chdir(path, &blk)
+          end
+
           # Creates a directory and all its parent directories.
           #
           # The argument `path` is intended to be a **directory** that you want to
@@ -168,6 +222,18 @@ module Dry
           # @api private
           def directory?(path)
             file.directory?(path)
+          end
+
+          # Check if the given path is an executable.
+          #
+          # @see https://ruby-doc.org/core/File.html#method-c-executable-3F
+          #
+          # @param path [String] the file to check
+          #
+          # @since x.x.x
+          # @api private
+          def executable?(path)
+            file.executable?(path)
           end
 
           # Opens (or creates) a new file for read/write operations.
