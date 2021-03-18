@@ -47,6 +47,10 @@ module Dry
             file_utils.touch(path, **kwargs)
           end
 
+          def read(path)
+            file.read(path)
+          end
+
           # Copies file content from `source` to `destination`
           #
           # @see https://ruby-doc.org/stdlib/libdoc/fileutils/rdoc/FileUtils.html#method-c-cp

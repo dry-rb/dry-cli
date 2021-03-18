@@ -7,17 +7,17 @@ module Dry
       #
       # @since 0.3.1
       class Files
-        require_relative "./files/file_system"
+        require_relative "./files/adapter"
 
         # Creates a new instance
         #
-        # @param file_system [Dry::CLI::Utils::FileSystem]
+        # @param adapter [Dry::CLI::Utils::FileSystem]
         #
         # @return [Dry::CLI::Utils::Files]
         #
         # @since x.x.x
-        def initialize(file_system: FileSystem.new)
-          @file_system = file_system
+        def initialize(memory: false, adapter: Adapter.call(memory: memory))
+          @adapter = adapter
         end
 
         # Creates an empty file for the given path.
@@ -29,7 +29,11 @@ module Dry
         # @since x.x.x
         def touch(path)
           mkdir_p(path)
-          file_system.touch(path)
+          adapter.touch(path)
+        end
+
+        def read(path)
+          adapter.read(path)
         end
 
         # Creates a new file or rewrites the contents
@@ -55,7 +59,7 @@ module Dry
         # @since x.x.x
         def cp(source, destination)
           mkdir_p(destination)
-          file_system.cp(source, destination)
+          adapter.cp(source, destination)
         end
 
         # Returns a new string formed by joining the strings using Operating
@@ -67,7 +71,7 @@ module Dry
         #
         # @since x.x.x
         def join(*path)
-          file_system.join(*path)
+          adapter.join(*path)
         end
 
         # Converts a path to an absolute path.
@@ -82,7 +86,7 @@ module Dry
         #
         # @since x.x.x
         def expand_path(path, dir = pwd)
-          file_system.expand_path(path, dir)
+          adapter.expand_path(path, dir)
         end
 
         # Returns the name of the current working directory.
@@ -91,7 +95,7 @@ module Dry
         #
         # @since x.x.x
         def pwd
-          file_system.pwd
+          adapter.pwd
         end
 
         # Temporary changes the current working directory of the process to the
@@ -102,7 +106,7 @@ module Dry
         #
         # @since x.x.x
         def chdir(path, &blk)
-          file_system.chdir(path, &blk)
+          adapter.chdir(path, &blk)
         end
 
         # Creates a directory for the given path.
@@ -125,7 +129,7 @@ module Dry
         #   Dry::CLI::Utils::Files.new.mkdir("path/to/file.rb")
         #     # => creates the `path/to/file.rb` directory
         def mkdir(path)
-          file_system.mkdir(path)
+          adapter.mkdir(path)
         end
 
         # Creates a directory for the given path.
@@ -149,7 +153,7 @@ module Dry
         #   Dry::CLI::Utils::Files.new.mkdir_p("path/to/directory")
         #     # => creates the `path/to` directory
         def mkdir_p(path)
-          file_system.mkdir_p(path)
+          adapter.mkdir_p(path)
         end
 
         # Deletes given path (file).
@@ -160,7 +164,7 @@ module Dry
         #
         # @since x.x.x
         def delete(path)
-          file_system.rm(path)
+          adapter.rm(path)
         end
 
         # Deletes given path (directory).
@@ -171,7 +175,7 @@ module Dry
         #
         # @since x.x.x
         def delete_directory(path)
-          file_system.rm_rf(path)
+          adapter.rm_rf(path)
         end
 
         # Adds a new line at the top of the file
@@ -185,7 +189,7 @@ module Dry
         #
         # @since x.x.x
         def unshift(path, line)
-          content = file_system.readlines(path)
+          content = adapter.readlines(path)
           content.unshift(newline(line))
 
           write(path, content)
@@ -204,7 +208,7 @@ module Dry
         def append(path, contents)
           mkdir_p(path)
 
-          content = file_system.readlines(path)
+          content = adapter.readlines(path)
           content << newline unless newline?(content.last)
           content << newline(contents)
 
@@ -224,7 +228,7 @@ module Dry
         #
         # @since x.x.x
         def replace_first_line(path, target, replacement)
-          content = file_system.readlines(path)
+          content = adapter.readlines(path)
           content[index(content, path, target)] = newline(replacement)
 
           write(path, content)
@@ -243,7 +247,7 @@ module Dry
         #
         # @since x.x.x
         def replace_last_line(path, target, replacement)
-          content = file_system.readlines(path)
+          content = adapter.readlines(path)
           content[-index(content.reverse, path, target) - CONTENT_OFFSET] = newline(replacement)
 
           write(path, content)
@@ -331,7 +335,7 @@ module Dry
         #
         # @since x.x.x
         def remove_line(path, target)
-          content = file_system.readlines(path)
+          content = adapter.readlines(path)
           i       = index(content, path, target)
 
           content.delete_at(i)
@@ -366,7 +370,7 @@ module Dry
         #   # class App
         #   # end
         def remove_block(path, target)
-          content  = file_system.readlines(path)
+          content  = adapter.readlines(path)
           starting = index(content, path, target)
           line     = content[starting]
           size     = line[SPACE_MATCHER].bytesize
@@ -396,7 +400,7 @@ module Dry
         #
         #   Dry::CLI::Utils::Files.new.exist?("missing_file") # => false
         def exist?(path)
-          file_system.exist?(path)
+          adapter.exist?(path)
         end
 
         # Checks if `path` is a directory
@@ -415,7 +419,7 @@ module Dry
         #
         #   Dry::CLI::Utils::Files.new.directory?("missing_directory") # => false
         def directory?(path)
-          file_system.directory?(path)
+          adapter.directory?(path)
         end
 
         # Checks if `path` is an executable
@@ -434,7 +438,7 @@ module Dry
         #
         #   Dry::CLI::Utils::Files.new.directory?("missing_file") # => false
         def executable?(path)
-          file_system.executable?(path)
+          adapter.executable?(path)
         end
 
         private
@@ -481,7 +485,7 @@ module Dry
 
         # @since x.x.x
         # @api private
-        attr_reader :file_system
+        attr_reader :adapter
 
         # @since x.x.x
         # @api private
@@ -504,7 +508,7 @@ module Dry
         # @since x.x.x
         # @api private
         def open(path, mode, *content)
-          file_system.open(path, mode) do |f|
+          adapter.open(path, mode) do |f|
             f.write(Array(content).flatten.join)
           end
         end
@@ -526,7 +530,7 @@ module Dry
         # @since x.x.x
         # @api private
         def _inject_line_before(path, target, contents, finder)
-          content = file_system.readlines(path)
+          content = adapter.readlines(path)
           i       = finder.call(content, path, target)
 
           content.insert(i, newline(contents))
@@ -536,7 +540,7 @@ module Dry
         # @since x.x.x
         # @api private
         def _inject_line_after(path, target, contents, finder)
-          content = file_system.readlines(path)
+          content = adapter.readlines(path)
           i       = finder.call(content, path, target)
 
           content.insert(i + CONTENT_OFFSET, newline(contents))
