@@ -5,13 +5,15 @@ module Dry
     module Utils
       module Path
         class << self
-          def call(path)
-            case path
-            when Array
-              Array(path).flatten
-            else
-              path.split(%r{\\/})
-            end.join(::File::SEPARATOR)
+          def call(*path)
+            path = Array(path).flatten
+            tokens = path.map do |token|
+              token.split(/\\|\//)
+            end
+
+            tokens.
+              flatten.
+              join(::File::SEPARATOR)
           end
           alias_method :[], :call
         end
