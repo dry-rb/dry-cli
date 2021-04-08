@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "dry/cli/utils/path"
+
 module Dry
   class CLI
     module Utils
@@ -9,7 +11,6 @@ module Dry
         # @since x.x.x
         # @api private
         class MemoryFileSystem
-          require_relative "./memory_file_system/path"
           require_relative "./memory_file_system/node"
 
           def initialize(root: Node.new)
