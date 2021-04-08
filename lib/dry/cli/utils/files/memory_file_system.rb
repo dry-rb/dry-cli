@@ -16,6 +16,10 @@ module Dry
             @root = root
           end
 
+          def join(*path)
+            Path[path]
+          end
+
           def chdir(path)
             path = Path[path]
             directory = find_directory(path)

@@ -8,7 +8,12 @@ module Dry
           module Path
             class << self
               def call(path)
-                path.split(%r{\\/}).join(::File::SEPARATOR)
+                case path
+                when Array
+                  Array(path).flatten
+                else
+                  path.split(%r{\\/})
+                end.join(::File::SEPARATOR)
               end
               alias_method :[], :call
             end
