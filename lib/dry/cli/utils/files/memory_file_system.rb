@@ -78,6 +78,12 @@ module Dry
             node
           end
 
+          def exist?(path)
+            path = Path[path]
+
+            !find(path).nil?
+          end
+
           def directory?(path)
             path = Path[path]
             !find_directory(path).nil?
