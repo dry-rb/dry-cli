@@ -63,7 +63,7 @@ module Dry
             file = find_file(path)
             raise ArgumentError, "`#{path}' isn't a file" if file.nil?
 
-            file.content
+            file.read
           end
 
           def write(path, *content)
@@ -76,6 +76,14 @@ module Dry
 
             node.file!(*content)
             node
+          end
+
+          def readlines(path)
+            path = Path[path]
+            file = find_file(path)
+            raise ArgumentError, "`#{path}' isn't a file" if file.nil?
+
+            file.readlines
           end
 
           def exist?(path)

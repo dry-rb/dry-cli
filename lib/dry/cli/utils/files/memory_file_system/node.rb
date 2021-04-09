@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "English"
+require "stringio"
 
 module Dry
   class CLI
@@ -8,8 +9,6 @@ module Dry
       class Files
         class MemoryFileSystem
           class Node
-            attr_reader :content
-
             def initialize
               @children = nil
               @content = nil
@@ -33,10 +32,20 @@ module Dry
             end
 
             def file!(*content)
-              @content = content.join($RS)
+              @content = StringIO.new(content.join($RS))
             end
 
             alias_method :write, :file!
+
+            def read
+              @content.rewind
+              @content.read
+            end
+
+            def readlines
+              @content.rewind
+              @content.readlines
+            end
           end
         end
       end
