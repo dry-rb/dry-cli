@@ -325,6 +325,123 @@ module Dry
           _inject_line_after(path, target, contents, method(:rindex))
         end
 
+        # Inject `contents` in `path` within the first Ruby block that matches `target`.
+        # The given `contents` will appear at the TOP of the Ruby block.
+        #
+        # @param path [String,Pathname] the path to file
+        # @param target [String,Regexp] the target matcher for Ruby block
+        # @param contents [String,Array<String>] the contents to inject
+        #
+        # @raise [Errno::ENOENT] if the path doesn't exist
+        # @raise [ArgumentError] if `target` cannot be found in `path`
+        #
+        # @since x.x.x
+        #
+        # @example Inject a single line
+        #   require "dry/cli/utils/files"
+        #
+        #   files = Dry::CLI::Utils::Files.new
+        #   path = "config/application.rb"
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     root __dir__
+        #   #   end
+        #   # end
+        #
+        #   # inject a single line
+        #   files.inject_line_at_block_top(path, /configure/, %(load_path.unshift("lib")))
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     load_path.unshift("lib")
+        #   #     root __dir__
+        #   #   end
+        #   # end
+        #
+        # @example Inject multiple lines
+        #   require "dry/cli/utils/files"
+        #
+        #   files = Dry::CLI::Utils::Files.new
+        #   path = "config/application.rb"
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     root __dir__
+        #   #   end
+        #   # end
+        #
+        #   # inject multiple lines
+        #   files.inject_line_at_block_top(path,
+        #                                  /configure/,
+        #                                  [%(load_path.unshift("lib")), "settings.load!"])
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     load_path.unshift("lib")
+        #   #     settings.load!
+        #   #     root __dir__
+        #   #   end
+        #   # end
+        #
+        # @example Inject a block
+        #   require "dry/cli/utils/files"
+        #
+        #   files = Dry::CLI::Utils::Files.new
+        #   path = "config/application.rb"
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     root __dir__
+        #   #   end
+        #   # end
+        #
+        #   # inject a block
+        #   block = <<~BLOCK
+        #     settings do
+        #       load!
+        #     end
+        #   BLOCK
+        #   files.inject_line_at_block_top(path, /configure/, block)
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     settings do
+        #   #       load!
+        #   #     end
+        #   #     root __dir__
+        #   #   end
+        #   # end
+        def inject_line_at_block_top(path, target, *contents)
+          content  = adapter.readlines(path)
+          starting = index(content, path, target)
+          offset   = SPACE * (content[starting][SPACE_MATCHER].bytesize + INDENTATION)
+
+          contents = Array(contents).flatten
+          contents = _offset_block_lines(contents, offset)
+
+          content.insert(starting + CONTENT_OFFSET, contents)
+          write(path, content)
+        end
+
         # Removes line from `path`, matching `target`.
         #
         # @param path [String,Pathname] the path to file
@@ -465,6 +582,11 @@ module Dry
 
         # @since x.x.x
         # @api private
+        INDENTATION = 2
+        private_constant :INDENTATION
+
+        # @since x.x.x
+        # @api private
         SPACE_MATCHER = /\A[[:space:]]*/.freeze
         private_constant :SPACE_MATCHER
 
@@ -545,6 +667,19 @@ module Dry
 
           content.insert(i + CONTENT_OFFSET, newline(contents))
           write(path, content)
+        end
+
+        # @since x.x.x
+        # @api private
+        def _offset_block_lines(contents, offset)
+          contents.map do |line|
+            if line.match?(NEW_LINE)
+              line = line.split(NEW_LINE)
+              _offset_block_lines(line, offset)
+            else
+              offset + line + NEW_LINE
+            end
+          end.join
         end
 
         # @since x.x.x

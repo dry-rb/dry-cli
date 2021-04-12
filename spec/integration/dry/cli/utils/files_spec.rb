@@ -898,6 +898,115 @@ RSpec.describe Dry::CLI::Utils::Files do
     end
   end
 
+  describe "#inject_line_at_block_top" do
+    it "injects line at the top of the Ruby block" do
+      path = root.join("inject_line_at_block_top.rb")
+      content = <<~CONTENT
+        class InjectLineBlockTop
+          configure do
+            root __dir__
+          end
+        end
+      CONTENT
+
+      subject.write(path, content)
+      subject.inject_line_at_block_top(path, "configure", %(load_path.unshift("dir")))
+
+      expected = <<~CONTENT
+        class InjectLineBlockTop
+          configure do
+            load_path.unshift("dir")
+            root __dir__
+          end
+        end
+      CONTENT
+
+      expect(path).to have_content(expected)
+    end
+
+    it "injects lines at the top of the Ruby block" do
+      path = root.join("inject_lines_at_block_top.rb")
+      content = <<~CONTENT
+        class InjectLinesBlockTop
+          configure do
+            root __dir__
+          end
+        end
+      CONTENT
+
+      subject.write(path, content)
+      subject.inject_line_at_block_top(path, "configure", [%(load_path.unshift("dir")), "settings.load!"])
+
+      expected = <<~CONTENT
+        class InjectLinesBlockTop
+          configure do
+            load_path.unshift("dir")
+            settings.load!
+            root __dir__
+          end
+        end
+      CONTENT
+
+      expect(path).to have_content(expected)
+    end
+
+    it "injects block at the top of the Ruby block" do
+      path = root.join("inject_block_at_block_top.rb")
+      content = <<~CONTENT
+        class InjectBlockBlockTop
+          configure do
+            root __dir__
+          end
+        end
+      CONTENT
+
+      block = <<~BLOCK
+        settings do
+          load!
+        end
+      BLOCK
+
+      subject.write(path, content)
+      subject.inject_line_at_block_top(path, "configure", block)
+
+      expected = <<~CONTENT
+        class InjectBlockBlockTop
+          configure do
+            settings do
+              load!
+            end
+            root __dir__
+          end
+        end
+      CONTENT
+
+      expect(path).to have_content(expected)
+    end
+
+    it "raises error if file cannot be found" do
+      path = root.join("inject_line_at_block_top_missing_file.rb")
+
+      expect {
+        subject.inject_line_at_block_top(path, "configure", "")
+      }.to raise_error(Errno::ENOENT)
+    end
+
+    it "raises error if Ruby block cannot be found" do
+      path = root.join("inject_line_at_block_top_missing_block.rb")
+
+      content = <<~CONTENT
+        class InjectLineBlockTopMissingBlock
+        end
+      CONTENT
+
+      subject.write(path, content)
+
+      expect {
+        subject.inject_line_at_block_top(path, "configure", "")
+      }.to raise_error(ArgumentError, "Cannot find `configure' inside `#{path.realpath}'.")
+    end
+  end
+
   describe "#remove_block" do
     it "removes block from Ruby file" do
       path = root.join("remove_block_simple.rb")
