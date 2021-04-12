@@ -442,6 +442,128 @@ module Dry
           write(path, content)
         end
 
+        # Inject `contents` in `path` within the first Ruby block that matches `target`.
+        # The given `contents` will appear at the BOTTOM of the Ruby block.
+        #
+        # @param path [String,Pathname] the path to file
+        # @param target [String,Regexp] the target matcher for Ruby block
+        # @param contents [String,Array<String>] the contents to inject
+        #
+        # @raise [Errno::ENOENT] if the path doesn't exist
+        # @raise [ArgumentError] if `target` cannot be found in `path`
+        #
+        # @since x.x.x
+        #
+        # @example Inject a single line
+        #   require "dry/cli/utils/files"
+        #
+        #   files = Dry::CLI::Utils::Files.new
+        #   path = "config/application.rb"
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     root __dir__
+        #   #   end
+        #   # end
+        #
+        #   # inject a single line
+        #   files.inject_line_at_block_bottom(path, /configure/, %(load_path.unshift("lib")))
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     root __dir__
+        #   #     load_path.unshift("lib")
+        #   #   end
+        #   # end
+        #
+        # @example Inject multiple lines
+        #   require "dry/cli/utils/files"
+        #
+        #   files = Dry::CLI::Utils::Files.new
+        #   path = "config/application.rb"
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     root __dir__
+        #   #   end
+        #   # end
+        #
+        #   # inject multiple lines
+        #   files.inject_line_at_block_bottom(path,
+        #                                     /configure/,
+        #                                     [%(load_path.unshift("lib")), "settings.load!"])
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     root __dir__
+        #   #     load_path.unshift("lib")
+        #   #     settings.load!
+        #   #   end
+        #   # end
+        #
+        # @example Inject a block
+        #   require "dry/cli/utils/files"
+        #
+        #   files = Dry::CLI::Utils::Files.new
+        #   path = "config/application.rb"
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     root __dir__
+        #   #   end
+        #   # end
+        #
+        #   # inject a block
+        #   block = <<~BLOCK
+        #     settings do
+        #       load!
+        #     end
+        #   BLOCK
+        #   files.inject_line_at_block_bottom(path, /configure/, block)
+        #
+        #   File.read(path)
+        #   # # frozen_string_literal: true
+        #   #
+        #   # class Application
+        #   #   configure do
+        #   #     root __dir__
+        #   #     settings do
+        #   #       load!
+        #   #     end
+        #   #   end
+        #   # end
+        def inject_line_at_block_bottom(path, target, *contents)
+          content  = adapter.readlines(path)
+          starting = index(content, path, target)
+          line     = content[starting]
+          size     = line[SPACE_MATCHER].bytesize
+          closing  = (SPACE * size) +
+                     (target.match?(INLINE_OPEN_BLOCK_MATCHER) ? INLINE_CLOSE_BLOCK : CLOSE_BLOCK)
+          ending   = starting + index(content[starting..-CONTENT_OFFSET], path, closing) - CONTENT_OFFSET
+          offset   = SPACE * content[ending][SPACE_MATCHER].bytesize
+
+          contents = Array(contents).flatten
+          contents = _offset_block_lines(contents, offset)
+
+          content.insert(ending + CONTENT_OFFSET, contents)
+          write(path, content)
+        end
+
         # Removes line from `path`, matching `target`.
         #
         # @param path [String,Pathname] the path to file
