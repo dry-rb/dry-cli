@@ -714,7 +714,7 @@ module Dry
 
         # @since x.x.x
         # @api private
-        INLINE_OPEN_BLOCK_MATCHER = /{/.freeze
+        INLINE_OPEN_BLOCK_MATCHER = "{"
         private_constant :INLINE_OPEN_BLOCK_MATCHER
 
         # @since x.x.x

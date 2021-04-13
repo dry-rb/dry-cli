@@ -924,6 +924,31 @@ RSpec.describe Dry::CLI::Utils::Files do
       expect(path).to have_content(expected)
     end
 
+    it "injects line at the top of the Ruby block (using a Regexp matcher)" do
+      path = root.join("inject_line_regexp_at_block_top.rb")
+      content = <<~CONTENT
+        class InjectLineRegexpBlockTop
+          configure do
+            root __dir__
+          end
+        end
+      CONTENT
+
+      subject.write(path, content)
+      subject.inject_line_at_block_top(path, /configure/, %(load_path.unshift("dir")))
+
+      expected = <<~CONTENT
+        class InjectLineRegexpBlockTop
+          configure do
+            load_path.unshift("dir")
+            root __dir__
+          end
+        end
+      CONTENT
+
+      expect(path).to have_content(expected)
+    end
+
     it "injects lines at the top of the Ruby block" do
       path = root.join("inject_lines_at_block_top.rb")
       content = <<~CONTENT
@@ -1023,6 +1048,31 @@ RSpec.describe Dry::CLI::Utils::Files do
 
       expected = <<~CONTENT
         class InjectLineBlockBottom
+          configure do
+            root __dir__
+            load_path.unshift("dir")
+          end
+        end
+      CONTENT
+
+      expect(path).to have_content(expected)
+    end
+
+    it "injects line at the bottom of the Ruby block (using a Regexp matcher)" do
+      path = root.join("inject_line_regexp_at_block_bottom.rb")
+      content = <<~CONTENT
+        class InjectLineRegexpBlockBottom
+          configure do
+            root __dir__
+          end
+        end
+      CONTENT
+
+      subject.write(path, content)
+      subject.inject_line_at_block_bottom(path, /configure/, %(load_path.unshift("dir")))
+
+      expected = <<~CONTENT
+        class InjectLineRegexpBlockBottom
           configure do
             root __dir__
             load_path.unshift("dir")
