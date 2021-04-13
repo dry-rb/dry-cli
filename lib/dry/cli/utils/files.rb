@@ -554,13 +554,13 @@ module Dry
           size     = line[SPACE_MATCHER].bytesize
           closing  = (SPACE * size) +
                      (target.match?(INLINE_OPEN_BLOCK_MATCHER) ? INLINE_CLOSE_BLOCK : CLOSE_BLOCK)
-          ending   = starting + index(content[starting..-CONTENT_OFFSET], path, closing) - CONTENT_OFFSET
-          offset   = SPACE * content[ending][SPACE_MATCHER].bytesize
+          ending   = starting + index(content[starting..-CONTENT_OFFSET], path, closing)
+          offset   = SPACE * (content[ending][SPACE_MATCHER].bytesize + INDENTATION)
 
           contents = Array(contents).flatten
           contents = _offset_block_lines(contents, offset)
 
-          content.insert(ending + CONTENT_OFFSET, contents)
+          content.insert(ending, contents)
           write(path, content)
         end
 
