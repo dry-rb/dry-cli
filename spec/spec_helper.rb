@@ -6,7 +6,7 @@ $LOAD_PATH.unshift "lib"
 require "dry/cli"
 require_relative "./support/rspec"
 
-%w[support unit].each do |dir|
+%w[support].each do |dir|
   Dir[File.join(Dir.pwd, "spec", dir, "**", "*.rb")].each do |file|
     unless file["support/warnings.rb"]
       require_relative file
