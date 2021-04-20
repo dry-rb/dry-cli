@@ -12,7 +12,6 @@ sections:
   - variadic-arguments
   - commands-with-subcommands-and-params
   - callbacks
-  - file-utilities
 ---
 
 `dry-cli` is a general-purpose framework for developing Command Line Interface (CLI) applications. It represents commands as objects that can be registered and offers support for arguments, options and forwarding variadic arguments to a sub-command.
