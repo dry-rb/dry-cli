@@ -132,7 +132,7 @@ module Dry
           @command = command
         end
 
-        # @since x.x.x
+        # @since 0.7.0
         # @api private
         def subcommands!(command)
           command_class = command.is_a?(Class) ? command : command.class
@@ -159,7 +159,7 @@ module Dry
           !command.nil?
         end
 
-        # @since x.x.x
+        # @since 0.7.0
         # @api private
         def children?
           children.any?

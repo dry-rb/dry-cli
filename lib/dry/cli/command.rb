@@ -43,11 +43,11 @@ module Dry
         # @api private
         attr_reader :options
 
-        # @since x.x.x
+        # @since 0.7.0
         # @api private
         attr_reader :subcommands
 
-        # @since x.x.x
+        # @since 0.7.0
         # @api private
         attr_writer :subcommands
       end
@@ -344,7 +344,7 @@ module Dry
         arguments.reject(&:required?)
       end
 
-      # @since x.x.x
+      # @since 0.7.0
       # @api private
       def self.subcommands
         subcommands
