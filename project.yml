@@ -1,6 +1,13 @@
 name: dry-cli
 codacy_id: 61dd5d070fc74f0cacf575b19d4930e1
-gemspec:
+rubies:
+  - "3.0"
+  - "2.7"
+  - "2.6"
+  - "2.5"
+  - "2.4"
+  - "jruby"
+  gemspec:
   authors: ["Luca Guidi"]
   email: ["me@lucaguidi.com"]
   summary: "Common framework to build command line interfaces with Ruby"
