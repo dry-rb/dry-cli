@@ -211,7 +211,7 @@ module Dry
       #   require "dry/cli"
       #
       #   class Console < Dry::CLI::Command
-      #     param :engine
+      #     option :engine
       #
       #     def call(engine: nil, **)
       #       puts "starting console (engine: #{engine || :irb})"
@@ -228,7 +228,7 @@ module Dry
       #   require "dry/cli"
       #
       #   class Console < Dry::CLI::Command
-      #     param :engine, values: %w(irb pry ripl)
+      #     option :engine, values: %w(irb pry ripl)
       #
       #     def call(engine: nil, **)
       #       puts "starting console (engine: #{engine || :irb})"
@@ -248,7 +248,7 @@ module Dry
       #   require "dry/cli"
       #
       #   class Console < Dry::CLI::Command
-      #     param :engine, desc: "Force a console engine"
+      #     option :engine, desc: "Force a console engine"
       #
       #     def call(engine: nil, **)
       #       # ...
@@ -266,7 +266,7 @@ module Dry
       #   require "dry/cli"
       #
       #   class Server < Dry::CLI::Command
-      #     param :code_reloading, type: :boolean, default: true
+      #     option :code_reloading, type: :boolean, default: true
       #
       #     def call(code_reloading:, **)
       #       puts "staring server (code reloading: #{code_reloading})"
@@ -289,7 +289,7 @@ module Dry
       #   require "dry/cli"
       #
       #   class Server < Dry::CLI::Command
-      #     param :port, aliases: ["-p"]
+      #     option :port, aliases: ["-p"]
       #
       #     def call(options)
       #       puts "staring server (port: #{options.fetch(:port, 2300)})"
