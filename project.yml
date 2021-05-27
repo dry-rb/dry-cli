@@ -8,7 +8,7 @@ rubies:
   - "2.5"
   - "2.4"
   - "jruby"
-  gemspec:
+gemspec:
   authors: ["Luca Guidi"]
   email: ["me@lucaguidi.com"]
   summary: "Common framework to build command line interfaces with Ruby"
