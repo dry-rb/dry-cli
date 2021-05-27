@@ -73,6 +73,14 @@ RSpec.shared_examples "Commands" do |cli|
       expect(output).to eq("server - {:code_reloading=>false, :deps=>[\"dep1\", \"dep2\"]}\n")
     end
 
+    it "with flag param" do
+      output = capture_output { cli.call(arguments: ["server"]) }
+      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"]}\n")
+
+      output = capture_output { cli.call(arguments: %w[server --quiet]) }
+      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :quiet=>true}\n")
+    end
+
     context "with array param" do
       it "allows to omit optional array argument" do
         output = capture_output { cli.call(arguments: %w[exec test]) }
@@ -123,6 +131,7 @@ RSpec.shared_examples "Commands" do |cli|
           --daemonize=VALUE                 # Daemonize the server
           --pid=VALUE                       # Path to write a pid file after daemonize
           --[no-]code-reloading             # Code reloading, default: true
+          --quiet                           # Suppress output to stdout
           --deps=VALUE1,VALUE2,..           # List of extra dependencies, default: ["dep1", "dep2"]
           --help, -h                        # Print this help
 
