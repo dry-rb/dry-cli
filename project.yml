@@ -1,4 +1,5 @@
 name: dry-cli
+custom_ci: true
 codacy_id: 61dd5d070fc74f0cacf575b19d4930e1
 rubies:
   - "3.0"
