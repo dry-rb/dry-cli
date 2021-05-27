@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-# this file is managed by dry-rb/devtools project
+# this file is synced from dry-rb/template-gem project
 
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Luca Guidi"]
   spec.email         = ["me@lucaguidi.com"]
   spec.license       = 'MIT'
-  spec.version       = Dry::CLI::VERSION.dup
+  spec.version       = Dry::Cli::VERSION.dup
 
   spec.summary       = "Common framework to build command line interfaces with Ruby"
   spec.description   = spec.summary
@@ -27,10 +27,5 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 2.4.0"
 
-  # to update dependencies edit project.yml
-  spec.add_development_dependency "bundler", ">= 1.6", "< 3"
-  spec.add_development_dependency "rake", "~> 13.0"
-  spec.add_development_dependency "rspec", "~> 3.7"
-  spec.add_development_dependency "rubocop", "~> 0.82"
-  spec.add_development_dependency "simplecov", "~> 0.17.1"
+  # to update dependencies edit project.yml  spec.add_development_dependency "bundler", ">= 1.6", "< 3"  spec.add_development_dependency "rake", "~> 13.0"  spec.add_development_dependency "rspec", "~> 3.7"  spec.add_development_dependency "rubocop", "~> 0.82"  spec.add_development_dependency "simplecov", "~> 0.17.1"
 end
