@@ -14,7 +14,7 @@
 
 ## Links
 
-* [User documentation](http://dry-rb.org/gems/dry-cli)
+* [User documentation](https://dry-rb.org/gems/dry-cli)
 * [API documentation](http://rubydoc.info/gems/dry-cli)
 
 ## Supported Ruby versions
