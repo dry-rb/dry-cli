@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Luca Guidi"]
   spec.email         = ["me@lucaguidi.com"]
   spec.license       = 'MIT'
-  spec.version       = Dry::Cli::VERSION.dup
+  spec.version       = Dry::CLI::VERSION.dup
 
   spec.summary       = "Common framework to build command line interfaces with Ruby"
   spec.description   = spec.summary
