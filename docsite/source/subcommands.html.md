@@ -34,5 +34,5 @@ Dry::CLI.new(Foo::CLI::Commands).call
 ```sh
 $ foo generate
 Commands:
-  foo generate config           # Generate configuration
+  foo generate configuration           # Generate configuration
 ```
