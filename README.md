@@ -1,3 +1,4 @@
+<!--- this file is synced from dry-rb/template-gem project -->
 [gem]: https://rubygems.org/gems/dry-cli
 [actions]: https://github.com/dry-rb/dry-cli/actions
 [codacy]: https://www.codacy.com/gh/dry-rb/dry-cli
@@ -21,8 +22,8 @@
 
 This library officially supports the following Ruby versions:
 
-* MRI >= `2.5`
-* jruby >= `9.2`
+* MRI `>= 2.4.0`
+* jruby `>= 9.2`
 
 ## License
 
