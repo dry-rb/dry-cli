@@ -8,7 +8,7 @@
 # dry-cli [![Join the chat at https://dry-rb.zulipchat.com](https://img.shields.io/badge/dry--rb-join%20chat-%23346b7a.svg)][chat]
 
 [![Gem Version](https://badge.fury.io/rb/dry-cli.svg)][gem]
-[![CI Status](https://github.com/dry-rb/dry-cli/workflows/ci/badge.svg)][actions]
+[![CI Status](https://github.com/dry-rb/dry-cli/workflows/CI/badge.svg)][actions]
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/61dd5d070fc74f0cacf575b19d4930e1)][codacy]
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/61dd5d070fc74f0cacf575b19d4930e1)][codacy]
 [![Inline docs](http://inch-ci.org/github/dry-rb/dry-cli.svg?branch=master)][inchpages]
