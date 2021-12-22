@@ -25,12 +25,13 @@ jobs:
       fail-fast: false
       matrix:
         ruby:
-        - "3.0"
-        - "2.7"
-        - "2.6"
-        - "2.5"
-        - "2.4"
-        - "jruby"
+          - "3.1.0-preview1"
+          - "3.0"
+          - "2.7"
+          - "2.6"
+          - "2.5"
+          - "2.4"
+          - "jruby"
         include:
           - ruby: "3.0"
             coverage: "true"
