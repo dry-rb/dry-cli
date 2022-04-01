@@ -58,7 +58,7 @@ module Dry
       def self.command_help(command)
         return if command.help.nil?
 
-        command.help.()
+        "\n#{command.help.()}"
       end
 
       # @since 0.1.0
