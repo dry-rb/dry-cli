@@ -16,6 +16,7 @@ module Dry
         base.class_eval do
           @_mutex       = Mutex.new
           @description  = nil
+          @help         = nil
           @examples     = []
           @subcommands  = []
           @arguments = base.superclass_arguments || []
@@ -106,6 +107,46 @@ module Dry
       #   #     foo server --no-code-reloading # Disable code reloading
       def self.example(*examples)
         @examples += examples.flatten(1)
+      end
+
+      # Add extra free text when `--help` flag is used.
+      #
+      # @param blk [Proc] a block that must return a free form string to add
+      #   extra information
+      #
+      # @since 0.8.0
+      #
+      # @example
+      #   require "dry/cli"
+      #
+      #   class Convert < Dry::CLI::Command
+      #     help do
+      #       require "tzinfo"
+      #
+      #       "Available timezones:\n\n" +
+      #         TZInfo::Timezone.all_identifiers.map { |i| "\t#{i}\n" }.join
+      #     end
+      #
+      #     def call(*)
+      #       # ...
+      #     end
+      #   end
+      #
+      #   # $ time convert --help
+      #   #   # ...
+      #   #
+      #   #   Available timezones:
+      #   #
+      #   #     Africa/Adibdjan
+      #   #     Africa/Accra
+      #   #     ...
+      #   #     Zulu
+      def self.help(&blk)
+        if blk
+          @help = blk
+        else
+          @help
+        end
       end
 
       # Specify an argument
@@ -375,6 +416,7 @@ module Dry
       delegate %i[
         description
         examples
+        help
         arguments
         options
         params

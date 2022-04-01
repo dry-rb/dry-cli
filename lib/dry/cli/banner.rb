@@ -24,7 +24,8 @@ module Dry
           command_subcommands(command),
           command_arguments(command),
           command_options(command),
-          command_examples(command, name)
+          command_examples(command, name),
+          command_help(command)
         ].compact.join("\n")
       end
 
@@ -50,6 +51,14 @@ module Dry
         return if command.examples.empty?
 
         "\nExamples:\n#{command.examples.map { |example| "  #{name} #{example}" }.join("\n")}"
+      end
+
+      # @since 0.8.0
+      # @api private
+      def self.command_help(command)
+        return if command.help.nil?
+
+        command.help.()
       end
 
       # @since 0.1.0
