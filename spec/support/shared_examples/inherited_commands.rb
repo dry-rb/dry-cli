@@ -116,6 +116,34 @@ RSpec.shared_examples "Inherited commands" do |cli|
       DESC
       expect(output).to eq(expected)
     end
+
+    it "shows free form help text" do
+      output = capture_output { cli.call(arguments: %w[i logs --help]) }
+      expected = <<~DESC
+        Command:
+          #{cmd} i convert
+
+        Usage:
+          #{cmd} i convert
+
+        Description:
+          Display recent log output
+
+        Arguments:
+          APP                               # REQUIRED Application name
+
+        Options:
+          --verbosity=VALUE                 # Verbosity level, default: "INFO"
+          --num=VALUE                       # number of lines to display
+          --[no-]tail                       # continually stream log
+          --help, -h                        # Print this help
+
+        Available timezones:
+          AEDT
+          CEST
+      DESC
+      expect(output).to eq(expected)
+    end
   end
 
   context "with inherited arguments" do

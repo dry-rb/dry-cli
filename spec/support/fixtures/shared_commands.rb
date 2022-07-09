@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/LineLength
 module Commands
   class Command < Dry::CLI::Command
   end
@@ -592,5 +591,14 @@ module InheritedCommands
       "APP_NAME --json"
     ]
   end
+
+  class Convert < Base
+    desc "Convert time between timezones"
+
+    help do
+      timezones = %w[AEDT CEST].map { |tz| "\t#{tz}\n" }.join
+
+      "Available timezones:\n\n#{timezones}"
+    end
+  end
 end
-# rubocop:enable Metrics/LineLength
