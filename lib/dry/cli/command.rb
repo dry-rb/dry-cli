@@ -375,6 +375,12 @@ module Dry
       end
       # rubocop:enable Metrics/PerceivedComplexity
 
+      # @since 1.5.0
+      # @api private
+      def self.required_options
+        options.select(&:required?)
+      end
+
       # @since 0.7.0
       # @api private
       def self.subcommands
@@ -404,15 +410,16 @@ module Dry
       extend Forwardable
 
       delegate %i[
+        arguments
+        arguments_sorted_by_usage_order
+        default_params
         description
         examples
-        arguments
+        optional_arguments
         options
         params
-        default_params
         required_arguments
-        optional_arguments
-        arguments_sorted_by_usage_order
+        required_options
         subcommands
       ] => "self.class"
 
