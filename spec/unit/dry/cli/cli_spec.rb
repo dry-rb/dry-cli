@@ -51,72 +51,90 @@ RSpec.describe "CLI" do
           --option-one=VALUE, -1 VALUE      # Option one
           --[no-]boolean-option, -b         # Option boolean
           --option-with-default=VALUE, -d VALUE  # Option default, default: "test"
+          --mandatory-option=VALUE          # REQUIRED Mandatory option
+          --mandatory-option-with-default=VALUE  # REQUIRED Mandatory option, default: "mandatory default"
           --help, -h                        # Print this help
       OUTPUT
       expect(output).to eq(expected_output)
     end
 
-    it "with required_argument" do
-      output = capture_output { cli.call(arguments: ["first_arg"]) }
+    it "with mandatory_arg and mandatory_option" do
+      output = capture_output { cli.call(arguments: %w[first_arg --mandatory-option=mandatory_opt_val]) }
       expect(output).to eq(
         "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test\"}\n"
+        "mandatory_option: mandatory_opt_val. " \
+        "Options: {:option_with_default=>\"test\", :mandatory_option_with_default=>\"mandatory default\", " \
+        ":mandatory_option=>\"mandatory_opt_val\"}\n"
       )
     end
 
     it "with optional_arg" do
-      output = capture_output { cli.call(arguments: %w[first_arg opt_arg]) }
+      output = capture_output { cli.call(arguments: %w[first_arg opt_arg --mandatory_option=mandatory_opt_val]) }
       expect(output).to eq(
         "mandatory_arg: first_arg. optional_arg: opt_arg. " \
-        "Options: {:option_with_default=>\"test\", :args=>[\"opt_arg\"]}\n"
+        "mandatory_option: mandatory_opt_val. " \
+        "Options: {:option_with_default=>\"test\", :mandatory_option_with_default=>\"mandatory default\", " \
+        ":mandatory_option=>\"mandatory_opt_val\", :args=>\[\"opt_arg\"]}\n"
       )
     end
 
     it "with underscored option_one" do
-      output = capture_output { cli.call(arguments: %w[first_arg --option_one=test2]) }
+      output = capture_output { cli.call(arguments: %w[first_arg --mandatory_option=mandatory_opt_val --option_one=test2]) }
       expect(output).to eq(
         "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
+        "mandatory_option: mandatory_opt_val. " \
+        "Options: {:option_with_default=>\"test\", :mandatory_option_with_default=>\"mandatory default\", " \
+        ":mandatory_option=>\"mandatory_opt_val\", :option_one=>\"test2\"}\n"
       )
     end
 
     it "with option_one alias" do
-      output = capture_output { cli.call(arguments: %w[first_arg -1 test2]) }
+      output = capture_output { cli.call(arguments: %w[first_arg --mandatory-option=mandatory_opt_val -1 test2]) }
       expect(output).to eq(
         "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
+        "mandatory_option: mandatory_opt_val. " \
+        "Options: {:option_with_default=>\"test\", :mandatory_option_with_default=>\"mandatory default\", " \
+        ":mandatory_option=>\"mandatory_opt_val\", :option_one=>\"test2\"}\n"
       )
     end
 
     it "with underscored boolean_option" do
-      output = capture_output { cli.call(arguments: %w[first_arg --boolean_option]) }
+      output = capture_output { cli.call(arguments: %w[first_arg --mandatory_option=mandatory_opt_val --boolean_option]) }
       expect(output).to eq(
         "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test\", :boolean_option=>true}\n"
+        "mandatory_option: mandatory_opt_val. " \
+        "Options: {:option_with_default=>\"test\", :mandatory_option_with_default=>\"mandatory default\", " \
+        ":mandatory_option=>\"mandatory_opt_val\", :boolean_option=>true}\n"
       )
     end
 
     it "with boolean_option alias" do
-      output = capture_output { cli.call(arguments: %w[first_arg -b]) }
+      output = capture_output { cli.call(arguments: %w[first_arg --mandatory_option=mandatory_opt_val -b]) }
       expect(output).to eq(
         "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test\", :boolean_option=>true}\n"
+        "mandatory_option: mandatory_opt_val. " \
+        "Options: {:option_with_default=>\"test\", :mandatory_option_with_default=>\"mandatory default\", " \
+        ":mandatory_option=>\"mandatory_opt_val\", :boolean_option=>true}\n"
       )
     end
 
-    it "with underscoreed option_with_default alias" do
-      output = capture_output { cli.call(arguments: %w[first_arg --option_with_default=test3]) }
+    it "with underscored option_with_default alias" do
+      output = capture_output { cli.call(arguments: %w[first_arg --mandatory_option=mandatory_opt_val --option_with_default=test3]) }
       expect(output).to eq(
         "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test3\"}\n"
+        "mandatory_option: mandatory_opt_val. " \
+        "Options: {:option_with_default=>\"test3\", :mandatory_option_with_default=>\"mandatory default\", " \
+        ":mandatory_option=>\"mandatory_opt_val\"}\n"
       )
     end
 
     it "with combination of aliases" do
-      output = capture_output { cli.call(arguments: %w[first_arg -bd test3]) }
+      output = capture_output { cli.call(arguments: %w[first_arg --mandatory_option=mandatory_opt_val -bd test3]) }
       expect(output).to eq(
         "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test3\", :boolean_option=>true}\n"
+        "mandatory_option: mandatory_opt_val. " \
+        "Options: {:option_with_default=>\"test3\", :mandatory_option_with_default=>\"mandatory default\", " \
+        ":mandatory_option=>\"mandatory_opt_val\", :boolean_option=>true}\n"
       )
     end
   end

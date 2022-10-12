@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/LineLength
 RSpec.shared_examples "Commands" do |cli|
   let(:cli) { cli }
 
@@ -96,7 +95,7 @@ RSpec.shared_examples "Commands" do |cli|
       context "and with an unknown value passed" do
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[console --engine=unknown]) }
-          expect(error).to eq("ERROR: \"rspec console\" was called with arguments \"--engine=unknown\"\n") # rubocop:disable Metrics/LineLength
+          expect(error).to eq("ERROR: \"rspec console\" was called with arguments \"--engine=unknown\"\n")
         end
       end
     end
@@ -145,7 +144,7 @@ RSpec.shared_examples "Commands" do |cli|
 
       it "with unknown param" do
         error = capture_error { cli.call(arguments: %w[new bookshelf --unknown 1234]) }
-        expect(error).to eq("ERROR: \"rspec new\" was called with arguments \"bookshelf --unknown 1234\"\n") # rubocop:disable Metrics/LineLength
+        expect(error).to eq("ERROR: \"rspec new\" was called with arguments \"bookshelf --unknown 1234\"\n")
       end
 
       it "no required" do
@@ -297,4 +296,3 @@ RSpec.shared_examples "Commands" do |cli|
     end
   end
 end
-# rubocop:enable Metrics/LineLength
