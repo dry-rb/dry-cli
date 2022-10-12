@@ -145,7 +145,7 @@ module Dry
 
       # @api private
       def self.option_description(option)
-        description = option.desc
+        description = "#{"REQUIRED " if option.required?}#{option.desc}"
         unless option.default.nil?
           description = "#{description}, default: #{option.default.inspect}"
         end
