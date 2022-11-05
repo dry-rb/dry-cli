@@ -1,4 +1,8 @@
 ---
+- version: 1.0.0
+  date: 2022-11-05
+  changed:
+    - "Version bumped to 1.0.0 (@solnic)"
 - version: 0.7.0
   date: '2020-05-08'
   added:
