@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"]   = "https://github.com/dry-rb/dry-cli"
   spec.metadata["bug_tracker_uri"]   = "https://github.com/dry-rb/dry-cli/issues"
 
-  spec.required_ruby_version = ">= 2.7.0"
+  spec.required_ruby_version = ">= 2.4.0"
 
   # to update dependencies edit project.yml
 
