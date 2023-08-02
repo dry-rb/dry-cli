@@ -49,7 +49,7 @@ module Dry
         unused_arguments = arguments.drop(command.required_arguments.length)
 
         unless all_required_params_satisfied
-          return error_message(command, prog_name, parsed_required_params, parsed_options)
+          return error_message(command, prog_name, parsed_required_params, parsed_options, parsed_options_with_defaults)
         end
 
         parsed_params.reject! { |_key, value| value.nil? }
@@ -67,8 +67,10 @@ module Dry
         usage
       end
 
-      def self.error_message(command, prog_name, parsed_required_params, parsed_options)
+      def self.error_message(command, prog_name, parsed_required_params, parsed_options, parsed_options_with_defaults)
         parsed_required_params_values = parsed_required_params.values.compact
+
+        missing_options = command.required_options.select { |option| parsed_options_with_defaults[option.name].nil? }
 
         error_msg = "ERROR: \"#{prog_name}\" was called with "
         error_msg += if parsed_required_params_values.empty?
@@ -78,6 +80,13 @@ module Dry
                      end
         error_msg += " and options #{parsed_options}" if parsed_options.any?
         error_msg += short_usage(command, prog_name)
+
+        if missing_options.any?
+          error_msg += "\nMissing required options:"
+          missing_options.each do |missing_option|
+            error_msg += "\n  #{Banner.extended_option(missing_option)}"
+          end
+        end
 
         Result.failure(error_msg)
       end

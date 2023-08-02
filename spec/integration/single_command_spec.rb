@@ -10,7 +10,8 @@ RSpec.describe "Single command" do
       _, stderr, = Open3.capture3("baz")
       expect(stderr).to eq(
         "ERROR: \"#{cmd}\" was called with no arguments\n"\
-        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"
+        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"\
+        "Missing required options:\n    --mandatory-option=VALUE          # REQUIRED Mandatory option\n"
       )
     end
 
@@ -46,7 +47,8 @@ RSpec.describe "Single command" do
         _, stderr, = Open3.capture3("baz first_arg --option_one=test2")
         expect(stderr).to eq(
           "ERROR: \"#{cmd}\" was called with arguments [\"first_arg\"] and options {:option_one=>\"test2\"}\n" \
-          "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"
+          "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"\
+          "Missing required options:\n    --mandatory-option=VALUE          # REQUIRED Mandatory option\n"
         )
       end
     end
