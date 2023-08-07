@@ -38,7 +38,7 @@ module Dry
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
       def self.parse_required_params(command, arguments, prog_name, parsed_options)
         parsed_params          = match_arguments(command.arguments, arguments)
         parsed_required_params = match_arguments(command.required_arguments, arguments)
@@ -67,14 +67,14 @@ module Dry
         parsed_options = parsed_options.merge(args: unused_arguments) if unused_arguments.any?
         Result.success(parsed_options)
       end
-      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity
 
       def self.match_arguments(command_arguments, arguments)
         result = {}
 
         command_arguments.each_with_index do |cmd_arg, index|
           if cmd_arg.array?
-            result[cmd_arg.name] = arguments[index..-1]
+            result[cmd_arg.name] = arguments[index..]
             break
           else
             result[cmd_arg.name] = arguments.at(index)

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/LineLength
 module Commands
   class Command < Dry::CLI::Command
   end
@@ -442,6 +441,7 @@ module Commands
     attr_reader :prop
 
     def initialize(prop:)
+      super()
       @prop = prop
     end
 
@@ -593,4 +593,3 @@ module InheritedCommands
     ]
   end
 end
-# rubocop:enable Metrics/LineLength

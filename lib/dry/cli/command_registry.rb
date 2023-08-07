@@ -37,7 +37,7 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      #
+      # rubocop:disable Metrics/AbcSize
       def get(arguments)
         @_mutex.synchronize do
           node   = @root
@@ -56,7 +56,7 @@ module Dry
               result = LookupResult.new(node, args, names, false)
               break
             elsif tmp.leaf?
-              args   = arguments[i + 1..-1]
+              args   = arguments[i + 1..]
               names  = arguments[0..i]
               node   = tmp
               result = LookupResult.new(node, args, names, true)
@@ -72,6 +72,7 @@ module Dry
           result
         end
       end
+      # rubocop:enable Metrics/AbcSize
 
       # Node of the registry
       #

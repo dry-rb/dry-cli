@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift __dir__ + "/../../lib"
+$LOAD_PATH.unshift "#{__dir__}/../../lib"
 require "dry/cli"
 require_relative "shared_commands"
 
@@ -62,7 +62,7 @@ module Foo
       register "options-with-aliases",                ::Commands::OptionsWithAliases
       register "variadic default",                    ::Commands::VariadicArguments
       register "variadic with-mandatory",             ::Commands::MandatoryAndVariadicArguments
-      register "variadic with-mandatory-and-options", ::Commands::MandatoryOptionsAndVariadicArguments # rubocop:disable Metrics/LineLength
+      register "variadic with-mandatory-and-options", ::Commands::MandatoryOptionsAndVariadicArguments
 
       register "generate webpack", ::Webpack::CLI::Generate
       register "hello",            ::Webpack::CLI::Hello

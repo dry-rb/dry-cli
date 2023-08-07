@@ -87,17 +87,17 @@ RSpec.shared_examples "Subcommands" do |cli|
       end
 
       it "more than one param and with optional params" do
-        output = capture_output { cli.call(arguments: %w[generate action web users#index --url=/signin]) } # rubocop:disable Metrics/LineLength
-        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>false, :url=>\"/signin\"}\n") # rubocop:disable Metrics/LineLength
+        output = capture_output { cli.call(arguments: %w[generate action web users#index --url=/signin]) }
+        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>false, :url=>\"/signin\"}\n")
       end
 
       it "more than one param and with boolean params" do
-        output = capture_output { cli.call(arguments: %w[generate action web users#index --skip-view --url=/signin]) } # rubocop:disable Metrics/LineLength
-        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>true, :url=>\"/signin\"}\n") # rubocop:disable Metrics/LineLength
+        output = capture_output { cli.call(arguments: %w[generate action web users#index --skip-view --url=/signin]) }
+        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>true, :url=>\"/signin\"}\n")
       end
 
       it "more than required params" do
-        output = capture_output { cli.call(arguments: %w[destroy action web users#index unexpected_param]) } # rubocop:disable Metrics/LineLength
+        output = capture_output { cli.call(arguments: %w[destroy action web users#index unexpected_param]) }
         expect(output).to eq("destroy action - app: web, action: users#index\n")
       end
 

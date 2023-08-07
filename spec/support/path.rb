@@ -7,7 +7,7 @@ module RSpec
         base.class_eval do
           before do
             @original_path = ENV["PATH"]
-            ENV["PATH"] = __dir__ + "/fixtures:" + ENV["PATH"]
+            ENV["PATH"] = "#{__dir__}/fixtures:#{ENV["PATH"]}"
           end
 
           after do
