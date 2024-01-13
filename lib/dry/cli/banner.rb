@@ -101,24 +101,35 @@ module Dry
         end.join("\n")
       end
 
+      # @since 0.8.0
+      # @api private
+      def self.simple_option(option)
+        name = Inflector.dasherize(option.name)
+        name = if option.boolean?
+                 "[no-]#{name}"
+               elsif option.array?
+                 "#{name}=VALUE1,VALUE2,.."
+               else
+                 "#{name}=VALUE"
+               end
+        name = "#{name}, #{option.alias_names.join(", ")}" if option.aliases.any?
+        "--#{name}"
+      end
+
+      # @since 0.8.0
+      # @api private
+      def self.extended_option(option)
+        name = "  #{simple_option(option).ljust(32)}  # #{"REQUIRED " if option.required?}#{option.desc}" # rubocop:disable Metrics/LineLength
+        name = "#{name}, default: #{option.default.inspect}" unless option.default.nil?
+        name
+      end
+
       # @since 0.1.0
       # @api private
       #
       def self.extended_command_options(command)
         result = command.options.map do |option|
-          name = Inflector.dasherize(option.name)
-          name = if option.boolean?
-                   "[no-]#{name}"
-                 elsif option.array?
-                   "#{name}=VALUE1,VALUE2,.."
-                 else
-                   "#{name}=VALUE"
-                 end
-          name = "#{name}, #{option.alias_names.join(", ")}" if option.aliases.any?
-          name = "  --#{name.ljust(30)}"
-          name = "#{name}  # #{option.desc}"
-          name = "#{name}, default: #{option.default.inspect}" unless option.default.nil?
-          name
+          extended_option(option)
         end
 
         result << "  --#{"help, -h".ljust(30)}  # Print this help"
