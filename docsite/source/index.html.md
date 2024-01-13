@@ -98,7 +98,7 @@ module Foo
         class Configuration < Dry::CLI::Command
           desc "Generate configuration"
 
-          option :apps, type: :array, default: [], desc: "Generate configuration for specific apps"
+          option :apps, type: :array, default: [], aliases: ["-a"], desc: "Generate configuration for specific apps"
 
           def call(apps:, **)
             puts "generated configuration for apps: #{apps.inspect}"
