@@ -59,6 +59,11 @@ module Dry
         type == :boolean
       end
 
+      # @api private
+      def flag?
+        type == :flag
+      end
+
       # @since 0.3.0
       # @api private
       def array?
@@ -92,6 +97,8 @@ module Dry
 
         if boolean?
           parser_options << "--[no-]#{dasherized_name}"
+        elsif flag?
+          parser_options << "--#{dasherized_name}"
         else
           parser_options << "--#{dasherized_name}=#{name}"
           parser_options << "--#{dasherized_name} #{name}"
@@ -112,7 +119,7 @@ module Dry
           .compact
           .uniq
           .map { |name| name.size == 1 ? "-#{name}" : "--#{name}" }
-          .map { |name| boolean? ? name : "#{name} VALUE" }
+          .map { |name| boolean? || flag? ? name : "#{name} VALUE" }
       end
     end
 
