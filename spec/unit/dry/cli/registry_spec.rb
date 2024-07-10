@@ -28,7 +28,9 @@ RSpec.describe Dry::CLI::Registry do
 
     context "when class is given" do
       it "raises error when #initialize arity is not equal to 0" do
-        callback = Struct
+        callback = Class.new do
+          def initialize(foo); end
+        end
 
         expect do
           Bar::CLI::Commands.before("alpha", callback)
@@ -64,7 +66,9 @@ RSpec.describe Dry::CLI::Registry do
 
     context "when class is given" do
       it "raises error when #initialize arity is not equal to 0" do
-        callback = Struct
+        callback = Class.new do
+          def initialize(foo); end
+        end
 
         expect do
           Bar::CLI::Commands.after("alpha", callback)
