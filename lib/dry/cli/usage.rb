@@ -55,8 +55,8 @@ module Dry
         required_arguments = command.required_arguments
         optional_arguments = command.optional_arguments
 
-        required = required_arguments.map { |arg| arg.name.upcase }.join(" ") if required_arguments.any? # rubocop:disable Metrics/LineLength
-        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(" ") if optional_arguments.any? # rubocop:disable Metrics/LineLength
+        required = required_arguments.map { |arg| arg.name.upcase }.join(" ") if required_arguments.any? # rubocop:disable Layout/LineLength
+        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(" ") if optional_arguments.any? # rubocop:disable Layout/LineLength
         result = [required, optional].compact
 
         " #{result.join(" ")}" unless result.empty?
