@@ -20,7 +20,7 @@ module Foo
       extend Dry::CLI::Registry
 
       class Request < Dry::CLI::Command
-        option :mode, default: "http", values: %w[http http2], desc: "The request mode"
+        option :mode, default: "http", values: %w[http http2], aliases: ["-m"], desc: "The request mode"
 
         def call(**options)
           puts "Performing a request (mode: #{options.fetch(:mode)})"
@@ -42,6 +42,11 @@ Performing a request (mode: http)
 
 ```sh
 $ foo request --mode=http2
+Performing a request (mode: http2)
+```
+
+```sh
+$ foo request --m=http2
 Performing a request (mode: http2)
 ```
 
