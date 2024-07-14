@@ -1,4 +1,9 @@
 ---
+- version: 1.1.0
+  date: 2024-07-14
+  added:
+    - |-
+      Added `:flag` option type. This acts like a `:boolean` that can only be set to true, so has no `--no-` prefix to disable it. (@Billiam in #117)
 - version: 1.0.0
   date: 2022-11-05
   changed:
