@@ -23,6 +23,10 @@ WithZeroArityBlock = Dry.CLI do
   register "root-command" do
     register "sub-command", Commands::RootCommands::SubCommand
   end
+  register "namespace", Commands::Namespace
+  register "namespace" do
+    register "sub-command", Commands::Namespace::SubCommand
+  end
 
   register "options-with-aliases",                Commands::OptionsWithAliases
   register "variadic default",                    Commands::VariadicArguments
