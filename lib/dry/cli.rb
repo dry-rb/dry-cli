@@ -116,6 +116,7 @@ module Dry
       return spell_checker(result, arguments) unless result.found?
 
       command, args = parse(result.command, result.arguments, result.names)
+      return usage(result) unless command.respond_to?(:call)
 
       command.instance_variable_set(:@err, err) unless command.instance_variable_defined?(:@err)
       command.instance_variable_set(:@out, out) unless command.instance_variable_defined?(:@out)

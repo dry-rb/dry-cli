@@ -18,6 +18,15 @@ RSpec.shared_examples "Inherited commands" do |cli|
       expect(error).to eq(expected)
     end
 
+    it "shows subcommands when root command doesn't implement #call" do
+      error = capture_error { cli.call(arguments: %w[namespace]) }
+      expected = <<~DESC
+        Commands:
+          #{cmd} namespace sub-command               # I'm a concrete command
+      DESC
+      expect(error).to eq(expected)
+    end
+
     it "shows run's help" do
       output = capture_output { cli.call(arguments: %w[i run --help]) }
       expected = <<~DESC
