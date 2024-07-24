@@ -111,6 +111,7 @@ module Dry
       return usage(result) unless result.found?
 
       command, args = parse(result.command, result.arguments, result.names)
+      return usage(result) unless command.respond_to?(:call)
 
       result.before_callbacks.run(command, args)
       command.call(**args)
