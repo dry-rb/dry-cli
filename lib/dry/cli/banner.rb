@@ -37,9 +37,19 @@ module Dry
       # @since 0.1.0
       # @api private
       def self.command_name_and_arguments(command, name)
-        usage = "\nUsage:\n  #{name}#{arguments(command)}"
+        usage = "\nUsage:\n"
 
-        return usage + " | #{name} SUBCOMMAND" if command.subcommands.any?
+        callable_root_command = false
+        if command.new.respond_to?(:call)
+          callable_root_command = true
+          usage += "  #{name}#{arguments(command)}"
+        end
+
+        if command.subcommands.any?
+          usage += " "
+          usage += "|" if callable_root_command
+          usage += " #{name} SUBCOMMAND"
+        end
 
         usage
       end
