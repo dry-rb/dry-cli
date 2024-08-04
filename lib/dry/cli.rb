@@ -112,9 +112,9 @@ module Dry
 
       command, args = parse(result.command, result.arguments, result.names)
 
-      result.before_callbacks.run(command, args)
+      result.before_callbacks.run(command, **args)
       command.call(**args)
-      result.after_callbacks.run(command, args)
+      result.after_callbacks.run(command, **args)
     end
 
     # Parse arguments for a command.

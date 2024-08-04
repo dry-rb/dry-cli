@@ -541,6 +541,12 @@ module Callbacks
     end
   end
 
+  class BeforeKwargsClass
+    def call(url:, dir:, **)
+      puts "before callback (class), kwarg(s): url: #{url}, dir: #{dir}"
+    end
+  end
+
   class AfterClass
     def call(args)
       puts "after callback (class), #{count(args)} arg(s): #{args.inspect}"
@@ -550,6 +556,12 @@ module Callbacks
 
     def count(args)
       args.count
+    end
+  end
+
+  class AfterKwargsClass
+    def call(url:, dir:, **)
+      puts "after callback (class), kwarg(s): url: #{url}, dir: #{dir}"
     end
   end
 
@@ -580,7 +592,9 @@ end
 # rubocop:enable Layout/LineLength
 
 Foo::CLI::Commands.before("callbacks", Callbacks::BeforeClass)
+Foo::CLI::Commands.before("callbacks",  Callbacks::BeforeKwargsClass)
 Foo::CLI::Commands.after("callbacks",  Callbacks::AfterClass)
+Foo::CLI::Commands.after("callbacks",  Callbacks::AfterKwargsClass)
 Foo::CLI::Commands.before("callbacks", Callbacks::Before.new)
 Foo::CLI::Commands.after("callbacks",  Callbacks::After.new)
 
