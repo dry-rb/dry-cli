@@ -331,6 +331,16 @@ module Foo
         end
       end
 
+      class Completion < Dry::CLI::Command
+        desc "Generate completion script"
+
+        option :shell, desc: "Shell to generate completion script for", default: "bash"
+
+        def call(shell:, **)
+          puts "completion - shell: #{shell}"
+        end
+      end
+
       class Exec < Dry::CLI::Command
         desc "Execute a task"
 
@@ -454,11 +464,12 @@ Foo::CLI::Commands.register "generate", aliases: ["g"] do |prefix|
   prefix.register "model",     Foo::CLI::Commands::Generate::Model
   prefix.register "secret",    Foo::CLI::Commands::Generate::Secret
 end
-Foo::CLI::Commands.register "new",     Foo::CLI::Commands::New
-Foo::CLI::Commands.register "routes",  Foo::CLI::Commands::Routes
-Foo::CLI::Commands.register "server",  Foo::CLI::Commands::Server,  aliases: ["s"]
-Foo::CLI::Commands.register "version", Foo::CLI::Commands::Version, aliases: ["v", "-v", "--version"]
-Foo::CLI::Commands.register "exec",    Foo::CLI::Commands::Exec
+Foo::CLI::Commands.register "new",        Foo::CLI::Commands::New
+Foo::CLI::Commands.register "routes",     Foo::CLI::Commands::Routes
+Foo::CLI::Commands.register "server",     Foo::CLI::Commands::Server,  aliases: ["s"]
+Foo::CLI::Commands.register "version",    Foo::CLI::Commands::Version, aliases: ["v", "-v", "--version"]
+Foo::CLI::Commands.register "completion", Foo::CLI::Commands::Completion, hidden: true
+Foo::CLI::Commands.register "exec",       Foo::CLI::Commands::Exec
 
 Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register "greeting",    Foo::CLI::Commands::Greeting
