@@ -21,9 +21,11 @@ module Dry
         max_length, commands = commands_and_arguments(result)
 
         commands.map do |banner, node|
+          next if node.hidden
+
           usage = description(node.command) if node.leaf?
           "#{justify(banner, max_length, usage)}#{usage}"
-        end.unshift(header).join("\n")
+        end.compact.unshift(header).join("\n")
       end
 
       # @since 0.1.0

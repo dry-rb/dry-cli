@@ -18,7 +18,7 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      def set(name, command, aliases)
+      def set(name, command, aliases, hidden)
         @_mutex.synchronize do
           node = @root
           name.split(/[[:space:]]/).each do |token|
@@ -26,6 +26,7 @@ module Dry
           end
 
           node.aliases!(aliases)
+          node.hidden!(hidden)
           if command
             node.leaf!(command)
             node.subcommands!(command)
@@ -91,6 +92,10 @@ module Dry
         # @api private
         attr_reader :aliases
 
+        # @since 1.1.1
+        # @api private
+        attr_reader :hidden
+
         # @since 0.1.0
         # @api private
         attr_reader :command
@@ -109,6 +114,7 @@ module Dry
           @parent   = parent
           @children = {}
           @aliases  = {}
+          @hidden   = hidden
           @command  = nil
 
           @before_callbacks = Chain.new
@@ -152,6 +158,12 @@ module Dry
           aliases.each do |a|
             parent.alias!(a, self)
           end
+        end
+
+        # @since 1.1.1
+        # @api private
+        def hidden!(hidden)
+          @hidden = hidden
         end
 
         # @since 0.1.0
