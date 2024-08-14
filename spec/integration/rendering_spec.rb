@@ -7,7 +7,6 @@ RSpec.describe "Rendering" do
     _, stderr, = Open3.capture3("foo unknown")
 
     expected = <<~DESC
-      I don't know how to 'unknown'.
       Commands:
         foo assets [SUBCOMMAND]
         foo callbacks DIR                                          # Command with callbacks

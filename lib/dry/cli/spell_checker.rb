@@ -18,16 +18,21 @@ module Dry
         output = []
 
         suggestions = DidYouMean::SpellChecker.new(dictionary: commands).correct(cmd.first)
-        output << "I don't know how to '#{cmd.join(' ')}'."
-        output << " Did you mean: '#{suggestions.first}' ?" if suggestions.any?
-
-        output.join("")
+        if suggestions.any?
+          "I don't know how to '#{cmd.join(' ')}'. Did you mean: '#{suggestions.first}' ?"
+        end
       end
 
       # @since 1.1.1
       # @api private
       def self.cmd_to_spell(arguments, result_names)
         arguments - result_names
+      end
+
+      # @since 1.1.1
+      # @api private
+      def self.ignore?(cmd)
+        cmd.empty? || cmd.first.start_with?("-")
       end
     end
   end

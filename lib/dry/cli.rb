@@ -164,7 +164,8 @@ module Dry
 
     # @since 1.1.1
     def spell_checker(result, arguments)
-      err.puts SpellChecker.call(result, arguments)
+      spell_checker = SpellChecker.call(result, arguments)
+      err.puts spell_checker if spell_checker
       puts
       err.puts Usage.call(result)
       exit(1)
