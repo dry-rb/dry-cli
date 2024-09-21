@@ -94,6 +94,16 @@ module Foo
         end
       end
 
+      class Completion < Dry::CLI::Command
+        desc "Generate completion"
+
+        option :shell, default: "bash", values: %w[bash zsh]
+
+        def call(shell:, **)
+          puts "generated completion - shell: #{shell}"
+        end
+      end
+
       module Generate
         class Configuration < Dry::CLI::Command
           desc "Generate configuration"
@@ -116,11 +126,12 @@ module Foo
         end
       end
 
-      register "version", Version, aliases: ["v", "-v", "--version"]
-      register "echo",    Echo
-      register "start",   Start
-      register "stop",    Stop
-      register "exec",    Exec
+      register "version",    Version, aliases: ["v", "-v", "--version"]
+      register "echo",       Echo
+      register "start",      Start
+      register "stop",       Stop
+      register "exec",       Exec
+      register "completion", Completion, hidden: true
 
       register "generate", aliases: ["g"] do |prefix|
         prefix.register "config", Generate::Configuration
@@ -147,6 +158,8 @@ Commands:
   foo stop                               # Stop Foo machinery
   foo version                            # Print version
 ```
+
+You can choose to hide a command from the help output by setting the `hidden` option to `true` when registering the command.
 
 ### Help
 

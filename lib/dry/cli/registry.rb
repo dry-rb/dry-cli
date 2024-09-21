@@ -75,11 +75,11 @@ module Dry
       #       end
       #     end
       #   end
-      def register(name, command = nil, aliases: [], &block)
-        @commands.set(name, command, aliases)
+      def register(name, command = nil, aliases: [], hidden: false, &block)
+        @commands.set(name, command, aliases, hidden)
 
         if block_given?
-          prefix = Prefix.new(@commands, name, aliases)
+          prefix = Prefix.new(@commands, name, aliases, hidden)
           if block.arity.zero?
             prefix.instance_eval(&block)
           else
@@ -308,19 +308,19 @@ module Dry
       class Prefix
         # @since 0.1.0
         # @api private
-        def initialize(registry, prefix, aliases)
+        def initialize(registry, prefix, aliases, hidden)
           @registry = registry
           @prefix   = prefix
 
-          registry.set(prefix, nil, aliases)
+          registry.set(prefix, nil, aliases, hidden)
         end
 
         # @since 0.1.0
         #
         # @see Dry::CLI::Registry#register
-        def register(name, command, aliases: [])
+        def register(name, command, aliases: [], hidden: false)
           command_name = "#{prefix} #{name}"
-          registry.set(command_name, command, aliases)
+          registry.set(command_name, command, aliases, hidden)
         end
 
         private
