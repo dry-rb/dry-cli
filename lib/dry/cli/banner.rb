@@ -9,14 +9,26 @@ module Dry
     # @since 0.1.0
     # @api private
     module Banner
-      # Prints command banner
+      # Prints command/namespace banner
       #
-      # @param command [Dry::CLI::Command] the command
+      # @param command [Dry::CLI::Command, Dry::CLI::Namespace] the command/namespace
       # @param out [IO] standard output
       #
       # @since 0.1.0
       # @api private
       def self.call(command, name)
+        b = if CLI.command?(command)
+              command_banner(command, name)
+            else
+              namespace_banner(command, name)
+            end
+
+        b.compact.join("\n")
+      end
+
+      # @since 1.1.1
+      # @api private
+      def self.command_banner(command, name)
         [
           command_name(name),
           command_name_and_arguments(command, name),
@@ -25,21 +37,43 @@ module Dry
           command_arguments(command),
           command_options(command),
           command_examples(command, name)
-        ].compact.join("\n")
+        ]
+      end
+
+      # @since 1.1.1
+      # @api private
+      def self.namespace_banner(namespace, name)
+        [
+          command_name(name, "Namespace"),
+          command_name_and_arguments(namespace, name),
+          command_description(namespace),
+          command_subcommands(namespace),
+          command_options(namespace)
+        ]
       end
 
       # @since 0.1.0
       # @api private
-      def self.command_name(name)
-        "Command:\n  #{name}"
+      def self.command_name(name, label = "Command")
+        "#{label}:\n  #{name}"
       end
 
       # @since 0.1.0
       # @api private
       def self.command_name_and_arguments(command, name)
-        usage = "\nUsage:\n  #{name}#{arguments(command)}"
+        usage = "\nUsage:\n"
 
-        return usage + " | #{name} SUBCOMMAND" if command.subcommands.any?
+        callable_root_command = false
+        if command.new.respond_to?(:call)
+          callable_root_command = true
+          usage += "  #{name}#{arguments(command)}"
+        end
+
+        if command.subcommands.any?
+          usage += " "
+          usage += "|" if callable_root_command
+          usage += " #{name} SUBCOMMAND"
+        end
 
         usage
       end
