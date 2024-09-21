@@ -45,11 +45,10 @@ module Dry
 
         # @since 0.7.0
         # @api private
-        attr_reader :subcommands
+        attr_accessor :subcommands
 
         # @since 0.7.0
         # @api private
-        attr_writer :subcommands
       end
 
       # Set the description of the command
