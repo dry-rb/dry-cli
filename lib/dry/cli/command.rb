@@ -344,7 +344,7 @@ module Dry
         arguments.reject(&:required?)
       end
 
-      # @since 0.8.0
+      # @since x.x.x
       # @api private
       def self.required_options
         options.select(&:required?)

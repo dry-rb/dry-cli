@@ -101,7 +101,7 @@ module Dry
         end.join("\n")
       end
 
-      # @since 0.8.0
+      # @since x.x.x
       # @api private
       def self.simple_option(option)
         name = Inflector.dasherize(option.name)
@@ -116,7 +116,7 @@ module Dry
         "--#{name}"
       end
 
-      # @since 0.8.0
+      # @since x.x.x
       # @api private
       def self.extended_option(option)
         name = "  #{simple_option(option).ljust(32)}  # #{"REQUIRED " if option.required?}#{option.desc}" # rubocop:disable Metrics/LineLength
