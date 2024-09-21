@@ -15,11 +15,10 @@ module Dry
       def self.call(result, arguments)
         commands = result.children.keys
         cmd = cmd_to_spell(arguments, result.names)
-        output = []
 
         suggestions = DidYouMean::SpellChecker.new(dictionary: commands).correct(cmd.first)
         if suggestions.any?
-          "I don't know how to '#{cmd.join(' ')}'. Did you mean: '#{suggestions.first}' ?"
+          "I don't know how to '#{cmd.join(" ")}'. Did you mean: '#{suggestions.first}' ?"
         end
       end
 

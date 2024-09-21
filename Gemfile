@@ -10,5 +10,5 @@ gem "backports", "~> 3.15.0", require: false
 
 unless ENV["CI"]
   gem "byebug", require: false, platforms: :mri
-  gem "yard",   require: false
+  gem "yard", require: false
 end
