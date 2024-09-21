@@ -10,6 +10,7 @@ module Dry
   class CLI
     require "dry/cli/version"
     require "dry/cli/errors"
+    require "dry/cli/namespace"
     require "dry/cli/command"
     require "dry/cli/registry"
     require "dry/cli/parser"
@@ -27,11 +28,36 @@ module Dry
     # @since 0.1.0
     # @api private
     def self.command?(command)
-      case command
+      inherits?(command, Command)
+    end
+
+    # Check if namespace
+    #
+    # @param namespace [Object] the namespace to check
+    #
+    # @return [TrueClass,FalseClass] true if instance of `Dry::CLI::Namespace`
+    #
+    # @since 1.1.1
+    # @api private
+    def self.namespace?(namespace)
+      inherits?(namespace, Namespace)
+    end
+
+    # Check if `obj` inherits from `klass`
+    #
+    # @param obj [Object] object to check
+    # @param klass [Object] class that should be inherited
+    #
+    # @return [TrueClass,FalseClass] true if `obj` inherits from `klass`
+    #
+    # @since 1.1.1
+    # @api private
+    def self.inherits?(obj, klass)
+      case obj
       when Class
-        command.ancestors.include?(Command)
+        obj.ancestors.include?(klass)
       else
-        command.is_a?(Command)
+        obj.is_a?(klass)
       end
     end
 

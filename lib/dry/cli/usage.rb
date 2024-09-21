@@ -68,7 +68,7 @@ module Dry
       # @since 0.1.0
       # @api private
       def self.description(command)
-        return unless CLI.command?(command)
+        return unless CLI.command?(command) || CLI.namespace?(command)
 
         " # #{command.description}" unless command.description.nil?
       end

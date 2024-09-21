@@ -440,7 +440,7 @@ module Commands
     end
   end
 
-  class Namespace < Dry::CLI::Command
+  class Namespace < Dry::CLI::Namespace
     desc "This is a namespace"
 
     class SubCommand < Dry::CLI::Command
