@@ -10,6 +10,7 @@ RSpec.describe "Inherited commands" do
           based logs APP                  # Display recent log output
           based run APP CMD               # Run a one-off process inside your app
           based subrun APP CMD
+
       OUT
       expect(output).to eq(expected)
     end
