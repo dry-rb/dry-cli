@@ -43,13 +43,16 @@ module Dry
         parsed_required_params = match_arguments(command.required_arguments, arguments)
         parsed_options_with_defaults = command.default_params.merge(parsed_options)
 
-        all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? } && # rubocop:disable Layout/LineLength
-                                        command.required_options.all? { |option| !parsed_options_with_defaults[option.name].nil? } # rubocop:disable Layout/LineLength
+        all_required_params_satisfied =
+          command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? } &&
+          command.required_options.all? { |option| !parsed_options_with_defaults[option.name].nil? }
 
         unused_arguments = arguments.drop(command.required_arguments.length)
 
         unless all_required_params_satisfied
-          return error_message(command, prog_name, parsed_required_params, parsed_options, parsed_options_with_defaults)
+          return error_message(
+            command, prog_name, parsed_required_params, parsed_options, parsed_options_with_defaults
+          )
         end
 
         parsed_params.reject! { |_key, value| value.nil? }
@@ -70,7 +73,9 @@ module Dry
       def self.error_message(command, prog_name, parsed_required_params, parsed_options, parsed_options_with_defaults)
         parsed_required_params_values = parsed_required_params.values.compact
 
-        missing_options = command.required_options.select { |option| parsed_options_with_defaults[option.name].nil? }
+        missing_options = command.required_options.select { |option|
+          parsed_options_with_defaults[option.name].nil?
+        }
 
         error_msg = "ERROR: \"#{prog_name}\" was called with "
         error_msg += if parsed_required_params_values.empty?
