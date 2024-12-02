@@ -2,13 +2,43 @@
 
 module Dry
   class CLI
-    # Collection of functions to colorize text.
+    # Collection of functions to style text.
     #
     # @since 1.3.0
-    module Colors
+    module Styles
       # since 1.3.0
       def bold(text)
         ensure_clean_sequence("\e[1m#{text}")
+      end
+
+      # since 1.3.0
+      def dim(text)
+        ensure_clean_sequence("\e[2m#{text}")
+      end
+
+      # since 1.3.0
+      def italic(text)
+        ensure_clean_sequence("\e[3m#{text}")
+      end
+
+      # since 1.3.0
+      def underline(text)
+        ensure_clean_sequence("\e[4m#{text}")
+      end
+
+      # since 1.3.0
+      def blink(text)
+        ensure_clean_sequence("\e[5m#{text}")
+      end
+
+      # since 1.3.0
+      def reverse(text)
+        ensure_clean_sequence("\e[7m#{text}")
+      end
+
+      # since 1.3.0
+      def invisible(text)
+        ensure_clean_sequence("\e[8m#{text}")
       end
 
       # since 1.3.0
