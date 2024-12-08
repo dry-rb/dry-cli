@@ -17,6 +17,7 @@ module Dry
     require "dry/cli/spell_checker"
     require "dry/cli/banner"
     require "dry/cli/inflector"
+    require "dry/cli/shell_completion"
 
     # Check if command
     #
@@ -110,6 +111,7 @@ module Dry
     def perform_registry(arguments)
       result = registry.get(arguments)
       return spell_checker(result, arguments) unless result.found?
+      return shell_completion(registry, result.arguments) if result.command == Dry::CLI::ShellCompletion
 
       command, args = parse(result.command, result.arguments, result.names)
 
@@ -169,6 +171,13 @@ module Dry
       puts
       err.puts Usage.call(result)
       exit(1)
+    end
+
+    # @since 1.3.0
+    # @api private
+    def shell_completion(registry, prefixes)
+      puts registry.complete(prefixes)
+      exit(0)
     end
 
     # Handles Exit codes for signals
