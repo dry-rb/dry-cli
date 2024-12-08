@@ -13,32 +13,32 @@ module StylesDemo
     # rubocop:disable Metrics/AbcSize
     def call
       demo = <<~DEMO
-        `bold`                   #{bold("This is bold")}
-        `dim`                    #{dim("This is dim")}
-        `italic`                 #{italic("This is italic")}
-        `underline`              #{underline("This is underline")}
-        `blink`                  #{blink("This blinks")}
-        `reverse`                #{reverse("This was reversed")}
-        `invisible`              #{invisible("This is invisible")} (you can't see it, right?)
-        `black`                  #{black("This is black")}
-        `red`                    #{red("This is red")}
-        `green`                  #{green("This is green")}
-        `yellow`                 #{yellow("This is yellow")}
-        `blue`                   #{blue("This is blue")}
-        `magenta`                #{magenta("This is magenta")}
-        `cyan`                   #{cyan("This is cyan")}
-        `white`                  #{white("This is white")}
-        `on_black`               #{on_black("This is black")}
-        `on_red`                 #{on_red("This is red")}
-        `on_green`               #{on_green("This is green")}
-        `on_yellow`              #{on_yellow("This is yellow")}
-        `on_blue`                #{on_blue("This is blue")}
-        `on_magenta`             #{on_magenta("This is magenta")}
-        `on_cyan`                #{on_cyan("This is cyan")}
-        `on_white`               #{on_white("This is white")}
-        `bold`+`red`:            #{bold(red("This is bold red"))}
-        `bold`+`on_green`:       #{bold(on_green("This is bold on green"))}
-        `bold`+`red`+`on_green`: #{bold(red(on_green("This is bold red on green")))}
+        `stylize("This is bold").bold`                           #=> #{stylize("This is bold").bold}
+        `stylize("This is dim").dim`                             #=> #{stylize("This is dim").dim}
+        `stylize("This is italic").italic`                       #=> #{stylize("This is italic").italic}
+        `stylize("This is underline").underline`                 #=> #{stylize("This is underline").underline}
+        `stylize("This blinks").blink`                           #=> #{stylize("This blinks").blink}
+        `stylize("This was reversed").reverse`                   #=> #{stylize("This was reversed").reverse}
+        `stylize("This is invisible").invisible`                 #=> #{stylize("This is invisible").invisible} (you can't see it, right?)
+        `stylize("This is black").black`                         #=> #{stylize("This is black").black}
+        `stylize("This is red").red`                             #=> #{stylize("This is red").red}
+        `stylize("This is green").green`                         #=> #{stylize("This is green").green}
+        `stylize("This is yellow").yellow`                       #=> #{stylize("This is yellow").yellow}
+        `stylize("This is blue").blue`                           #=> #{stylize("This is blue").blue}
+        `stylize("This is magenta").magenta`                     #=> #{stylize("This is magenta").magenta}
+        `stylize("This is cyan").cyan`                           #=> #{stylize("This is cyan").cyan}
+        `stylize("This is white").white`                         #=> #{stylize("This is white").white}
+        `stylize("This is black").on_black`                      #=> #{stylize("This is black").on_black}
+        `stylize("This is red").on_red`                          #=> #{stylize("This is red").on_red}
+        `stylize("This is green").on_green`                      #=> #{stylize("This is green").on_green}
+        `stylize("This is yellow").on_yellow`                    #=> #{stylize("This is yellow").on_yellow}
+        `stylize("This is blue").on_blue`                        #=> #{stylize("This is blue").on_blue}
+        `stylize("This is magenta").on_magenta`                  #=> #{stylize("This is magenta").on_magenta}
+        `stylize("This is cyan").on_cyan`                        #=> #{stylize("This is cyan").on_cyan}
+        `stylize("This is white").on_white`                      #=> #{stylize("This is white").on_white}
+        `stylize("This is bold red").bold.red                    #=> #{stylize("This is bold red").bold.red}
+        `stylize("This is bold on green").bold.on_green`         #=> #{stylize("This is bold on green").bold.on_green}
+        `stylize("This is bold red on green").bold.red.on_green` #=> #{stylize("This is bold red on green").bold.red.on_green}
       DEMO
       puts demo
     end
