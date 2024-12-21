@@ -13,7 +13,7 @@ RSpec.describe "Rendering" do
         foo console                                                # Starts Foo console
         foo db [SUBCOMMAND]
         foo destroy [SUBCOMMAND]
-        foo exec TASK [DIRS]                                       # Execute a task
+        foo exec TASK DIRS                                         # Execute a task
         foo generate [SUBCOMMAND]
         foo greeting [RESPONSE]
         foo hello                                                  # Print a greeting
