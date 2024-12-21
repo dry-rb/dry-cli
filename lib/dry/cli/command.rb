@@ -350,6 +350,31 @@ module Dry
         arguments.reject(&:required?)
       end
 
+      # @since 1.3.0
+      # @api private
+      # rubocop:disable Metrics/PerceivedComplexity
+      def self.arguments_sorted_by_usage_order
+        args = required_arguments + optional_arguments
+
+        args.sort! do |a1, a2|
+          a1_priority = a2_priority = 0
+
+          a1_priority += 2 unless a1.array?
+          a2_priority += 2 unless a2.array?
+          a1_priority += 1 if a1.required?
+          a2_priority += 1 if a2.required?
+
+          if a1_priority > a2_priority
+            -1
+          elsif a2_priority > a1_priority
+            1
+          else
+            0
+          end
+        end
+      end
+      # rubocop:enable Metrics/PerceivedComplexity
+
       # @since 0.7.0
       # @api private
       def self.subcommands
@@ -387,6 +412,7 @@ module Dry
         default_params
         required_arguments
         optional_arguments
+        arguments_sorted_by_usage_order
         subcommands
       ] => "self.class"
 
