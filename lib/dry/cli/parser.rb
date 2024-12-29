@@ -20,6 +20,9 @@ module Dry
         OptionParser.new do |opts|
           command.options.each do |option|
             opts.on(*option.parser_options) do |value|
+              conflict_found = parsed_options.keys.find { option.conflicts_with?(_1) }
+              raise InvalidOptionCombination if conflict_found
+
               parsed_options[option.name.to_sym] = value
             end
           end
@@ -31,7 +34,7 @@ module Dry
 
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, prog_name, parsed_options)
-      rescue ::OptionParser::ParseError
+      rescue ::OptionParser::ParseError, InvalidOptionCombination
         Result.failure("ERROR: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(" ")}\"") # rubocop:disable Layout/LineLength
       end
 

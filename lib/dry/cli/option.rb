@@ -82,6 +82,12 @@ module Dry
         options[:label] || name.upcase
       end
 
+      # @since 1.3.0
+      # @api private
+      def conflicts_with
+        options[:conflicts_with] || []
+      end
+
       # @since 0.1.0
       # @api private
       def argument?
@@ -120,6 +126,15 @@ module Dry
           .uniq
           .map { |name| name.size == 1 ? "-#{name}" : "--#{name}" }
           .map { |name| boolean? || flag? ? name : "#{name} VALUE" }
+      end
+
+      # @since 1.3.0
+      # @api private
+      def conflicts_with?(opt)
+        candidates = conflicts_with
+        return false if candidates.empty?
+
+        candidates.include?(opt)
       end
     end
 

@@ -312,6 +312,54 @@ module Dry
         @options << Option.new(name, options)
       end
 
+      # Mutually exclusive options (aka options that cannot be used together)
+      #
+      # @param options [Array] options that cannot be used together
+      #
+      # @since 1.3.0
+      #
+      # @example Basic usage
+      #   require "dry/cli"
+      #
+      #   class Greetings < Dry::CLI::Command
+      #     mutually_exclusive_options [
+      #       [:english, {desc: "Chooses English", type: :flag}],
+      #       [:spanish, {desc: "Chooses Spanish", type: :flag}],
+      #       [:portuguese, {desc: "Chooses Portuguese", type: :flag}]
+      #     ]
+      #
+      #     def call(options)
+      #       if options.key?(:english)
+      #         puts "Good morning"
+      #       elsif options.key?(:spanish)
+      #         puts "Buenos días"
+      #       elsif options.key?(:portuguese)
+      #         puts "Bom dia"
+      #       end
+      #     end
+      #   end
+      #
+      #   # $ foo greetings --english
+      #   # Good morning
+      #
+      #   # $ foo greetings --english --spanish
+      #   # ERROR: "foo greetings" was called with arguments "--english --spanish"
+      def self.mutually_exclusive_options(opts)
+        names = opts.map { _1[0] }
+
+        opts.each do |o|
+          current_name, current_opts = o
+          current_opts ||= {}
+
+          current_opts.merge!(
+            {
+              conflicts_with: names.reject { _1 == current_name }
+            }
+          )
+          option(current_name, current_opts)
+        end
+      end
+
       # @since 0.1.0
       # @api private
       def self.params
