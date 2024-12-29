@@ -26,6 +26,11 @@ RSpec.shared_examples "Commands" do |cli|
     expect(output).to eq("generate secret - app: web\n")
   end
 
+  it "fails when using options that conflict" do
+    error = capture_error { cli.call(arguments: %w[greeting hello --person=Gustavo --alien=Orion]) }
+    expect(error).to eq("ERROR: \"rspec greeting\" was called with arguments \"hello --person=Gustavo --alien=Orion\"\n")
+  end
+
   context "works with params" do
     it "without params" do
       output = capture_output { cli.call(arguments: ["server"]) }

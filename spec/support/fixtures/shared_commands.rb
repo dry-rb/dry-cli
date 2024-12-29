@@ -342,7 +342,10 @@ module Commands
   class Greeting < Dry::CLI::Command
     argument :response, default: "Hello World"
 
-    option :person
+    mutually_exclusive_options [
+      [:person],
+      [:alien, {desc: "Choose an alien", type: :string}]
+    ]
 
     def call(response:, **options)
       puts "response: #{response}, person: #{options[:person]}"
