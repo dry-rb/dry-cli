@@ -143,26 +143,46 @@ RSpec.shared_examples "Inherited commands" do |cli|
   context "with inherited options" do
     it "run has default verbosity_level" do
       output = capture_output { cli.call(arguments: %w[i run application_name command_name]) }
-      expect(output).to include('Options: {:verbosity=>"INFO"}')
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to include('Options: {:verbosity=>"INFO"}')
+      else
+        expect(output).to include('Options: {verbosity: "INFO"}')
+      end
     end
 
     it "subrun has default verbosity_level too" do
       output = capture_output { cli.call(arguments: %w[i subrun application_name command_name]) }
-      expect(output).to include('Options: {:verbosity=>"INFO"}')
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to include('Options: {:verbosity=>"INFO"}')
+      else
+        expect(output).to include('Options: {verbosity: "INFO"}')
+      end
     end
 
     it "addons has verbosity_level set to debug" do
       output = capture_output do
         cli.call(arguments: %w[i addons application_name --verbosity=DEBUG])
       end
-      expect(output).to include("Options: {:verbosity=>\"DEBUG\", :json=>false}")
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to include("Options: {:verbosity=>\"DEBUG\", :json=>false}")
+      else
+        expect(output).to include("Options: {verbosity: \"DEBUG\", json: false}")
+      end
     end
 
     it "logs has verbosity_level set to WARNING" do
       output = capture_output do
         cli.call(arguments: %w[i logs application_name --verbosity=WARNING])
       end
-      expect(output).to include("Options: {:verbosity=>\"WARNING\"}")
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to include("Options: {:verbosity=>\"WARNING\"}")
+      else
+        expect(output).to include("Options: {verbosity: \"WARNING\"}")
+      end
     end
   end
 

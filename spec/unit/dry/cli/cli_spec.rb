@@ -58,66 +58,130 @@ RSpec.describe "CLI" do
 
     it "with required_argument" do
       output = capture_output { cli.call(arguments: ["first_arg"]) }
-      expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test\"}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {:option_with_default=>\"test\"}\n"
+        )
+      else
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {option_with_default: \"test\"}\n"
+        )
+      end
     end
 
     it "with optional_arg" do
       output = capture_output { cli.call(arguments: %w[first_arg opt_arg]) }
-      expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: opt_arg. " \
-        "Options: {:option_with_default=>\"test\", :args=>[\"opt_arg\"]}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: opt_arg. " \
+          "Options: {:option_with_default=>\"test\", :args=>[\"opt_arg\"]}\n"
+        )
+      else
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: opt_arg. " \
+          "Options: {option_with_default: \"test\", args: [\"opt_arg\"]}\n"
+        )
+      end
     end
 
     it "with underscored option_one" do
       output = capture_output { cli.call(arguments: %w[first_arg --option_one=test2]) }
-      expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
+        )
+      else
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {option_with_default: \"test\", option_one: \"test2\"}\n"
+        )
+      end
     end
 
     it "with option_one alias" do
       output = capture_output { cli.call(arguments: %w[first_arg -1 test2]) }
-      expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
+        )
+      else
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {option_with_default: \"test\", option_one: \"test2\"}\n"
+        )
+      end
     end
 
     it "with underscored boolean_option" do
       output = capture_output { cli.call(arguments: %w[first_arg --boolean_option]) }
-      expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test\", :boolean_option=>true}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {:option_with_default=>\"test\", :boolean_option=>true}\n"
+        )
+      else
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {option_with_default: \"test\", boolean_option: true}\n"
+        )
+      end
     end
 
     it "with boolean_option alias" do
       output = capture_output { cli.call(arguments: %w[first_arg -b]) }
-      expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test\", :boolean_option=>true}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {:option_with_default=>\"test\", :boolean_option=>true}\n"
+        )
+      else
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {option_with_default: \"test\", boolean_option: true}\n"
+        )
+      end
     end
 
     it "with underscoreed option_with_default alias" do
       output = capture_output { cli.call(arguments: %w[first_arg --option_with_default=test3]) }
-      expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test3\"}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {:option_with_default=>\"test3\"}\n"
+        )
+      else
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {option_with_default: \"test3\"}\n"
+        )
+      end
     end
 
     it "with combination of aliases" do
       output = capture_output { cli.call(arguments: %w[first_arg -bd test3]) }
-      expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test3\", :boolean_option=>true}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {:option_with_default=>\"test3\", :boolean_option=>true}\n"
+        )
+      else
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {option_with_default: \"test3\", boolean_option: true}\n"
+        )
+      end
     end
   end
 end

@@ -27,16 +27,29 @@ RSpec.shared_examples "Third-party gems" do |cli|
 
   context "callbacks" do
     it "allows to add callbacks as a block" do
-      expected = <<~OUTPUT
-        before command callback Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
-        before callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
-        before callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
-        dir: ., url: "https://hanamirb.test"
-        after command callback Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
-        after callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
-        after callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
-      OUTPUT
+      if RUBY_VERSION < "3.4"
+        expected = <<~OUTPUT
+          before command callback Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
+          before callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+          before callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+          dir: ., url: "https://hanamirb.test"
+          after command callback Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
+          after callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+          after callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+        OUTPUT
 
+      else
+        expected = <<~OUTPUT
+          before command callback Webpack::CLI::CallbacksCommand {url: "https://hanamirb.test", dir: "."}
+          before callback (class), 2 arg(s): {url: "https://hanamirb.test", dir: "."}
+          before callback (object), 2 arg(s): {url: "https://hanamirb.test", dir: "."}
+          dir: ., url: "https://hanamirb.test"
+          after command callback Webpack::CLI::CallbacksCommand {url: "https://hanamirb.test", dir: "."}
+          after callback (class), 2 arg(s): {url: "https://hanamirb.test", dir: "."}
+          after callback (object), 2 arg(s): {url: "https://hanamirb.test", dir: "."}
+        OUTPUT
+
+      end
       output = capture_output { cli.call(arguments: %w[callbacks . --url=https://hanamirb.test]) }
       expect(output).to eq(expected)
     end
