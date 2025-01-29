@@ -38,8 +38,6 @@ RSpec.shared_examples "Third-party gems" do |cli|
           after callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
         OUTPUT
 
-        output = capture_output { cli.call(arguments: %w[callbacks . --url=https://hanamirb.test]) }
-        expect(output).to eq(expected)
       else
         expected = <<~OUTPUT
           before command callback Webpack::CLI::CallbacksCommand {url: "https://hanamirb.test", dir: "."}
@@ -51,9 +49,9 @@ RSpec.shared_examples "Third-party gems" do |cli|
           after callback (object), 2 arg(s): {url: "https://hanamirb.test", dir: "."}
         OUTPUT
 
-        output = capture_output { cli.call(arguments: %w[callbacks . --url=https://hanamirb.test]) }
-        expect(output).to eq(expected)
       end
+      output = capture_output { cli.call(arguments: %w[callbacks . --url=https://hanamirb.test]) }
+      expect(output).to eq(expected)
     end
   end
 

@@ -14,7 +14,6 @@ RSpec.describe "Third-party gems" do
         after callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
         after callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
       OUTPUT
-      expect(output).to eq(expected)
     else
       expected = <<~OUTPUT
         before command callback Foo::Webpack::CLI::CallbacksCommand {url: "https://hanamirb.test", dir: "."}
@@ -25,8 +24,7 @@ RSpec.describe "Third-party gems" do
         after callback (class), 2 arg(s): {url: "https://hanamirb.test", dir: "."}
         after callback (object), 2 arg(s): {url: "https://hanamirb.test", dir: "."}
       OUTPUT
-      expect(output).to eq(expected)
     end
-
+    expect(output).to eq(expected)
   end
 end
