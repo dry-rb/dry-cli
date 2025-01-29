@@ -18,8 +18,15 @@ RSpec.describe "Inherited commands" do
 
   it "works for subclasses" do
     output = `based subrun application_name command_to_run`
-    expect(output).to eq(
-      "Run - App: application_name - Command: command_to_run - Options: {:verbosity=>\"INFO\"}\n"
-    )
+
+    if RUBY_VERSION < "3.4"
+      expect(output).to eq(
+        "Run - App: application_name - Command: command_to_run - Options: {:verbosity=>\"INFO\"}\n"
+      )
+    else
+      expect(output).to eq(
+        "Run - App: application_name - Command: command_to_run - Options: {verbosity: \"INFO\"}\n"
+      )
+    end
   end
 end
