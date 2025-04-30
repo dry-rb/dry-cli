@@ -176,6 +176,13 @@ RSpec.shared_examples "Commands" do |cli|
           expect(error).to eq("ERROR: \"rspec console\" was called with arguments \"--engine=unknown\"\n")
         end
       end
+
+      context "with an unknown argument" do
+        it "prints error" do
+          error = capture_error { cli.call(arguments: %w[db rollback 4]) }
+          expect(error).to eq("ERROR: \"rspec db rollback\" was called with arguments \"4\"\n")
+        end
+      end
     end
 
     it "with help param" do

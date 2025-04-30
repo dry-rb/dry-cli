@@ -31,7 +31,7 @@ module Dry
 
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, prog_name, parsed_options)
-      rescue ::OptionParser::ParseError
+      rescue ::OptionParser::ParseError, UnknownValueError
         Result.failure("ERROR: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(" ")}\"") # rubocop:disable Layout/LineLength
       end
 
@@ -40,8 +40,8 @@ module Dry
       #
       # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
       def self.parse_required_params(command, arguments, prog_name, parsed_options)
-        parsed_params          = match_arguments(command.arguments, arguments)
-        parsed_required_params = match_arguments(command.required_arguments, arguments)
+        parsed_params          = match_arguments(command.arguments, arguments, parsed_options)
+        parsed_required_params = match_arguments(command.required_arguments, arguments, parsed_options)
         all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? } # rubocop:disable Layout/LineLength
 
         unused_arguments = arguments.drop(command.required_arguments.length)
@@ -69,15 +69,20 @@ module Dry
       end
       # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity
 
-      def self.match_arguments(command_arguments, arguments)
+      def self.match_arguments(command_arguments, arguments, default_values)
         result = {}
 
+        arg = nil
         command_arguments.each_with_index do |cmd_arg, index|
           if cmd_arg.array?
-            result[cmd_arg.name] = arguments[index..]
+            arg = arguments[index..] || default_values[cmd_arg.name]
+            raise UnknownValueError unless cmd_arg.valid_value?(arg)
+            result[cmd_arg.name] = arg
             break
           else
-            result[cmd_arg.name] = arguments.at(index)
+            arg = arguments.at(index) || default_values[cmd_arg.name]
+            raise UnknownValueError unless cmd_arg.valid_value?(arg)
+            result[cmd_arg.name] = arg
           end
         end
 
