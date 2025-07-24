@@ -97,6 +97,10 @@ module Dry
     # @api private
     def perform_command(arguments)
       command, args = parse(kommand, arguments, [])
+
+      command.instance_variable_set(:@err, err)
+      command.instance_variable_set(:@out, out)
+
       command.call(**args)
     end
 
@@ -112,6 +116,9 @@ module Dry
       return spell_checker(result, arguments) unless result.found?
 
       command, args = parse(result.command, result.arguments, result.names)
+
+      command.instance_variable_set(:@err, err)
+      command.instance_variable_set(:@out, out)
 
       result.before_callbacks.run(command, args)
       command.call(**args)
