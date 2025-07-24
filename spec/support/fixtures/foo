@@ -433,6 +433,32 @@ module Foo
           end
         end
       end
+
+      module PrefixCommands
+        class NestedOnceCommand < Dry::CLI::Command
+          desc "A nested sub command"
+
+          def call(**_params)
+            puts "I'm a one level nested command"
+          end
+        end
+
+        class NestedTwiceCommand < Dry::CLI::Command
+          desc "A nested nested sub command"
+
+          def call(**_params)
+            puts "I'm a two level nested command"
+          end
+        end
+
+        class NestedThriceCommand < Dry::CLI::Command
+          desc "A nested nested nested sub command"
+
+          def call(**_params)
+            puts "I'm a three level nested command"
+          end
+        end
+      end
     end
   end
 end
@@ -480,6 +506,14 @@ Foo::CLI::Commands.register "root-command sub-command", Foo::CLI::Commands::Root
 Foo::CLI::Commands.register "variadic default",                    Foo::CLI::Commands::VariadicArguments
 Foo::CLI::Commands.register "variadic with-mandatory",             Foo::CLI::Commands::MandatoryAndVariadicArguments
 Foo::CLI::Commands.register "variadic with-mandatory-and-options", Foo::CLI::Commands::MandatoryOptionsAndVariadicArguments
+
+Foo::CLI::Commands.register "nested" do
+  register "one", Foo::CLI::Commands::PrefixCommands::NestedOnceCommand do
+    register "two", Foo::CLI::Commands::PrefixCommands::NestedTwiceCommand do
+      register "three", Foo::CLI::Commands::PrefixCommands::NestedThriceCommand
+    end
+  end
+end
 
 module Foo
   module Webpack
