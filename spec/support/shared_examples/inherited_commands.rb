@@ -43,7 +43,7 @@ RSpec.shared_examples "Inherited commands" do |cli|
           sub-command                       # I'm a concrete command
 
         Options:
-          --help, -h                        # Print this help
+          --help, -h  # Print this help
       DESC
       expect(output).to eq(expected)
     end
@@ -61,12 +61,12 @@ RSpec.shared_examples "Inherited commands" do |cli|
           Run a one-off process inside your app
 
         Arguments:
-          APP                               # REQUIRED Application name
-          CMD                               # REQUIRED Command to execute
+          APP                # REQUIRED Application name
+          CMD                # REQUIRED Command to execute
 
         Options:
-          --verbosity=VALUE                 # Verbosity level, default: "INFO"
-          --help, -h                        # Print this help
+          --verbosity=VALUE  # Verbosity level, default: "INFO"
+          --help, -h         # Print this help
       DESC
       expect(output).to eq(expected)
     end
@@ -81,12 +81,12 @@ RSpec.shared_examples "Inherited commands" do |cli|
           #{cmd} i subrun APP CMD
 
         Arguments:
-          APP                               # REQUIRED Application name
-          CMD                               # REQUIRED Command to execute
+          APP                # REQUIRED Application name
+          CMD                # REQUIRED Command to execute
 
         Options:
-          --verbosity=VALUE                 # Verbosity level, default: "INFO"
-          --help, -h                        # Print this help
+          --verbosity=VALUE  # Verbosity level, default: "INFO"
+          --help, -h         # Print this help
       DESC
       expect(output).to eq(expected)
     end
@@ -104,16 +104,16 @@ RSpec.shared_examples "Inherited commands" do |cli|
           Lists your add-ons and attachments
 
         Arguments:
-          APP                               # REQUIRED Application name
+          APP                             # REQUIRED Application name
 
         Options:
-          --verbosity=VALUE                 # Verbosity level, default: "INFO"
-          --[no-]json                       # return add-ons in json format, default: false
-          --help, -h                        # Print this help
+          --verbosity=VALUE               # Verbosity level, default: "INFO"
+          --[no-]json                     # return add-ons in json format, default: false
+          --help, -h                      # Print this help
 
         Examples:
-          #{cmd} i addons APP_NAME
-          #{cmd} i addons APP_NAME --json
+          #{cmd} i addons APP_NAME         # Basic usage
+          #{cmd} i addons APP_NAME --json  # Return add-ons in JSON format
       DESC
       expect(output).to eq(expected)
     end
@@ -131,18 +131,18 @@ RSpec.shared_examples "Inherited commands" do |cli|
           Display recent log output
 
         Arguments:
-          APP                               # REQUIRED Application name
+          APP                             # REQUIRED Application name
 
         Options:
-          --verbosity=VALUE                 # Verbosity level, default: "INFO"
-          --num=VALUE                       # number of lines to display
-          --[no-]tail                       # continually stream log
-          --help, -h                        # Print this help
+          --verbosity=VALUE               # Verbosity level, default: "INFO"
+          --num=VALUE                     # number of lines to display
+          --[no-]tail                     # continually stream log
+          --help, -h                      # Print this help
 
         Examples:
-          #{cmd} i logs APP_NAME
-          #{cmd} i logs APP_NAME --num=50
-          #{cmd} i logs APP_NAME --tail
+          #{cmd} i logs APP_NAME           # Basic usage
+          #{cmd} i logs APP_NAME --num=50  # Display 50 lines
+          #{cmd} i logs APP_NAME --tail    # Continually stream log
       DESC
       expect(output).to eq(expected)
     end

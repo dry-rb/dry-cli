@@ -78,13 +78,11 @@ module Dry
       #   require "dry/cli"
       #
       #   class Server < Dry::CLI::Command
-      #     example [
-      #       "                    # Basic usage (it uses the bundled server engine)",
-      #       "--server=webrick    # Force `webrick` server engine",
-      #       "--host=0.0.0.0      # Bind to a host",
-      #       "--port=2306         # Bind to a port",
-      #       "--no-code-reloading # Disable code reloading"
-      #     ]
+      #     example "", "Basic usage (it uses the bundled server engine)",
+      #     example "--server=webrick, "Force `webrick` server engine",
+      #     example "--host=0.0.0.0, "Bind to a host",
+      #     example "--port=2306", "Bind to a port",
+      #     example "--no-code-reloading", "Disable code reloading"
       #
       #     def call(*)
       #       # ...
@@ -100,8 +98,8 @@ module Dry
       #   #     foo server --host=0.0.0.0      # Bind to a host
       #   #     foo server --port=2306         # Bind to a port
       #   #     foo server --no-code-reloading # Disable code reloading
-      def self.example(*examples)
-        @examples += examples.flatten(1)
+      def self.example(example, description = "")
+        @examples.push([example, description])
       end
 
       # Specify an argument
