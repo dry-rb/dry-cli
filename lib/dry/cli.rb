@@ -57,12 +57,13 @@ module Dry
     # Invoke the CLI
     #
     # @param arguments [Array<string>] the command line arguments (defaults to `ARGV`)
-    # @param out [IO] the standard output (defaults to `$stdout`)
-    # @param err [IO] the error output (defaults to `$stderr`)
+    # @param stderr [IO] the error output (defaults to `$stderr`)
+    # @param stdin [IO] the standard input (defaults to `$stdin`)
+    # @param stdout [IO] the standard output (defaults to `$stdout`)
     #
     # @since 0.1.0
-    def call(arguments: ARGV, out: $stdout, err: $stderr)
-      @out, @err = out, err
+    def call(arguments: ARGV, stderr: $stderr, stdin: $stdin, stdout: $stdout)
+      @stderr, @stdin, @stdout = stderr, stdin, stdout
       kommand ? perform_command(arguments) : perform_registry(arguments)
     rescue SignalException => e
       signal_exception(e)
@@ -82,11 +83,15 @@ module Dry
 
     # @since 0.6.0
     # @api private
-    attr_reader :out
+    attr_reader :stderr
+
+    # @since unreleased
+    # @api private
+    attr_reader :stdin
 
     # @since 0.6.0
     # @api private
-    attr_reader :err
+    attr_reader :stdout
 
     # Invoke the CLI if singular command passed
     #
@@ -145,29 +150,29 @@ module Dry
     # @since 0.6.0
     # @api private
     def build_command(command)
-      command.is_a?(Class) ? command.new : command
+      command.is_a?(Class) ? command.new(stderr: stderr, stdin: stdin, stdout: stdout) : command
     end
 
     # @since 0.6.0
     # @api private
     def help(command, prog_name)
-      out.puts Banner.call(command, prog_name)
+      stdout.puts Banner.call(command, prog_name)
       exit(0) # Successful exit
     end
 
     # @since 0.6.0
     # @api private
     def error(result)
-      err.puts(result.error)
+      stderr.puts(result.error)
       exit(1)
     end
 
     # @since 1.1.1
     def spell_checker(result, arguments)
       spell_checker = SpellChecker.call(result, arguments)
-      err.puts spell_checker if spell_checker
+      stderr.puts spell_checker if spell_checker
       puts
-      err.puts Usage.call(result)
+      stderr.puts Usage.call(result)
       exit(1)
     end
 
