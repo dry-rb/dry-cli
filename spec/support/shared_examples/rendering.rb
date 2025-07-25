@@ -170,10 +170,10 @@ RSpec.shared_examples "Rendering" do |cli|
         Accepts options with aliases
 
       Options:
-        --url=VALUE, -u VALUE             # The action URL
-        --[no-]flag, -f                   # The flag
-        --[no-]opt, -o                    # The opt, default: false
-        --help, -h                        # Print this help
+        --url=VALUE, -u VALUE  # The action URL
+        --[no-]flag, -f        # The flag
+        --[no-]opt, -o         # The opt, default: false
+        --help, -h             # Print this help
     DESC
 
     expect(output).to eq(expected)

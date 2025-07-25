@@ -8,9 +8,7 @@ module Commands
     class Precompile < Dry::CLI::Command
       desc "Precompile assets for deployment"
 
-      example [
-        "FOO_ENV=production # Precompile assets for production environment"
-      ]
+      example "FOO_ENV=production", "Precompile assets for production environment"
 
       def call(*); end
     end
@@ -20,10 +18,8 @@ module Commands
     desc "Starts Foo console"
     option :engine, desc: "Force a console engine", values: %w[irb pry ripl]
 
-    example [
-      "             # Uses the bundled engine",
-      "--engine=pry # Force to use Pry"
-    ]
+    example "", "Uses the bundled engine"
+    example "--engine=pry", "Force to use Pry"
 
     def call(engine: nil, **)
       puts "console - engine: #{engine}"
@@ -59,10 +55,8 @@ module Commands
       desc "Migrate the database"
       argument :version, desc: "The target version of the migration (see `foo db version`)"
 
-      example [
-        "               # Migrate to the last version",
-        "20170721120747 # Migrate to a specific version"
-      ]
+      example "", "Migrate to the last version"
+      example "20170721120747", "Migrate to a specific version"
 
       def call(*); end
     end
@@ -94,10 +88,8 @@ module Commands
     class Action < Dry::CLI::Command
       desc "Destroy an action from app"
 
-      example [
-        "web home#index    # Basic usage",
-        "admin users#index # Destroy from `admin` app"
-      ]
+      example "web home#index", "Basic usage"
+      example "admin users#index", "Destroy from `admin` app"
 
       argument :app,    required: true, desc: "The application name (eg. `web`)"
       argument :action, required: true, desc: "The action name (eg. `home#index`)"
@@ -112,9 +104,7 @@ module Commands
 
       argument :app, required: true, desc: "The application name (eg. `web`)"
 
-      example [
-        "admin # Destroy `admin` app"
-      ]
+      example "admin", "Destroy `admin` app"
 
       def call(*); end
     end
@@ -124,9 +114,7 @@ module Commands
 
       argument :mailer, required: true, desc: "The mailer name (eg. `welcome`)"
 
-      example [
-        "welcome # Destroy `WelcomeMailer` mailer"
-      ]
+      example "welcome", "Destroy `WelcomeMailer` mailer"
 
       def call(*); end
     end
@@ -136,9 +124,7 @@ module Commands
 
       argument :migration, required: true, desc: "The migration name (eg. `create_users`)"
 
-      example [
-        "create_users # Destroy `db/migrations/20170721120747_create_users.rb`"
-      ]
+      example "create_users", "Destroy `db/migrations/20170721120747_create_users.rb`"
 
       def call(*); end
     end
@@ -148,9 +134,7 @@ module Commands
 
       argument :model, required: true, desc: "The model name (eg. `user`)"
 
-      example [
-        "user # Destroy `User` entity and `UserRepository` repository"
-      ]
+      example "user", "Destroy `User` entity and `UserRepository` repository"
 
       def call(*); end
     end
@@ -160,13 +144,11 @@ module Commands
     class Action < Dry::CLI::Command
       desc "Generate an action for app"
 
-      example [
-        "web home#index                    # Basic usage",
-        "admin home#index                  # Generate for `admin` app",
-        "web home#index --url=/            # Specify URL",
-        "web sessions#destroy --method=GET # Specify HTTP method",
-        "web books#create --skip-view      # Skip view and template"
-      ]
+      example "web home#index", "Basic usage"
+      example "admin home#index", "Generate for `admin` app"
+      example "web home#index --url=/", "Specify URL"
+      example "web sessions#destroy --method=GET", "Specify HTTP method"
+      example "web books#create --skip-view", "Skip view and template"
 
       argument :app,    required: true, desc: "The application name (eg. `web`)"
       argument :action, required: true, desc: "The action name (eg. `home#index`)"
@@ -186,10 +168,8 @@ module Commands
       argument :app, required: true, desc: "The application name (eg. `web`)"
       option :application_base_url, desc: "The app base URL (eg. `/api/v1`)"
 
-      example [
-        "admin                              # Generate `admin` app",
-        "api --application-base-url=/api/v1 # Generate `api` app and mount at `/api/v1`"
-      ]
+      example "admin", "Generate `admin` app"
+      example "api --application-base-url=/api/v1", "Generate `api` app and mount at `/api/v1`"
 
       def call(*); end
     end
@@ -203,12 +183,10 @@ module Commands
       option :to,      desc: "The default `to` field of the mail"
       option :subject, desc: "The mail subject"
 
-      example [
-        "welcome                                         # Basic usage",
-        'welcome --from="noreply@example.com"            # Generate with default `from` value',
-        'announcement --to="users@example.com"           # Generate with default `to` value',
-        'forgot_password --subject="Your password reset" # Generate with default `subject`'
-      ]
+      example "welcome", "Basic usage"
+      example 'welcome --from="noreply@example.com"', "Generate with default `from` value"
+      example 'announcement --to="users@example.com"', "Generate with default `to` value"
+      example 'forgot_password --subject="Your password reset"', "Generate with default `subject`"
 
       def call(*); end
     end
@@ -218,9 +196,7 @@ module Commands
 
       argument :migration, required: true, desc: "The migration name (eg. `create_users`)"
 
-      example [
-        "create_users # Generate `db/migrations/20170721120747_create_users.rb`"
-      ]
+      example "create_users", "Generate `db/migrations/20170721120747_create_users.rb`"
 
       def call(*); end
     end
@@ -231,10 +207,8 @@ module Commands
       argument :model, required: true, desc: "Model name (eg. `user`)"
       option :skip_migration, type: :boolean, default: false, desc: "Skip migration"
 
-      example [
-        "user                  # Generate `User` entity, `UserRepository` repository, and the migration",
-        "user --skip-migration # Generate `User` entity and `UserRepository` repository"
-      ]
+      example "user", "Generate `User` entity, `UserRepository` repository, and the migration"
+      example "user --skip-migration", "Generate `User` entity and `UserRepository` repository"
 
       def call(model:, **)
         puts "generate model - model: #{model}"
@@ -246,10 +220,8 @@ module Commands
 
       argument :app, desc: "The application name (eg. `web`)"
 
-      example [
-        "    # Prints secret (eg. `6fad60e21f3f6bfcaf8e56cdb0f835d644b4892c3badc58328126812429bf073`)",
-        "web # Prints session secret (eg. `WEB_SESSIONS_SECRET=6fad60e21f3f6bfcaf8e56cdb0f835d644b4892c3badc58328126812429bf073`)"
-      ]
+      example "", "Prints secret (eg. `6fad60e21f3f6bfcaf8e56cdb0f835d644b4892c3badc58328126812429bf073`)"
+      example "web", "Prints session secret (eg. `WEB_SESSIONS_SECRET=6fad60e21f3f6bfcaf8e56cdb0f835d644b4892c3badc58328126812429bf073`)"
 
       def call(app: nil, **)
         puts "generate secret - app: #{app}"
@@ -268,13 +240,11 @@ module Commands
     option :test,                 desc: "Project testing framework (minitest/rspec)", default: "minitest"
     option :foo_head,             desc: "Use Foo HEAD (true/false)", type: :boolean, default: false
 
-    example [
-      "bookshelf                     # Basic usage",
-      "bookshelf --test=rspec        # Setup RSpec testing framework",
-      "bookshelf --database=postgres # Setup Postgres database",
-      "bookshelf --template=slim     # Setup Slim template engine",
-      "bookshelf --foo-head          # Use Foo HEAD"
-    ]
+    example "bookshelf", "Basic usage"
+    example "bookshelf --test=rspec", "Setup RSpec testing framework"
+    example "bookshelf --database=postgres", "Setup Postgres database"
+    example "bookshelf --template=slim", "Setup Slim template engine"
+    example "bookshelf --foo-head", "Use Foo HEAD"
 
     def call(project:, **)
       puts "new - project: #{project}"
@@ -301,13 +271,11 @@ module Commands
     option :quiet,          desc: "Suppress output to stdout", type: :flag
     option :deps,           desc: "List of extra dependencies", type: :array, default: %w[dep1 dep2]
 
-    example [
-      "                    # Basic usage (it uses the bundled server engine)",
-      "--server=webrick    # Force `webrick` server engine",
-      "--host=0.0.0.0      # Bind to a host",
-      "--port=2306         # Bind to a port",
-      "--no-code-reloading # Disable code reloading"
-    ]
+    example "", "Basic usage (it uses the bundled server engine)"
+    example "--server=webrick", "Force `webrick` server engine"
+    example "--host=0.0.0.0", "Bind to a host"
+    example "--port=2306", "Bind to a port"
+    example "--no-code-reloading", "Disable code reloading"
 
     def call(**options)
       puts "server - #{options.inspect}"
@@ -547,7 +515,8 @@ module InheritedCommands
     desc "Base description"
     argument :app, desc: "Application name", type: :string, required: true
     option :verbosity, desc: "Verbosity level", type: :string, default: "INFO"
-    example "Base example"
+
+    example "app_name", "Base example"
 
     def call(app:, **options)
       puts "Base - App: #{app} - Options: #{options.inspect}"
@@ -572,11 +541,9 @@ module InheritedCommands
     option :num, desc: "number of lines to display"
     option :tail, desc: "continually stream log", type: :boolean
 
-    example [
-      "APP_NAME",
-      "APP_NAME --num=50",
-      "APP_NAME --tail"
-    ]
+    example "APP_NAME", "Basic usage"
+    example "APP_NAME --num=50", "Display 50 lines"
+    example "APP_NAME --tail", "Continually stream log"
 
     def call(app:, **options)
       puts "Logs - App: #{app} - Options: #{options.inspect}"
@@ -588,9 +555,7 @@ module InheritedCommands
 
     option :json, desc: "return add-ons in json format", type: :boolean, default: false
 
-    example [
-      "APP_NAME",
-      "APP_NAME --json"
-    ]
+    example "APP_NAME", "Basic usage"
+    example "APP_NAME --json", "Return add-ons in JSON format"
   end
 end

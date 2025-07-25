@@ -18,17 +18,16 @@ RSpec.describe "Subcommands" do
           Generate a model
 
         Arguments:
-          MODEL                             # REQUIRED Model name (eg. `user`)
+          MODEL                                     # REQUIRED Model name (eg. `user`)
 
         Options:
-          --[no-]skip-migration             # Skip migration, default: false
-          --help, -h                        # Print this help
+          --[no-]skip-migration                     # Skip migration, default: false
+          --help, -h                                # Print this help
 
         Examples:
-          foo generate model user                  # Generate `User` entity, `UserRepository` repository, and the migration
-          foo generate model user --skip-migration # Generate `User` entity and `UserRepository` repository
+          foo generate model user                   # Generate `User` entity, `UserRepository` repository, and the migration
+          foo generate model user --skip-migration  # Generate `User` entity and `UserRepository` repository
       DESC
-
       expect(output).to eq(expected)
     end
   end

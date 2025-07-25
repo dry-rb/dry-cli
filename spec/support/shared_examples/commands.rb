@@ -205,13 +205,12 @@ RSpec.shared_examples "Commands" do |cli|
           --help, -h                        # Print this help
 
         Examples:
-          #{cmd} server                     # Basic usage (it uses the bundled server engine)
-          #{cmd} server --server=webrick    # Force `webrick` server engine
-          #{cmd} server --host=0.0.0.0      # Bind to a host
-          #{cmd} server --port=2306         # Bind to a port
-          #{cmd} server --no-code-reloading # Disable code reloading
+          #{cmd} server                      # Basic usage (it uses the bundled server engine)
+          #{cmd} server --server=webrick     # Force `webrick` server engine
+          #{cmd} server --host=0.0.0.0       # Bind to a host
+          #{cmd} server --port=2306          # Bind to a port
+          #{cmd} server --no-code-reloading  # Disable code reloading
       DESC
-
       expect(output).to eq(expected)
     end
 
@@ -297,11 +296,11 @@ RSpec.shared_examples "Commands" do |cli|
           sub-command                       # Root command sub command
 
         Arguments:
-          ROOT_COMMAND_ARGUMENT             # REQUIRED Root command argument
+          ROOT_COMMAND_ARGUMENT        # REQUIRED Root command argument
 
         Options:
-          --root-command-option=VALUE       # Root command option
-          --help, -h                        # Print this help
+          --root-command-option=VALUE  # Root command option
+          --help, -h                   # Print this help
       DESC
 
       expect(output).to eq(expected)

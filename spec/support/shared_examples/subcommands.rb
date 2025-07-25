@@ -83,17 +83,16 @@ RSpec.shared_examples "Subcommands" do |cli|
           Generate a model
 
         Arguments:
-          MODEL                             # REQUIRED Model name (eg. `user`)
+          MODEL                                       # REQUIRED Model name (eg. `user`)
 
         Options:
-          --[no-]skip-migration             # Skip migration, default: false
-          --help, -h                        # Print this help
+          --[no-]skip-migration                       # Skip migration, default: false
+          --help, -h                                  # Print this help
 
         Examples:
-          #{cmd} generate model user                  # Generate `User` entity, `UserRepository` repository, and the migration
-          #{cmd} generate model user --skip-migration # Generate `User` entity and `UserRepository` repository
+          #{cmd} generate model user                   # Generate `User` entity, `UserRepository` repository, and the migration
+          #{cmd} generate model user --skip-migration  # Generate `User` entity and `UserRepository` repository
       DESC
-
       expect(output).to eq(expected)
     end
 
@@ -174,22 +173,21 @@ RSpec.shared_examples "Subcommands" do |cli|
       output = capture_output { cli.call(arguments: %w[root-command sub-command -h]) }
       expected = <<~DESC
         Command:
-          rspec root-command sub-command
+          #{cmd} root-command sub-command
 
         Usage:
-          rspec root-command sub-command ROOT_COMMAND_SUB_COMMAND_ARGUMENT
+          #{cmd} root-command sub-command ROOT_COMMAND_SUB_COMMAND_ARGUMENT
 
         Description:
           Root command sub command
 
         Arguments:
-          ROOT_COMMAND_SUB_COMMAND_ARGUMENT  # REQUIRED Root command sub command argument
+          ROOT_COMMAND_SUB_COMMAND_ARGUMENT        # REQUIRED Root command sub command argument
 
         Options:
           --root-command-sub-command-option=VALUE  # Root command sub command option
-          --help, -h                        # Print this help
+          --help, -h                               # Print this help
       DESC
-
       expect(output).to eq(expected)
 
       output = capture_output { cli.call(arguments: %w[root-command sub-command --help]) }

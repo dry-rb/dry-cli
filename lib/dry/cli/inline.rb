@@ -13,7 +13,7 @@ module Dry
     # methods below
     #
     # DSL consists of 5 methods:
-    # `desc`, `example`, `argument`, `option` 
+    # `desc`, `example`, `argument`, `option`
     # — are similar to methods from Command class
     #
     # `run` accepts a block to execute
