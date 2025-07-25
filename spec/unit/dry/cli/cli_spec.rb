@@ -35,23 +35,23 @@ RSpec.describe "CLI" do
       output = capture_output { cli.call(arguments: ["-h"]) }
       expected_output = <<~OUTPUT
         Command:
-          #{cmd}
+          rspec
 
         Usage:
-          #{cmd} MANDATORY_ARG [OPTIONAL_ARG]
+          rspec MANDATORY_ARG [OPTIONAL_ARG]
 
         Description:
           Baz command line interface
 
         Arguments:
-          MANDATORY_ARG                     # REQUIRED Mandatory argument
-          OPTIONAL_ARG                      # Optional argument (has to have default value in call method)
+          MANDATORY_ARG                          # REQUIRED Mandatory argument
+          OPTIONAL_ARG                           # Optional argument (has to have default value in call method)
 
         Options:
-          --option-one=VALUE, -1 VALUE      # Option one
-          --[no-]boolean-option, -b         # Option boolean
+          --option-one=VALUE, -1 VALUE           # Option one
+          --[no-]boolean-option, -b              # Option boolean
           --option-with-default=VALUE, -d VALUE  # Option default, default: "test"
-          --help, -h                        # Print this help
+          --help, -h                             # Print this help
       OUTPUT
       expect(output).to eq(expected_output)
     end

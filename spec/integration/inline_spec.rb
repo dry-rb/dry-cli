@@ -19,14 +19,14 @@ RSpec.describe "Inline" do
           Baz command line interface
 
         Arguments:
-          MANDATORY_ARG                     # REQUIRED Mandatory argument
-          OPTIONAL_ARG                      # Optional argument (has to have default value in call method)
+          MANDATORY_ARG                          # REQUIRED Mandatory argument
+          OPTIONAL_ARG                           # Optional argument (has to have default value in call method)
 
         Options:
-          --option-one=VALUE, -1 VALUE      # Option one
-          --[no-]boolean-option, -b         # Option boolean
+          --option-one=VALUE, -1 VALUE           # Option one
+          --[no-]boolean-option, -b              # Option boolean
           --option-with-default=VALUE, -d VALUE  # Option default, default: "test"
-          --help, -h                        # Print this help
+          --help, -h                             # Print this help
       OUTPUT
       expect(output).to eq(expected_output)
     end
