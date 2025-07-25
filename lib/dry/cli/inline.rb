@@ -13,7 +13,7 @@ module Dry
     # methods below
     #
     # DSL consists of 5 methods:
-    # `desc`, `example`, `argument`, `option` 
+    # `desc`, `example`, `argument`, `option`
     # — are similar to methods from Command class
     #
     # `run` accepts a block to execute
@@ -60,13 +60,13 @@ module Dry
       #   end
       #
       # @since 0.6.0
-      def run(arguments: ARGV, out: $stdout)
+      def run(arguments: ARGV, stdout: $stdout)
         command = AnonymousCommand
         command.define_method(:call) do |**args|
           yield(**args)
         end
 
-        Dry.CLI(command).call(arguments: arguments, out: out)
+        Dry.CLI(command).call(arguments: arguments, stdout: stdout)
       end
     end
   end
