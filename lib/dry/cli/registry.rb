@@ -318,9 +318,18 @@ module Dry
         # @since 0.1.0
         #
         # @see Dry::CLI::Registry#register
-        def register(name, command, aliases: [], hidden: false)
+        def register(name, command = nil, aliases: [], hidden: false, &block)
           command_name = "#{prefix} #{name}"
           registry.set(command_name, command, aliases, hidden)
+
+          if block_given?
+            prefix = self.class.new(registry, command_name, aliases, hidden)
+            if block.arity.zero?
+              prefix.instance_eval(&block)
+            else
+              yield(prefix)
+            end
+          end
         end
 
         private
