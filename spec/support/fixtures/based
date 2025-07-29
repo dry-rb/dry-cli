@@ -38,11 +38,9 @@ module Based
     option :num, desc: "number of lines to display"
     option :tail, desc: "continually stream log", type: :boolean
 
-    example [
-      "APP_NAME",
-      "APP_NAME --num=50",
-      "APP_NAME --tail"
-    ]
+    example "APP_NAME"
+    example "APP_NAME --num=50"
+    example "APP_NAME --tail"
   end
 
   class Addons < Base
@@ -50,10 +48,8 @@ module Based
 
     option :json, desc: "return add-ons in json format", type: :boolean, default: false
 
-    example [
-      "APP_NAME",
-      "APP_NAME --json"
-    ]
+    example "APP_NAME"
+    example "APP_NAME --json"
   end
 
   register "run", Run
