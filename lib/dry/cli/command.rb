@@ -379,6 +379,39 @@ module Dry
         optional_arguments
         subcommands
       ] => "self.class"
+
+      protected
+
+      # The error output used to print error messaging
+      #
+      # @example
+      #   class MyCommand
+      #     def call
+      #       stdout.puts "Hello World!"
+      #       exit(0)
+      #     rescue StandardError => e
+      #       stderr.puts "Uh oh: #{e.message}"
+      #       exit(1)
+      #     end
+      #   end
+      #
+      # @since unreleased
+      # @return [IO]
+      attr_reader :stderr
+
+      # The standard output object used to print messaging
+      #
+      # @example
+      #   class MyCommand
+      #     def call
+      #       stdout.puts "Hello World!"
+      #       exit(0)
+      #     end
+      #   end
+      #
+      # @since unreleased
+      # @return [IO]
+      attr_reader :stdout
     end
   end
 end
