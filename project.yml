@@ -18,4 +18,3 @@ gemspec:
     - [rake, "~> 13.0"]
     - [rspec, "~> 3.7"]
     - [simplecov, "~> 0.17.1"]
-    - [rubocop, "~> 0.82"]
