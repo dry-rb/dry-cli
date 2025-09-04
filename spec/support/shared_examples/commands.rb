@@ -266,13 +266,20 @@ RSpec.shared_examples "Commands" do |cli|
 
         context "and there are options" do
           it "parses both separately" do
-            output = capture_output { cli.call(arguments: ["variadic", "with-mandatory-and-options", cmd, "bar", "baz"]) }
+            output = capture_output {
+              cli.call(arguments: ["variadic", "with-mandatory-and-options", cmd, "bar", "baz"])
+            }
             expect(output).to eq("first: #{cmd}\nurl: \nmethod: \nUnused Arguments: bar, baz\n")
 
-            output = capture_output { cli.call(arguments: ["variadic", "with-mandatory-and-options", "--url=root", "--method=index", cmd, "bar", "baz"]) }
+            output = capture_output {
+              cli.call(arguments: ["variadic", "with-mandatory-and-options", "--url=root", "--method=index", cmd,
+                                   "bar", "baz"])
+            }
             expect(output).to eq("first: #{cmd}\nurl: root\nmethod: index\nUnused Arguments: bar, baz\n")
 
-            output = capture_output { cli.call(arguments: %w[variadic with-mandatory-and-options uno -- due tre --blah]) }
+            output = capture_output {
+              cli.call(arguments: %w[variadic with-mandatory-and-options uno -- due tre --blah])
+            }
             expect(output).to eq("first: uno\nurl: \nmethod: \nUnused Arguments: due, tre, --blah\n")
           end
         end

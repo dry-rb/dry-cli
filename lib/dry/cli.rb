@@ -64,8 +64,8 @@ module Dry
     def call(arguments: ARGV, out: $stdout, err: $stderr)
       @out, @err = out, err
       kommand ? perform_command(arguments) : perform_registry(arguments)
-    rescue SignalException => e
-      signal_exception(e)
+    rescue SignalException => exception
+      signal_exception(exception)
     rescue Errno::EPIPE
       # no op
     end

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
+
 RSpec.shared_examples "Subcommands" do |cli|
   let(:cli) { cli }
 
@@ -256,3 +258,4 @@ RSpec.shared_examples "Subcommands" do |cli|
     end
   end
 end
+# rubocop:enable Layout/LineLength
