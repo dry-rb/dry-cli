@@ -1,0 +1,14 @@
+name:
+  gem: dry-cli
+  constant: Dry::CLI
+github_org: dry-rb
+gemspec:
+  authors: ["Hanakai team"]
+  email: ["info@hanakai.org"]
+  summary: "Common framework to build command line interfaces with Ruby"
+  homepage: "https://dry-rb.org/gems/dry-cli"
+  required_ruby_version: ">= 3.1"
+  development_dependencies:
+    - bundler
+    - rake
+    - rspec
