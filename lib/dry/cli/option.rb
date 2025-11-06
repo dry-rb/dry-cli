@@ -70,6 +70,18 @@ module Dry
         type == :array
       end
 
+      # @since 2.0.0
+      # @api private
+      def integer?
+        type == :integer
+      end
+
+      # @since 2.0.0
+      # @api private
+      def float?
+        type == :float
+      end
+
       # @since 0.1.0
       # @api private
       def default
@@ -121,6 +133,24 @@ module Dry
           .map { |name| name.size == 1 ? "-#{name}" : "--#{name}" }
           .map { |name| boolean? || flag? ? name : "#{name} VALUE" }
       end
+
+      # @since 2.0.0
+      # @api private
+      # rubocop:disable Metrics/PerceivedComplexity
+      def type_cast(value)
+        return value if value.nil?
+
+        if integer?
+          value.to_i
+        elsif float?
+          value.to_f
+        elsif argument? && (boolean? || flag?)
+          %w[0 f false off].include?(value.downcase) ? false : true
+        else
+          value
+        end
+      end
+      # rubocop:enable Metrics/PerceivedComplexity
     end
 
     # Command line argument
