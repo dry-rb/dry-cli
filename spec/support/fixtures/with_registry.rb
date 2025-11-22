@@ -58,6 +58,8 @@ module Foo
       register "with-initializer", ::Commands::InitializedCommand.new(prop: "prop_val")
       register "root-command", ::Commands::RootCommand
       register "root-command sub-command", ::Commands::RootCommands::SubCommand
+      register "namespace", ::Commands::Namespace
+      register "namespace sub-command", ::Commands::Namespace::SubCommand
 
       register "options-with-aliases",                ::Commands::OptionsWithAliases
       register "variadic default",                    ::Commands::VariadicArguments

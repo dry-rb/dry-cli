@@ -440,6 +440,18 @@ module Commands
     end
   end
 
+  class Namespace < Dry::CLI::Namespace
+    desc "This is a namespace"
+
+    class SubCommand < Dry::CLI::Command
+      desc "I'm a concrete command"
+
+      def call(**params)
+        puts "I'm a concrete command"
+      end
+    end
+  end
+
   class InitializedCommand < Dry::CLI::Command
     attr_reader :prop
 
