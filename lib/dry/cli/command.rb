@@ -366,6 +366,14 @@ module Dry
         superclass_variable_dup(:@options)
       end
 
+      # @since unreleased
+      # @api private
+      def initialize(stderr: $stderr, stdin: $stdin, stdout: $stdout)
+        @stderr = stderr
+        @stdin  = stdin
+        @stdout = stdout
+      end
+
       extend Forwardable
 
       delegate %i[
@@ -379,6 +387,52 @@ module Dry
         optional_arguments
         subcommands
       ] => "self.class"
+
+      protected
+
+      # The error output used to print error messaging
+      #
+      # @example
+      #   class MyCommand
+      #     def call
+      #       stdout.puts "Hello World!"
+      #       exit(0)
+      #     rescue StandardError => e
+      #       stderr.puts "Uh oh: #{e.message}"
+      #       exit(1)
+      #     end
+      #   end
+      #
+      # @since unreleased
+      # @return [IO]
+      attr_reader :stderr
+
+      # The standard input stream used for reading input
+      #
+      # @example
+      #   class MyCommand
+      #     def call
+      #       name = stdin.gets.chomp
+      #       stdout.puts "Hello #{name}!"
+      #     end
+      #   end
+      #
+      # @since unreleased
+      # @return [IO]
+      attr_reader :stdin
+
+      # The standard output stream used for normal output
+      #
+      # @example
+      #   class MyCommand
+      #     def call
+      #       stdout.puts "Hello World!"
+      #     end
+      #   end
+      #
+      # @since unreleased
+      # @return [IO]
+      attr_reader :stdout
     end
   end
 end
