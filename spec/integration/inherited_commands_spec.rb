@@ -3,8 +3,8 @@
 require "open3"
 
 RSpec.describe "Inherited commands" do
-  context "when --help flag" do
-    it "subclass do not" do
+  context "with --help flag" do
+    it "includes inherited arguments in help output" do
       _, stderr, = Open3.capture3("based --help")
       expected = <<~OUT
         Commands:
