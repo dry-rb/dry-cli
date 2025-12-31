@@ -183,5 +183,45 @@ RSpec.describe "CLI" do
         )
       end
     end
+
+    it "exposes @out and @err to command without overriding pre-existing ivars" do
+      # @out and @err are exposed by default
+      command_class = Class.new(Dry::CLI::Command) do
+        def call(**)
+          @out.puts "out"
+          @err.puts "err"
+        end
+      end
+      cli = Dry.CLI(command_class.new)
+
+      default_out = StringIO.new
+      default_err = StringIO.new
+      cli.call(arguments: [], out: default_out, err: default_err)
+
+      expect(default_out.string).to eq("out\n")
+      expect(default_err.string).to eq("err\n")
+
+      # @out and @err do not override pre-existing ivars
+      custom_command_class = Class.new(command_class) do
+        define_method(:initialize) do |out, err|
+          super()
+          @out = out
+          @err = err
+        end
+      end
+
+      custom_out = StringIO.new
+      custom_err = StringIO.new
+      cli = Dry.CLI(custom_command_class.new(custom_out, custom_err))
+
+      default_out = StringIO.new
+      default_err = StringIO.new
+      cli.call(arguments: [], out: default_out, err: default_err)
+
+      expect(custom_out.string).to eq("out\n")
+      expect(custom_err.string).to eq("err\n")
+      expect(default_out.string).to eq("")
+      expect(default_err.string).to eq("")
+    end
   end
 end
