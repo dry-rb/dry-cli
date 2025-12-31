@@ -7,12 +7,25 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ## [Unreleased]
 
+### Added
+
+- Provide the CLI’s `out` and `err` streams to command instances (unless `@out` and `@err` ivars  already exist in the command). (@aaronmallen in #150)
+
 ### Changed
 
-- Set minimum Ruby version to 3.2 (@timriley)
+- Set minimum Ruby version to 3.2. (@timriley)
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+[Unreleased]: https://github.com/dry-rb/dry-cli/compare/v1.3.0...main
 
 ## [1.3.0] - 2025-07-29
-
 
 ### Added
 
@@ -42,40 +55,34 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - Set minimum Ruby version to 3.1. (@timriley)
 
-[Compare v1.2.0...v1.3.0](https://github.com/dry-rb/dry-cli/compare/v1.2.0...v1.3.0)
+[1.3.0]: https://github.com/dry-rb/dry-cli/compare/v1.2.0...v1.3.0
 
 ## [1.2.0] - 2024-10-15
-
 
 ### Added
 
 - Added `:hidden` option to register commands that should not be shown in the help output. (@benoittgt in #137)
 - Provide suggestions when there is a typo in a command name. (@benoittgt in #138)
 
-
-[Compare v1.1.0...v1.2.0](https://github.com/dry-rb/dry-cli/compare/v1.1.0...v1.2.0)
+[1.2.0]: https://github.com/dry-rb/dry-cli/compare/v1.1.0...v1.2.0
 
 ## [1.1.0] - 2024-07-14
-
 
 ### Added
 
 - Added `:flag` option type. This acts like a `:boolean` that can only be set to true, so has no `--no-` prefix to disable it. (@Billiam in #117)
 
-
-[Compare v1.0.0...v1.1.0](https://github.com/dry-rb/dry-cli/compare/v1.0.0...v1.1.0)
+[1.1.0]: https://github.com/dry-rb/dry-cli/compare/v1.0.0...v1.1.0
 
 ## [1.0.0] - 2022-11-05
-
 
 ### Changed
 
 - Version bumped to 1.0.0 (@solnic)
 
-[Compare v0.7.0...v1.0.0](https://github.com/dry-rb/dry-cli/compare/v0.7.0...v1.0.0)
+[1.0.0]: https://github.com/dry-rb/dry-cli/compare/v0.7.0...v1.0.0
 
 ## [0.7.0] - 2020-05-08
-
 
 ### Added
 
@@ -99,10 +106,9 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 - Remove concurrent-ruby as runtime dependency (@jodosha)
 - [Internal] Banner and Parses refactoring (@IvanShamatov)
 
-[Compare v0.6.0...v0.7.0](https://github.com/dry-rb/dry-cli/compare/v0.6.0...v0.7.0)
+[0.7.0]: https://github.com/dry-rb/dry-cli/compare/v0.6.0...v0.7.0
 
 ## [0.6.0] - 2020-03-06
-
 
 ### Added
 
@@ -116,11 +122,9 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 - [John Ledbetter & Luca Guidi] Fix ruby 2.7 warnings (@jodosha)
 - Fix banner, when option is a type of Array (@IvanShamatov)
 
-
-[Compare v0.5.1...v0.6.0](https://github.com/dry-rb/dry-cli/compare/v0.5.1...v0.6.0)
+[0.6.0]: https://github.com/dry-rb/dry-cli/compare/v0.5.1...v0.6.0
 
 ## [0.5.1] - 2020-01-23
-
 
 ### Added
 
@@ -134,48 +138,38 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - Added missing 'set' require (@solnic)
 
-
-[Compare v0.5.0...v0.5.1](https://github.com/dry-rb/dry-cli/compare/v0.5.0...v0.5.1)
+[0.5.1]: https://github.com/dry-rb/dry-cli/compare/v0.5.0...v0.5.1
 
 ## [0.5.0] - 2019-12-21
-
 
 ### Added
 
 - [Internal] removed runtime and development dependency against `hanami-utils` (@jodosha, @IvanShamatov, @solnic)
 
-
-[Compare v0.4.0...v0.5.0](https://github.com/dry-rb/dry-cli/compare/v0.4.0...v0.5.0)
+[0.5.0]: https://github.com/dry-rb/dry-cli/compare/v0.4.0...v0.5.0
 
 ## [0.4.0] - 2019-12-10
-
 
 ### Added
 
 - `hanami-cli` => `dry-cli` (@jodosha, @IvanShamatov, @solnic)
 
-
-[Compare v0.3.1...v0.4.0](https://github.com/dry-rb/dry-cli/compare/v0.3.1...v0.4.0)
+[0.4.0]: https://github.com/dry-rb/dry-cli/compare/v0.3.1...v0.4.0
 
 ## [0.3.1] - 2019-01-18
-
 
 ### Added
 
 - Official support for Ruby: MRI 2.6 (@jodosha)
 - Support `bundler` 2.0+ (@jodosha)
 
-
-[Compare v0.3.0...v0.3.1](https://github.com/dry-rb/dry-cli/compare/v0.3.0...v0.3.1)
+[0.3.1]: https://github.com/dry-rb/dry-cli/compare/v0.3.0...v0.3.1
 
 ## [0.3.0] - 2018-10-24
 
-
-
-[Compare v0.3.0.beta1...v0.3.0](https://github.com/dry-rb/dry-cli/compare/v0.3.0.beta1...v0.3.0)
+[0.3.0]: https://github.com/dry-rb/dry-cli/compare/v0.3.0.beta1...v0.3.0
 
 ## [0.3.0.beta1] - 2018-08-08
-
 
 ### Added
 
@@ -188,29 +182,21 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - Print informative message when unknown or wrong option is passed (`"test" was called with arguments "--framework=unknown"`) (@davydovanton)
 
-
-[Compare v0.2.0...v0.3.0.beta1](https://github.com/dry-rb/dry-cli/compare/v0.2.0...v0.3.0.beta1)
+[0.3.0.beta1]: https://github.com/dry-rb/dry-cli/compare/v0.2.0...v0.3.0.beta1
 
 ## [0.2.0] - 2018-04-11
 
-
-
-[Compare v0.2.0.rc2...v0.2.0](https://github.com/dry-rb/dry-cli/compare/v0.2.0.rc2...v0.2.0)
+[0.2.0]: https://github.com/dry-rb/dry-cli/compare/v0.2.0.rc2...v0.2.0
 
 ## [0.2.0.rc2] - 2018-04-06
 
-
-
-[Compare v0.2.0.rc1...v0.2.0.rc2](https://github.com/dry-rb/dry-cli/compare/v0.2.0.rc1...v0.2.0.rc2)
+[0.2.0.rc2]: https://github.com/dry-rb/dry-cli/compare/v0.2.0.rc1...v0.2.0.rc2
 
 ## [0.2.0.rc1] - 2018-03-30
 
-
-
-[Compare v0.2.0.beta2...v0.2.0.rc1](https://github.com/dry-rb/dry-cli/compare/v0.2.0.beta2...v0.2.0.rc1)
+[0.2.0.rc1]: https://github.com/dry-rb/dry-cli/compare/v0.2.0.beta2...v0.2.0.rc1
 
 ## [0.2.0.beta2] - 2018-03-23
-
 
 ### Added
 
@@ -220,21 +206,17 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - Ensure callbacks' context of execution (aka `self`) to be the command that is being executed (@jodosha, @davydovanton)
 
-
-[Compare v0.2.0.beta1...v0.2.0.beta2](https://github.com/dry-rb/dry-cli/compare/v0.2.0.beta1...v0.2.0.beta2)
+[0.2.0.beta2]: https://github.com/dry-rb/dry-cli/compare/v0.2.0.beta1...v0.2.0.beta2
 
 ## [0.2.0.beta1] - 2018-02-28
-
 
 ### Added
 
 - Register `before`/`after` callbacks for commands (@davydovanton)
 
-
-[Compare v0.1.1...v0.2.0.beta1](https://github.com/dry-rb/dry-cli/compare/v0.1.1...v0.2.0.beta1)
+[0.2.0.beta1]: https://github.com/dry-rb/dry-cli/compare/v0.1.1...v0.2.0.beta1
 
 ## [0.1.1] - 2018-02-27
-
 
 ### Added
 
@@ -245,39 +227,29 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 - Ensure default values for arguments to be sent to commands (@AlfonsoUceda)
 - Ensure to fail when a missing required argument isn't provider, but an option is provided instead (@AlfonsoUceda)
 
-
-[Compare v0.1.0...v0.1.1](https://github.com/dry-rb/dry-cli/compare/v0.1.0...v0.1.1)
+[0.1.1]: https://github.com/dry-rb/dry-cli/compare/v0.1.0...v0.1.1
 
 ## [0.1.0] - 2017-10-25
 
-
-
-[Compare v0.1.0.rc1...v0.1.0](https://github.com/dry-rb/dry-cli/compare/v0.1.0.rc1...v0.1.0)
+[0.1.0]: https://github.com/dry-rb/dry-cli/compare/v0.1.0.rc1...v0.1.0
 
 ## [0.1.0.rc1] - 2017-10-16
 
-
-
-[Compare v0.1.0.beta3...v0.1.0.rc1](https://github.com/dry-rb/dry-cli/compare/v0.1.0.beta3...v0.1.0.rc1)
+[0.1.0.rc1]: https://github.com/dry-rb/dry-cli/compare/v0.1.0.beta3...v0.1.0.rc1
 
 ## [0.1.0.beta3] - 2017-10-04
 
-
-
-[Compare v0.1.0.beta2...v0.1.0.beta3](https://github.com/dry-rb/dry-cli/compare/v0.1.0.beta2...v0.1.0.beta3)
+[0.1.0.beta3]: https://github.com/dry-rb/dry-cli/compare/v0.1.0.beta2...v0.1.0.beta3
 
 ## [0.1.0.beta2] - 2017-10-03
-
 
 ### Added
 
 - Allow default value for arguments (@AlfonsoUceda)
 
-
-[Compare v0.1.0.beta1...v0.1.0.beta2](https://github.com/dry-rb/dry-cli/compare/v0.1.0.beta1...v0.1.0.beta2)
+[0.1.0.beta2]: https://github.com/dry-rb/dry-cli/compare/v0.1.0.beta1...v0.1.0.beta2
 
 ## [0.1.0.beta1] - 2017-08-11
-
 
 ### Added
 
