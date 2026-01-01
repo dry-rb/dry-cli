@@ -122,7 +122,6 @@ module Dry
           .map { |name| boolean? || flag? ? name : "#{name} VALUE" }
       end
 
-      # @since 1.3.0
       # @api private
       def valid_value?(value)
         available_values = values
