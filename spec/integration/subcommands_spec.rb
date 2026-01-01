@@ -57,4 +57,30 @@ RSpec.describe "Subcommands" do
       expect(output).to eq(expected)
     end
   end
+
+  context "it works with multi nested prefixed commands" do
+    it "nests once" do
+      output = `foo nested one`
+
+      expected = "I'm a one level nested command\n"
+
+      expect(output).to eq(expected)
+    end
+
+    it "nests twice" do
+      output = `foo nested one two`
+
+      expected = "I'm a two level nested command\n"
+
+      expect(output).to eq(expected)
+    end
+
+    it "nests thrice" do
+      output = `foo nested one two three`
+
+      expected = "I'm a three level nested command\n"
+
+      expect(output).to eq(expected)
+    end
+  end
 end

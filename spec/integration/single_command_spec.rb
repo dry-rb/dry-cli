@@ -40,18 +40,34 @@ RSpec.describe "Single command" do
 
     it "with option_one" do
       output = `baz first_arg --option-one=test2`
-      expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
+        )
+      else
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {option_with_default: \"test\", option_one: \"test2\"}\n"
+        )
+      end
     end
 
     it "with combination of aliases" do
       output = `baz first_arg -bd test3`
-      expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        "Options: {:option_with_default=>\"test3\", :boolean_option=>true}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {:option_with_default=>\"test3\", :boolean_option=>true}\n"
+        )
+      else
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          "Options: {option_with_default: \"test3\", boolean_option: true}\n"
+        )
+      end
     end
   end
 

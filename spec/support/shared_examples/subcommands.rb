@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
+
 RSpec.shared_examples "Subcommands" do |cli|
   let(:cli) { cli }
 
@@ -28,23 +30,45 @@ RSpec.shared_examples "Subcommands" do |cli|
 
     it "a param using space" do
       output = capture_output { cli.call(arguments: %w[server --port 2306]) }
-      expect(output).to eq(
-        "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
+        )
+
+      else
+        expect(output).to eq(
+          "server - {code_reloading: true, deps: [\"dep1\", \"dep2\"], port: \"2306\"}\n"
+        )
+      end
     end
 
     it "a param using equal sign" do
       output = capture_output { cli.call(arguments: %w[server --port=2306]) }
-      expect(output).to eq(
-        "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
+        )
+      else
+        expect(output).to eq(
+          "server - {code_reloading: true, deps: [\"dep1\", \"dep2\"], port: \"2306\"}\n"
+        )
+      end
     end
 
     it "a param using alias" do
       output = capture_output { cli.call(arguments: %w[server -p 2306]) }
-      expect(output).to eq(
-        "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :port=>\"2306\"}\n"
+        )
+      else
+        expect(output).to eq(
+          "server - {code_reloading: true, deps: [\"dep1\", \"dep2\"], port: \"2306\"}\n"
+        )
+      end
     end
 
     it "with help param" do
@@ -88,12 +112,22 @@ RSpec.shared_examples "Subcommands" do |cli|
 
       it "more than one param and with optional params" do
         output = capture_output { cli.call(arguments: %w[generate action web users#index --url=/signin]) }
-        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>false, :url=>\"/signin\"}\n")
+
+        if RUBY_VERSION < "3.4"
+          expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>false, :url=>\"/signin\"}\n")
+        else
+          expect(output).to eq("generate action - app: web, action: users#index, options: {skip_view: false, url: \"/signin\"}\n")
+        end
       end
 
       it "more than one param and with boolean params" do
         output = capture_output { cli.call(arguments: %w[generate action web users#index --skip-view --url=/signin]) }
-        expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>true, :url=>\"/signin\"}\n")
+
+        if RUBY_VERSION < "3.4"
+          expect(output).to eq("generate action - app: web, action: users#index, options: {:skip_view=>true, :url=>\"/signin\"}\n")
+        else
+          expect(output).to eq("generate action - app: web, action: users#index, options: {skip_view: true, url: \"/signin\"}\n")
+        end
       end
 
       it "more than required params" do
@@ -224,3 +258,4 @@ RSpec.shared_examples "Subcommands" do |cli|
     end
   end
 end
+# rubocop:enable Layout/LineLength

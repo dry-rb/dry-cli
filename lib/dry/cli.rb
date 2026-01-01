@@ -64,8 +64,8 @@ module Dry
     def call(arguments: ARGV, out: $stdout, err: $stderr)
       @out, @err = out, err
       kommand ? perform_command(arguments) : perform_registry(arguments)
-    rescue SignalException => e
-      signal_exception(e)
+    rescue SignalException => exception
+      signal_exception(exception)
     rescue Errno::EPIPE
       # no op
     end
@@ -97,6 +97,10 @@ module Dry
     # @api private
     def perform_command(arguments)
       command, args = parse(kommand, arguments, [])
+
+      command.instance_variable_set(:@err, err) unless command.instance_variable_defined?(:@err)
+      command.instance_variable_set(:@out, out) unless command.instance_variable_defined?(:@out)
+
       command.call(**args)
     end
 
@@ -113,9 +117,12 @@ module Dry
 
       command, args = parse(result.command, result.arguments, result.names)
 
-      result.before_callbacks.run(command, args)
+      command.instance_variable_set(:@err, err) unless command.instance_variable_defined?(:@err)
+      command.instance_variable_set(:@out, out) unless command.instance_variable_defined?(:@out)
+
+      result.before_callbacks.run(command, **args)
       command.call(**args)
-      result.after_callbacks.run(command, args)
+      result.after_callbacks.run(command, **args)
     end
 
     # Parse arguments for a command.

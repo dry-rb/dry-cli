@@ -17,6 +17,7 @@ RSpec.describe "Rendering" do
         foo generate [SUBCOMMAND]
         foo greeting [RESPONSE]
         foo hello                                                  # Print a greeting
+        foo nested [SUBCOMMAND]
         foo new PROJECT                                            # Generate a new Foo project
         foo root-command [ARGUMENT|SUBCOMMAND]                     # Root command with arguments and subcommands
         foo routes                                                 # Print routes

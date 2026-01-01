@@ -31,8 +31,8 @@ module Dry
 
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, prog_name, parsed_options)
-      rescue ::OptionParser::ParseError, ValueError
-        Result.failure("ERROR: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(" ")}\"") # rubocop:disable Layout/LineLength
+      rescue ::OptionParser::ParseError
+        Result.failure("ERROR: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(" ")}\"")
       end
 
       # @since 0.1.0

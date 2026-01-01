@@ -195,7 +195,12 @@ module Dry
       #   #   Options:
       #   #     --help, -h          # Print this help
       def self.argument(name, options = {})
-        @arguments << Argument.new(name, options)
+        new_arg = Argument.new(name, options)
+
+        duplicate_index = @arguments.find_index { _1.name == new_arg.name }
+        @arguments.delete_at(duplicate_index) unless duplicate_index.nil?
+
+        @arguments << new_arg
       end
 
       # Command line option (aka optional argument)
@@ -309,7 +314,12 @@ module Dry
       #   # Options:
       #   #   --port=VALUE, -p VALUE
       def self.option(name, options = {})
-        @options << Option.new(name, options)
+        new_op = Option.new(name, options)
+
+        duplicate_index = @options.find_index { _1.name == new_op.name }
+        @options.delete_at(duplicate_index) unless duplicate_index.nil?
+
+        @options << new_op
       end
 
       # @since 0.1.0
@@ -379,6 +389,39 @@ module Dry
         optional_arguments
         subcommands
       ] => "self.class"
+
+      protected
+
+      # The error output used to print error messaging
+      #
+      # @example
+      #   class MyCommand
+      #     def call
+      #       out.puts "Hello World!"
+      #       exit(0)
+      #     rescue StandardError => e
+      #       err.puts "Uh oh: #{e.message}"
+      #       exit(1)
+      #     end
+      #   end
+      #
+      # @since unreleased
+      # @return [IO]
+      attr_reader :err
+
+      # The standard output object used to print messaging
+      #
+      # @example
+      #   class MyCommand
+      #     def call
+      #       out.puts "Hello World!"
+      #       exit(0)
+      #     end
+      #   end
+      #
+      # @since unreleased
+      # @return [IO]
+      attr_reader :out
     end
   end
 end
