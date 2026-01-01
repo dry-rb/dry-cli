@@ -20,7 +20,7 @@ module Dry
         OptionParser.new do |opts|
           command.options.each do |option|
             opts.on(*option.parser_options) do |value|
-              parsed_options[option.name.to_sym] = value
+              parsed_options[option.name.to_sym] = option.type_cast(value)
             end
           end
 
@@ -77,7 +77,7 @@ module Dry
             result[cmd_arg.name] = arguments[index..]
             break
           else
-            result[cmd_arg.name] = arguments.at(index)
+            result[cmd_arg.name] = cmd_arg.type_cast(arguments.at(index))
           end
         end
 
