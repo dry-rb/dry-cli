@@ -21,9 +21,11 @@ module Dry
         max_length, commands = commands_and_arguments(result)
 
         commands.map do |banner, node|
+          next if node.hidden
+
           usage = description(node.command) if node.leaf?
           "#{justify(banner, max_length, usage)}#{usage}"
-        end.unshift(header).join("\n")
+        end.compact.unshift(header).join("\n")
       end
 
       # @since 0.1.0
@@ -55,8 +57,8 @@ module Dry
         required_arguments = command.required_arguments
         optional_arguments = command.optional_arguments
 
-        required = required_arguments.map { |arg| arg.name.upcase }.join(" ") if required_arguments.any? # rubocop:disable Layout/LineLength
-        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(" ") if optional_arguments.any? # rubocop:disable Layout/LineLength
+        required = required_arguments.map { |arg| arg.name.upcase }.join(" ") if required_arguments.any?
+        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(" ") if optional_arguments.any?
         result = [required, optional].compact
 
         " #{result.join(" ")}" unless result.empty?

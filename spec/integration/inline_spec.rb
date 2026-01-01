@@ -33,11 +33,20 @@ RSpec.describe "Inline" do
 
     it "with underscored option_one" do
       output = `inline first_arg -1 test2 -bd test3`
-      expect(output).to eq(
-        "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-        'Options: {:option_with_default=>"test3", :option_one=>"test2", :boolean_option=>true}' \
-        "\n"
-      )
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          'Options: {:option_with_default=>"test3", :option_one=>"test2", :boolean_option=>true}' \
+          "\n"
+        )
+      else
+        expect(output).to eq(
+          "mandatory_arg: first_arg. optional_arg: optional_arg. " \
+          'Options: {option_with_default: "test3", option_one: "test2", boolean_option: true}' \
+          "\n"
+        )
+      end
     end
   end
 end

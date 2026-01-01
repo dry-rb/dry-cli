@@ -246,10 +246,12 @@ module Commands
 
       argument :app, desc: "The application name (eg. `web`)"
 
+      # rubocop:disable Layout/LineLength
       example [
         "    # Prints secret (eg. `6fad60e21f3f6bfcaf8e56cdb0f835d644b4892c3badc58328126812429bf073`)",
         "web # Prints session secret (eg. `WEB_SESSIONS_SECRET=6fad60e21f3f6bfcaf8e56cdb0f835d644b4892c3badc58328126812429bf073`)"
       ]
+      # rubocop:enable Layout/LineLength
 
       def call(app: nil, **)
         puts "generate secret - app: #{app}"

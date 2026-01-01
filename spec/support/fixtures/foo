@@ -331,6 +331,16 @@ module Foo
         end
       end
 
+      class Completion < Dry::CLI::Command
+        desc "Generate completion script"
+
+        option :shell, desc: "Shell to generate completion script for", default: "bash"
+
+        def call(shell:, **)
+          puts "completion - shell: #{shell}"
+        end
+      end
+
       class Exec < Dry::CLI::Command
         desc "Execute a task"
 
@@ -423,6 +433,32 @@ module Foo
           end
         end
       end
+
+      module PrefixCommands
+        class NestedOnceCommand < Dry::CLI::Command
+          desc "A nested sub command"
+
+          def call(**_params)
+            puts "I'm a one level nested command"
+          end
+        end
+
+        class NestedTwiceCommand < Dry::CLI::Command
+          desc "A nested nested sub command"
+
+          def call(**_params)
+            puts "I'm a two level nested command"
+          end
+        end
+
+        class NestedThriceCommand < Dry::CLI::Command
+          desc "A nested nested nested sub command"
+
+          def call(**_params)
+            puts "I'm a three level nested command"
+          end
+        end
+      end
     end
   end
 end
@@ -454,11 +490,12 @@ Foo::CLI::Commands.register "generate", aliases: ["g"] do |prefix|
   prefix.register "model",     Foo::CLI::Commands::Generate::Model
   prefix.register "secret",    Foo::CLI::Commands::Generate::Secret
 end
-Foo::CLI::Commands.register "new",     Foo::CLI::Commands::New
-Foo::CLI::Commands.register "routes",  Foo::CLI::Commands::Routes
-Foo::CLI::Commands.register "server",  Foo::CLI::Commands::Server,  aliases: ["s"]
-Foo::CLI::Commands.register "version", Foo::CLI::Commands::Version, aliases: ["v", "-v", "--version"]
-Foo::CLI::Commands.register "exec",    Foo::CLI::Commands::Exec
+Foo::CLI::Commands.register "new",        Foo::CLI::Commands::New
+Foo::CLI::Commands.register "routes",     Foo::CLI::Commands::Routes
+Foo::CLI::Commands.register "server",     Foo::CLI::Commands::Server,  aliases: ["s"]
+Foo::CLI::Commands.register "version",    Foo::CLI::Commands::Version, aliases: ["v", "-v", "--version"]
+Foo::CLI::Commands.register "completion", Foo::CLI::Commands::Completion, hidden: true
+Foo::CLI::Commands.register "exec",       Foo::CLI::Commands::Exec
 
 Foo::CLI::Commands.register "hello",       Foo::CLI::Commands::Hello
 Foo::CLI::Commands.register "greeting",    Foo::CLI::Commands::Greeting
@@ -469,6 +506,14 @@ Foo::CLI::Commands.register "root-command sub-command", Foo::CLI::Commands::Root
 Foo::CLI::Commands.register "variadic default",                    Foo::CLI::Commands::VariadicArguments
 Foo::CLI::Commands.register "variadic with-mandatory",             Foo::CLI::Commands::MandatoryAndVariadicArguments
 Foo::CLI::Commands.register "variadic with-mandatory-and-options", Foo::CLI::Commands::MandatoryOptionsAndVariadicArguments
+
+Foo::CLI::Commands.register "nested" do
+  register "one", Foo::CLI::Commands::PrefixCommands::NestedOnceCommand do
+    register "two", Foo::CLI::Commands::PrefixCommands::NestedTwiceCommand do
+      register "three", Foo::CLI::Commands::PrefixCommands::NestedThriceCommand
+    end
+  end
+end
 
 module Foo
   module Webpack

@@ -29,34 +29,84 @@ RSpec.shared_examples "Commands" do |cli|
   context "works with params" do
     it "without params" do
       output = capture_output { cli.call(arguments: ["server"]) }
-      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"]}\n")
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"]}\n")
+      else
+        expect(output).to eq("server - {code_reloading: true, deps: [\"dep1\", \"dep2\"]}\n")
+      end
     end
 
     it "a param using space" do
       output = capture_output { cli.call(arguments: %w[server --server thin]) }
-      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :server=>\"thin\"}\n")
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :server=>\"thin\"}\n")
+      else
+        expect(output).to eq("server - {code_reloading: true, deps: [\"dep1\", \"dep2\"], server: \"thin\"}\n")
+      end
     end
 
     it "a param using equal sign" do
       output = capture_output { cli.call(arguments: %w[server --host=localhost]) }
-      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :host=>\"localhost\"}\n")
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :host=>\"localhost\"}\n")
+      else
+        expect(output).to eq("server - {code_reloading: true, deps: [\"dep1\", \"dep2\"], host: \"localhost\"}\n")
+      end
     end
 
-    it "a param using alias" do
-      output = capture_output { cli.call(arguments: %w[options-with-aliases -u test]) }
-      expect(output).to eq("options with aliases - {:opt=>false, :url=>\"test\"}\n")
+    context "with aliases" do
+      it "includes a space" do
+        output = capture_output { cli.call(arguments: %w[options-with-aliases -u test]) }
 
-      output = capture_output { cli.call(arguments: %w[options-with-aliases -utest]) }
-      expect(output).to eq("options with aliases - {:opt=>false, :url=>\"test\"}\n")
+        if RUBY_VERSION < "3.4"
+          expect(output).to eq("options with aliases - {:opt=>false, :url=>\"test\"}\n")
+        else
+          expect(output).to eq("options with aliases - {opt: false, url: \"test\"}\n")
+        end
+      end
 
-      output = capture_output { cli.call(arguments: %w[options-with-aliases -f -u test]) }
-      expect(output).to eq("options with aliases - {:opt=>false, :flag=>true, :url=>\"test\"}\n")
+      it "doesn't include a space" do
+        output = capture_output { cli.call(arguments: %w[options-with-aliases -utest]) }
 
-      output = capture_output { cli.call(arguments: %w[options-with-aliases -o]) }
-      expect(output).to eq("options with aliases - {:opt=>true}\n")
+        if RUBY_VERSION < "3.4"
+          expect(output).to eq("options with aliases - {:opt=>false, :url=>\"test\"}\n")
+        else
+          expect(output).to eq("options with aliases - {opt: false, url: \"test\"}\n")
+        end
+      end
 
-      output = capture_output { cli.call(arguments: %w[options-with-aliases -of]) }
-      expect(output).to eq("options with aliases - {:opt=>true, :flag=>true}\n")
+      it "has multiple aliases" do
+        output = capture_output { cli.call(arguments: %w[options-with-aliases -f -u test]) }
+
+        if RUBY_VERSION < "3.4"
+          expect(output).to eq("options with aliases - {:opt=>false, :flag=>true, :url=>\"test\"}\n")
+        else
+          expect(output).to eq("options with aliases - {opt: false, flag: true, url: \"test\"}\n")
+        end
+      end
+
+      it "uses an alias to override a default value" do
+        output = capture_output { cli.call(arguments: %w[options-with-aliases -o]) }
+
+        if RUBY_VERSION < "3.4"
+          expect(output).to eq("options with aliases - {:opt=>true}\n")
+        else
+          expect(output).to eq("options with aliases - {opt: true}\n")
+        end
+      end
+
+      it "uses an alias to override a default value, combined with a flag alias" do
+        output = capture_output { cli.call(arguments: %w[options-with-aliases -of]) }
+
+        if RUBY_VERSION < "3.4"
+          expect(output).to eq("options with aliases - {:opt=>true, :flag=>true}\n")
+        else
+          expect(output).to eq("options with aliases - {opt: true, flag: true}\n")
+        end
+      end
     end
 
     it "a param with unknown param" do
@@ -66,18 +116,38 @@ RSpec.shared_examples "Commands" do |cli|
 
     it "with boolean param" do
       output = capture_output { cli.call(arguments: ["server"]) }
-      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"]}\n")
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"]}\n")
+      else
+        expect(output).to eq("server - {code_reloading: true, deps: [\"dep1\", \"dep2\"]}\n")
+      end
 
       output = capture_output { cli.call(arguments: %w[server --no-code-reloading]) }
-      expect(output).to eq("server - {:code_reloading=>false, :deps=>[\"dep1\", \"dep2\"]}\n")
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq("server - {:code_reloading=>false, :deps=>[\"dep1\", \"dep2\"]}\n")
+      else
+        expect(output).to eq("server - {code_reloading: false, deps: [\"dep1\", \"dep2\"]}\n")
+      end
     end
 
     it "with flag param" do
       output = capture_output { cli.call(arguments: ["server"]) }
-      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"]}\n")
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"]}\n")
+      else
+        expect(output).to eq("server - {code_reloading: true, deps: [\"dep1\", \"dep2\"]}\n")
+      end
 
       output = capture_output { cli.call(arguments: %w[server --quiet]) }
-      expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :quiet=>true}\n")
+
+      if RUBY_VERSION < "3.4"
+        expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep1\", \"dep2\"], :quiet=>true}\n")
+      else
+        expect(output).to eq("server - {code_reloading: true, deps: [\"dep1\", \"dep2\"], quiet: true}\n")
+      end
     end
 
     context "with array param" do
@@ -196,13 +266,20 @@ RSpec.shared_examples "Commands" do |cli|
 
         context "and there are options" do
           it "parses both separately" do
-            output = capture_output { cli.call(arguments: ["variadic", "with-mandatory-and-options", cmd, "bar", "baz"]) }
+            output = capture_output {
+              cli.call(arguments: ["variadic", "with-mandatory-and-options", cmd, "bar", "baz"])
+            }
             expect(output).to eq("first: #{cmd}\nurl: \nmethod: \nUnused Arguments: bar, baz\n")
 
-            output = capture_output { cli.call(arguments: ["variadic", "with-mandatory-and-options", "--url=root", "--method=index", cmd, "bar", "baz"]) }
+            output = capture_output {
+              cli.call(arguments: ["variadic", "with-mandatory-and-options", "--url=root", "--method=index", cmd,
+                                   "bar", "baz"])
+            }
             expect(output).to eq("first: #{cmd}\nurl: root\nmethod: index\nUnused Arguments: bar, baz\n")
 
-            output = capture_output { cli.call(arguments: %w[variadic with-mandatory-and-options uno -- due tre --blah]) }
+            output = capture_output {
+              cli.call(arguments: %w[variadic with-mandatory-and-options uno -- due tre --blah])
+            }
             expect(output).to eq("first: uno\nurl: \nmethod: \nUnused Arguments: due, tre, --blah\n")
           end
         end

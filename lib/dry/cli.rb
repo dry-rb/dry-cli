@@ -14,6 +14,7 @@ module Dry
     require "dry/cli/registry"
     require "dry/cli/parser"
     require "dry/cli/usage"
+    require "dry/cli/spell_checker"
     require "dry/cli/banner"
     require "dry/cli/inflector"
 
@@ -63,8 +64,8 @@ module Dry
     def call(arguments: ARGV, out: $stdout, err: $stderr)
       @out, @err = out, err
       kommand ? perform_command(arguments) : perform_registry(arguments)
-    rescue SignalException => e
-      signal_exception(e)
+    rescue SignalException => exception
+      signal_exception(exception)
     rescue Errno::EPIPE
       # no op
     end
@@ -96,6 +97,10 @@ module Dry
     # @api private
     def perform_command(arguments)
       command, args = parse(kommand, arguments, [])
+
+      command.instance_variable_set(:@err, err) unless command.instance_variable_defined?(:@err)
+      command.instance_variable_set(:@out, out) unless command.instance_variable_defined?(:@out)
+
       command.call(**args)
     end
 
@@ -108,10 +113,13 @@ module Dry
     # @api private
     def perform_registry(arguments)
       result = registry.get(arguments)
-      return usage(result) unless result.found?
+      return spell_checker(result, arguments) unless result.found?
 
       command, args = parse(result.command, result.arguments, result.names)
 
+      command.instance_variable_set(:@err, err) unless command.instance_variable_defined?(:@err)
+      command.instance_variable_set(:@out, out) unless command.instance_variable_defined?(:@out)
+      
       result.before_callbacks.run(command, **args)
       command.call(**args)
       result.after_callbacks.run(command, **args)
@@ -161,9 +169,11 @@ module Dry
       exit(1)
     end
 
-    # @since 0.1.0
-    # @api private
-    def usage(result)
+    # @since 1.1.1
+    def spell_checker(result, arguments)
+      spell_checker = SpellChecker.call(result, arguments)
+      err.puts spell_checker if spell_checker
+      puts
       err.puts Usage.call(result)
       exit(1)
     end
