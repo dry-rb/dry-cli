@@ -9,8 +9,8 @@ module Dry
     class Error < StandardError
     end
 
-    # @since 1.3.0
-    class UnknownValueError < Error
+    # @since x.x.x
+    class ValueError < Error
     end
 
     # @since 0.2.1

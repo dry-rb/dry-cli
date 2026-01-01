@@ -31,7 +31,7 @@ module Dry
 
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, prog_name, parsed_options)
-      rescue ::OptionParser::ParseError, UnknownValueError
+      rescue ::OptionParser::ParseError, ValueError
         Result.failure("ERROR: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(" ")}\"") # rubocop:disable Layout/LineLength
       end
 
@@ -76,12 +76,12 @@ module Dry
         command_arguments.each_with_index do |cmd_arg, index|
           if cmd_arg.array?
             arg = arguments[index..] || default_values[cmd_arg.name]
-            raise UnknownValueError unless cmd_arg.valid_value?(arg)
+            raise ValueError unless cmd_arg.valid_value?(arg)
             result[cmd_arg.name] = arg
             break
           else
             arg = arguments.at(index) || default_values[cmd_arg.name]
-            raise UnknownValueError unless cmd_arg.valid_value?(arg)
+            raise ValueError unless cmd_arg.valid_value?(arg)
             result[cmd_arg.name] = arg
           end
         end
