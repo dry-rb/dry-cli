@@ -9,6 +9,10 @@ module Dry
     class Error < StandardError
     end
 
+    # @since x.x.x
+    class ValueError < Error
+    end
+
     # @since 0.2.1
     class UnknownCommandError < Error
       # @since 0.2.1

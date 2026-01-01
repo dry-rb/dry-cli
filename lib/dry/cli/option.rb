@@ -121,6 +121,18 @@ module Dry
           .map { |name| name.size == 1 ? "-#{name}" : "--#{name}" }
           .map { |name| boolean? || flag? ? name : "#{name} VALUE" }
       end
+
+      # @api private
+      def valid_value?(value)
+        available_values = values
+        return true if available_values.nil?
+
+        if array?
+          (value - available_values).empty?
+        else
+          available_values.map(&:to_s).include?(value.to_s)
+        end
+      end
     end
 
     # Command line argument

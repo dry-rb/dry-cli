@@ -82,7 +82,7 @@ module Commands
     class Rollback < Dry::CLI::Command
       desc "Rollback the database"
 
-      argument :steps, desc: "Number of versions to rollback", default: 1
+      argument :steps, desc: "Number of versions to rollback", default: 1, values: [1, 2, 3]
 
       def call(steps:, **)
         puts steps
