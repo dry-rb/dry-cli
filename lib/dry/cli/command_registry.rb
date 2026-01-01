@@ -253,9 +253,9 @@ module Dry
 
         # @since 0.4.0
         # @api private
-        def run(context, *args)
+        def run(context, **args)
           chain.each do |callback|
-            context.instance_exec(*args, &callback)
+            context.instance_exec(**args, &callback)
           end
         end
       end
