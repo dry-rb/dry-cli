@@ -637,7 +637,7 @@ end
 # rubocop:enable Layout/LineLength
 
 Foo::CLI::Commands.before("callbacks", Callbacks::BeforeClass)
-Foo::CLI::Commands.before("callbacks",  Callbacks::BeforeKwargsClass)
+Foo::CLI::Commands.before("callbacks", Callbacks::BeforeKwargsClass)
 Foo::CLI::Commands.after("callbacks",  Callbacks::AfterClass)
 Foo::CLI::Commands.after("callbacks",  Callbacks::AfterKwargsClass)
 Foo::CLI::Commands.before("callbacks", Callbacks::Before.new)
