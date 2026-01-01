@@ -38,18 +38,18 @@ module Dry
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
+      # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Layout/LineLength
       def self.parse_required_params(command, arguments, prog_name, parsed_options)
-        parsed_params          = match_arguments(command.arguments, arguments, parsed_options)
+        parsed_params = match_arguments(command.arguments, arguments, parsed_options)
         parsed_required_params = match_arguments(command.required_arguments, arguments, parsed_options)
-        all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? } # rubocop:disable Layout/LineLength
+        all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? }
 
         unused_arguments = arguments.drop(command.required_arguments.length)
 
         unless all_required_params_satisfied
           parsed_required_params_values = parsed_required_params.values.compact
 
-          usage = "\nUsage: \"#{prog_name} #{command.required_arguments.map(&:description_name).join(" ")}" # rubocop:disable Layout/LineLength
+          usage = "\nUsage: \"#{prog_name} #{command.required_arguments.map(&:description_name).join(" ")}"
 
           usage += " | #{prog_name} SUBCOMMAND" if command.subcommands.any?
 
@@ -58,7 +58,7 @@ module Dry
           if parsed_required_params_values.empty?
             return Result.failure("ERROR: \"#{prog_name}\" was called with no arguments#{usage}")
           else
-            return Result.failure("ERROR: \"#{prog_name}\" was called with arguments #{parsed_required_params_values}#{usage}") # rubocop:disable Layout/LineLength
+            return Result.failure("ERROR: \"#{prog_name}\" was called with arguments #{parsed_required_params_values}#{usage}")
           end
         end
 
@@ -67,7 +67,7 @@ module Dry
         parsed_options = parsed_options.merge(args: unused_arguments) if unused_arguments.any?
         Result.success(parsed_options)
       end
-      # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity
+      # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity, Layout/LineLength
 
       def self.match_arguments(command_arguments, arguments, default_values)
         result = {}
@@ -77,11 +77,13 @@ module Dry
           if cmd_arg.array?
             arg = arguments[index..] || default_values[cmd_arg.name]
             raise ValueError unless cmd_arg.valid_value?(arg)
+
             result[cmd_arg.name] = arg
             break
           else
             arg = arguments.at(index) || default_values[cmd_arg.name]
             raise ValueError unless cmd_arg.valid_value?(arg)
+
             result[cmd_arg.name] = arg
           end
         end
