@@ -119,7 +119,7 @@ module Dry
 
       command.instance_variable_set(:@err, err) unless command.instance_variable_defined?(:@err)
       command.instance_variable_set(:@out, out) unless command.instance_variable_defined?(:@out)
-      
+
       result.before_callbacks.run(command, **args)
       command.call(**args)
       result.after_callbacks.run(command, **args)
