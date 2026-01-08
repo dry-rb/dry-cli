@@ -463,6 +463,7 @@ module Foo
   end
 end
 
+Foo::CLI::Commands.register "-c", Dry::CLI::ShellCompletion
 Foo::CLI::Commands.register "assets precompile", Foo::CLI::Commands::Assets::Precompile
 Foo::CLI::Commands.register "console",           Foo::CLI::Commands::Console
 Foo::CLI::Commands.register "db" do |prefix|
