@@ -9,7 +9,7 @@ module Dry
     class Error < StandardError
     end
 
-    # @since x.x.x
+    # @since 1.4.0
     class ValueError < Error
     end
 

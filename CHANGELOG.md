@@ -9,11 +9,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ### Added
 
-- Provide the CLI’s `out` and `err` streams to command instances (unless `@out` and `@err` ivars  already exist in the command). (@aaronmallen in #150)
-
 ### Changed
-
-- Set minimum Ruby version to 3.2. (@timriley)
 
 ### Deprecated
 
@@ -23,7 +19,25 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ### Security
 
-[Unreleased]: https://github.com/dry-rb/dry-cli/compare/v1.3.0...main
+[Unreleased]: https://github.com/dry-rb/dry-cli/compare/v1.4.0...main
+
+## [1.4.0] - 2026-01-09
+
+### Added
+
+- Provide the CLI’s `out` and `err` streams to command instances (unless `@out` and `@err` ivars  already exist in the command). (@aaronmallen in #150)
+
+### Changed
+
+- Require Ruby 3.2 or later. (@timriley)
+
+### Fixed
+
+- Pass a commands keyword arguments to any related callbacks. (@gustavothecoder in #136)
+- Avoid duplicated option names in `--help` output when a subclass re-defines an option. (@gustavothecoder in #143)
+- Properly raise an error when an invalid value is passed to an option (previously this was working for arguments only, not options). (@gustavothecoder in #142)
+
+[1.4.0]: https://github.com/dry-rb/dry-cli/compare/v1.3.0...v1.4.0
 
 ## [1.3.0] - 2025-07-29
 
