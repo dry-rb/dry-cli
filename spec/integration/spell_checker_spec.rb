@@ -8,6 +8,7 @@ RSpec.describe "Spell checker" do
 
     expected = <<~DESC
       I don't know how to 'routs'. Did you mean: 'routes' ?
+
       Commands:
         foo assets [SUBCOMMAND]
         foo callbacks DIR                                          # Command with callbacks
@@ -36,6 +37,7 @@ RSpec.describe "Spell checker" do
 
     expected = <<~DESC
       I don't know how to 'comand'. Did you mean: 'command' ?
+
       Commands:
         foo sub command         # Override a subcommand
     DESC
