@@ -19,7 +19,15 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ### Security
 
-[Unreleased]: https://github.com/dry-rb/dry-cli/compare/v1.4.0...main
+[Unreleased]: https://github.com/dry-rb/dry-cli/compare/v1.4.1...main
+
+## [1.4.1] - 2026-01-21
+
+### Fixed
+
+- Remove spurious leading blank line when printing usage output. (@aaronmallen in #154)
+
+[1.4.1]: https://github.com/dry-rb/dry-cli/compare/v1.4.0...v1.4.1
 
 ## [1.4.0] - 2026-01-09
 
