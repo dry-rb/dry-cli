@@ -34,14 +34,15 @@ WithBlock = Dry::CLI.new do |cli|
   cli.register "callbacks",        Webpack::CLI::CallbacksCommand
 
   cli.register "db" do |prefix|
-    prefix.register "apply",   Commands::DB::Apply
-    prefix.register "console", Commands::DB::Console
-    prefix.register "create",  Commands::DB::Create
-    prefix.register "drop",    Commands::DB::Drop
-    prefix.register "migrate", Commands::DB::Migrate
-    prefix.register "prepare", Commands::DB::Prepare
-    prefix.register "version", Commands::DB::Version
+    prefix.register "apply",    Commands::DB::Apply
+    prefix.register "console",  Commands::DB::Console
+    prefix.register "create",   Commands::DB::Create
+    prefix.register "drop",     Commands::DB::Drop
+    prefix.register "migrate",  Commands::DB::Migrate
+    prefix.register "prepare",  Commands::DB::Prepare
+    prefix.register "version",  Commands::DB::Version
     prefix.register "rollback", Commands::DB::Rollback
+    prefix.register "vacuum",   Commands::DB::Vacuum
   end
 
   cli.register "destroy", aliases: ["d"] do |prefix|

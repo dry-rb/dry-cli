@@ -124,6 +124,8 @@ module Dry
 
       # @api private
       def valid_value?(value)
+        return true if value.nil? && !required?
+
         available_values = values
         return true if available_values.nil?
 
