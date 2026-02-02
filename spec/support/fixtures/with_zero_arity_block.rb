@@ -35,14 +35,15 @@ WithZeroArityBlock = Dry.CLI do
   register "callbacks",        Webpack::CLI::CallbacksCommand
 
   register "db" do
-    register "apply",   Commands::DB::Apply
-    register "console", Commands::DB::Console
-    register "create",  Commands::DB::Create
-    register "drop",    Commands::DB::Drop
-    register "migrate", Commands::DB::Migrate
-    register "prepare", Commands::DB::Prepare
-    register "version", Commands::DB::Version
+    register "apply",    Commands::DB::Apply
+    register "console",  Commands::DB::Console
+    register "create",   Commands::DB::Create
+    register "drop",     Commands::DB::Drop
+    register "migrate",  Commands::DB::Migrate
+    register "prepare",  Commands::DB::Prepare
+    register "version",  Commands::DB::Version
     register "rollback", Commands::DB::Rollback
+    register "vacuum",   Commands::DB::Vacuum
   end
 
   register "destroy", aliases: ["d"] do
