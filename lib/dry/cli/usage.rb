@@ -56,7 +56,7 @@ module Dry
 
         args = command.arguments_sorted_by_usage_order
         args.map! do |a|
-          name = a.required? ? a.name.to_s : "[#{a.name}]"
+          name = a.required? ? "#{a.name}" : "[#{a.name}]"
           name.upcase!
         end
 
