@@ -17,6 +17,8 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ### Fixed
 
+- Optional arguments were incorrectly displayed at the end of usage message (@gustavothecoder in #145)
+
 ### Security
 
 [Unreleased]: https://github.com/dry-rb/dry-cli/compare/v1.4.1...main
