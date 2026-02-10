@@ -2,6 +2,7 @@
 
 require "forwardable"
 require "dry/cli/option"
+require "dry/cli/styles"
 
 module Dry
   class CLI
@@ -9,6 +10,8 @@ module Dry
     #
     # @since 0.1.0
     class Command
+      include Styles
+
       # @since 0.1.0
       # @api private
       def self.inherited(base)
