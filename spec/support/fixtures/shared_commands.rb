@@ -88,6 +88,17 @@ module Commands
         puts steps
       end
     end
+
+    class Vacuum < Dry::CLI::Command
+      desc "Vacuum the database"
+
+      argument :mode, desc: "Optional mode of vacuum", required: true, values: [:full, :freeze, :verbose]
+      argument :parallel, desc: "Parallel workers", values: [1, 2, 3]
+
+      def call(mode:, parallel: nil, **)
+        puts "mode: #{mode}, parallel: #{parallel}"
+      end
+    end
   end
 
   module Destroy
