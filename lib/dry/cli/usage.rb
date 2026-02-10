@@ -34,13 +34,7 @@ module Dry
         max_length = 0
         ret        = commands(result).each_with_object({}) do |(name, node), memo|
           args        = arguments(node.command)
-          args_banner = if node.command && node.leaf? && node.children? && args
-                          ROOT_COMMAND_WITH_SUBCOMMANDS_BANNER
-                        elsif node.leaf? && args
-                          args
-                        elsif node.children?
-                          SUBCOMMAND_BANNER
-                        end
+          args_banner = arguments_banner(node, args)
 
           partial       = "  #{command_name(result, name)}#{args_banner}"
           max_length    = partial.bytesize if max_length < partial.bytesize
@@ -63,6 +57,18 @@ module Dry
         end
 
         " #{args.join(" ")}" unless args.empty?
+      end
+
+      # @since 2.0.0
+      # @api private
+      def self.arguments_banner(node, args)
+        if node.command && node.leaf? && node.children? && args
+          ROOT_COMMAND_WITH_SUBCOMMANDS_BANNER
+        elsif node.leaf? && args
+          args
+        elsif node.children?
+          SUBCOMMAND_BANNER
+        end
       end
 
       # @since 0.1.0
