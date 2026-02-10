@@ -61,7 +61,7 @@ module Dry
 
       # @since 2.0.0
       # @api private
-      def self.arguments_banner(node, args)
+      def self.arguments_banner(node, args) # rubocop:disable Metrics/PerceivedComplexity
         if node.command && node.leaf? && node.children? && args
           ROOT_COMMAND_WITH_SUBCOMMANDS_BANNER
         elsif node.leaf? && args
