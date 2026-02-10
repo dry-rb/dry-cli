@@ -9,6 +9,8 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ### Added
 
+- Support for command namespaces (@gustavothecoder in #135)
+
 ### Changed
 
 ### Deprecated
