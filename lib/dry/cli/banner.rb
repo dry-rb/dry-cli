@@ -85,7 +85,8 @@ module Dry
       def self.arguments(command)
         args = command.arguments_sorted_by_usage_order
         args.map! do |a|
-          name = a.required? ? "#{a.name}" : "[#{a.name}]"
+          # a.to_s raises deprecation warning that it will result in a frozen string in the future
+          name = a.required? ? "#{a.name}" : "[#{a.name}]" # rubocop:disable Style/RedundantInterpolation
           name.upcase!
         end
 
