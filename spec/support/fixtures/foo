@@ -344,8 +344,8 @@ module Foo
       class Exec < Dry::CLI::Command
         desc "Execute a task"
 
+        argument :dirs, desc: "Directories",     type: :array,  required: true
         argument :task, desc: "Task to execute", type: :string, required: true
-        argument :dirs, desc: "Directories",     type: :array,  required: false
 
         def call(task:, dirs: [], **)
           puts "exec - Task: #{task} - Directories: #{dirs.inspect}"

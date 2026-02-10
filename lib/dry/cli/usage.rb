@@ -54,14 +54,14 @@ module Dry
       def self.arguments(command)
         return unless CLI.command?(command)
 
-        required_arguments = command.required_arguments
-        optional_arguments = command.optional_arguments
+        args = command.arguments_sorted_by_usage_order
+        args.map! do |a|
+          # a.to_s raises deprecation warning that it will result in a frozen string in the future
+          name = a.required? ? "#{a.name}" : "[#{a.name}]" # rubocop:disable Style/RedundantInterpolation
+          name.upcase!
+        end
 
-        required = required_arguments.map { |arg| arg.name.upcase }.join(" ") if required_arguments.any?
-        optional = optional_arguments.map { |arg| "[#{arg.name.upcase}]" }.join(" ") if optional_arguments.any?
-        result = [required, optional].compact
-
-        " #{result.join(" ")}" unless result.empty?
+        " #{args.join(" ")}" unless args.empty?
       end
 
       # @since 0.1.0
