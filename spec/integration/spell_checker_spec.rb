@@ -10,6 +10,7 @@ RSpec.describe "Spell checker" do
       I don't know how to 'routs'. Did you mean: 'routes' ?
 
       Commands:
+        foo -c PREFIX                                              # Help you to build a shell completion script by searching commands based on a prefix
         foo assets [SUBCOMMAND]
         foo callbacks DIR                                          # Command with callbacks
         foo console                                                # Starts Foo console
