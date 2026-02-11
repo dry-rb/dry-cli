@@ -27,6 +27,20 @@ RSpec.describe "CLI" do
     end
   end
 
+  context "optional argument with required values" do
+    let(:cli) do
+      Class.new(Dry::CLI::Command) do
+        argument :first, required: true, values: %w[one two]
+        argument :second, required: false, values: %w[one two]
+      end.then { Dry.CLI(it) }
+    end
+
+    it "does not fail when optional argument is missing" do
+      result = capture_error { cli.call(arguments: ["one"]) }
+      expect(result).not_to match("ERROR")
+    end
+  end
+
   context "with command" do
     let(:cli) { Dry.CLI(Baz::CLI) }
     let(:cmd) { File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME)) }
