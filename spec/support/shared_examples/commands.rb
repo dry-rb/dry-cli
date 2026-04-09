@@ -156,7 +156,7 @@ RSpec.shared_examples "Commands" do |cli|
         expect(output).to eq("exec - Task: test - Directories: []\n")
       end
 
-      it "capture all the remaining arguments" do
+      it "captures all the remaining arguments" do
         output = capture_output { cli.call(arguments: %w[exec test api admin]) }
         expect(output).to eq("exec - Task: test - Directories: [\"api\", \"admin\"]\n")
       end
@@ -164,7 +164,7 @@ RSpec.shared_examples "Commands" do |cli|
 
     context "with supported values" do
       context "and with supported value passed" do
-        it "call the command with the option" do
+        it "calls the command with the option" do
           output = capture_output { cli.call(arguments: %w[console --engine=pry]) }
           expect(output).to eq("console - engine: pry\n")
         end
@@ -181,6 +181,20 @@ RSpec.shared_examples "Commands" do |cli|
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[db rollback 4]) }
           expect(error).to eq("ERROR: \"rspec db rollback\" was called with arguments \"4\"\n")
+        end
+      end
+
+      context "without a required argument limited by values array" do
+        it "prints error" do
+          error = capture_error { cli.call(arguments: %w[db vacuum]) }
+          expect(error).to eq("ERROR: \"rspec db vacuum\" was called with arguments \"\"\n")
+        end
+      end
+
+      context "without an optional argument limited by values array" do
+        it "can be used" do
+          output = capture_output { cli.call(arguments: %w[db vacuum full]) }
+          expect(output).to eq("mode: full, parallel: \n")
         end
       end
     end
