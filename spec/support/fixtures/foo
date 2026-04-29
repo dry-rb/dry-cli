@@ -35,7 +35,7 @@ module Foo
         ]
 
         def call(engine: nil, **)
-          puts "console - engine: #{engine}"
+          puts stylize("console - engine: ").blue.bold, stylize(engine.to_s).magenta
         end
       end
 
