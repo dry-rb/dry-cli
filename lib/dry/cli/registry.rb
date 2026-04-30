@@ -270,6 +270,12 @@ module Dry
         @commands.get(arguments)
       end
 
+      # @since 1.3.0
+      # @api private
+      def complete(prefixes)
+        @commands.complete(prefixes)
+      end
+
       private
 
       COMMAND_NAME_SEPARATOR = " "

@@ -8,6 +8,7 @@ RSpec.describe "Rendering" do
 
     expected = <<~DESC
       Commands:
+        foo -c PREFIX                                              # Help you to build a shell completion script by searching commands based on a prefix
         foo assets [SUBCOMMAND]
         foo callbacks DIR                                          # Command with callbacks
         foo console                                                # Starts Foo console

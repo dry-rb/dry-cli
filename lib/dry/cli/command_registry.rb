@@ -73,6 +73,23 @@ module Dry
       end
       # rubocop:enable Metrics/AbcSize
 
+      # Search for commands/subcommands that match the `prefixes`
+      #
+      # @param prefixes [Array<String>] the prefixes to be matched
+      #
+      # @since 1.3.0
+      # @api private
+      def complete(prefixes)
+        initial_lookup = get(prefixes)
+
+        candidates = initial_lookup.children.keys
+        candidates += @root.aliases.keys if initial_lookup.names.empty?
+
+        pending_prefix = prefixes != initial_lookup.names ? prefixes.last : nil
+        candidates.filter! {|c| c.start_with?(prefixes.last)} unless pending_prefix.nil?
+        candidates.join("\n")
+      end
+
       # Node of the registry
       #
       # @since 0.1.0
