@@ -76,6 +76,12 @@ module Dry
         []
       end
 
+      # @since 1.5.0
+      # @api private
+      def self.required_options
+        []
+      end
+
       # @since 1.1.1
       # @api private
       def self.subcommands
