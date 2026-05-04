@@ -12,10 +12,6 @@ module Dry
         obj.instance_variable_set(:@__loaded_extensions__, ::Set.new)
       end
 
-      # Register an extension
-      #
-      # @param [Symbol] name extension name
-      # @yield extension block. This block guaranteed not to be called more than once
       def register_extension(name, &block)
         @__available_extensions__[name] = block
       end
@@ -25,12 +21,13 @@ module Dry
       end
 
       def unload_extension(name)
-        @__locaded_extensions__.delete(name)
+        @__loaded_extensions__.delete(name)
       end
 
-      # Enables specified extensions. Already enabled extensions remain untouched
-      #
-      # @param [Array<Symbol>] extensions list of extension names
+      def available_extension?(name)
+        @__available_extensions__.key?(name)
+      end
+
       def load_extensions(*extensions)
         extensions.each do |ext|
           block = @__available_extensions__.fetch(ext) do

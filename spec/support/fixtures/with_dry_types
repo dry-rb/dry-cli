@@ -6,7 +6,11 @@ require "dry/cli"
 require_relative "../../../lib/dry/cli/command"
 require "json"
 
-Dry::CLI.load_extensions(:dry_types)
+if ENV["DONT_LOAD_EXTENSION"]
+  require "dry/types"
+else
+  Dry::CLI.load_extensions(:dry_types)
+end
 
 Types = Dry.Types()
 

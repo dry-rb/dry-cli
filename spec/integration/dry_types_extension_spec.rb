@@ -24,4 +24,9 @@ RSpec.describe "Dry Types extension" do
     _, stderr, = Open3.capture3("with_dry_types info system --sudo_mode not_false")
     expect(stderr).to eq("ERROR: \"with_dry_types info\" was called with arguments \"system --sudo_mode not_false\"\n")
   end
+
+  it "does not use Dry Types extension if it's not loaded" do
+    output, _, = Open3.capture3("DONT_LOAD_EXTENSION=1 with_dry_types info system 17 --sudo_mode true")
+    expect(JSON.parse(output.chomp)).to eq({"args" => ["17"], "lines" => "17", "sudo_mode" => "true", "type" => "system"})
+  end
 end
