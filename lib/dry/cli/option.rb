@@ -133,6 +133,15 @@ module Dry
           available_values.map(&:to_s).include?(value.to_s)
         end
       end
+
+      def type_cast(value)
+        if Dry::CLI.loaded_extension?(:dry_types) &&
+           type.is_a?(Dry::Types::Type)
+          type.call(value)
+        else
+          value
+        end
+      end
     end
 
     # Command line argument
