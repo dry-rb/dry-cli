@@ -19,4 +19,9 @@ RSpec.describe "Dry Types extension" do
       {"args" => ["15"], "lines" => 15, "sudo_mode" => true, "type" => "system"}
     )
   end
+
+  it "raises a standar Dry CLI error when casting fails" do
+    _, stderr, = Open3.capture3("with_dry_types info system --sudo_mode not_false")
+    expect(stderr).to eq("ERROR: \"with_dry_types info\" was called with arguments \"system --sudo_mode not_false\"\n")
+  end
 end

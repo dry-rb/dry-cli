@@ -137,7 +137,11 @@ module Dry
       def type_cast(value)
         if Dry::CLI.loaded_extension?(:dry_types) &&
            type.is_a?(Dry::Types::Type)
-          type.call(value)
+          begin
+            type.call(value)
+          rescue Dry::Types::CoercionError
+            raise ValueError
+          end
         else
           value
         end
