@@ -100,12 +100,9 @@ module Dry
 
       # @api private
       def self.arguments(command)
-        args = command.arguments_sorted_by_usage_order
-        args.map! do |a|
-          # a.to_s raises deprecation warning that it will result in a frozen string in the future
-          name = a.required? ? "#{a.name}" : "[#{a.name}]" # rubocop:disable Style/RedundantInterpolation
-          name.upcase!
-        end
+        args = command.arguments_sorted_by_usage_order.map { |a|
+          a.required? ? a.name.to_s.upcase : "[#{a.name.to_s.upcase}]"
+        }
 
         " #{args.join(" ")}" unless args.empty?
       end
