@@ -43,9 +43,9 @@ module Dry
           command_name_and_arguments(command, name),
           command_description(command),
           command_subcommands(command),
-          command_arguments(argument_rows, indent),
-          command_options(option_rows, indent),
-          command_examples(example_rows, indent)
+          row_section("Arguments", argument_rows, indent),
+          row_section("Options", option_rows, indent),
+          row_section("Examples", example_rows, indent)
         ]
       end
 
@@ -60,7 +60,7 @@ module Dry
           command_name_and_arguments(namespace, name),
           command_description(namespace),
           command_subcommands(namespace),
-          command_options(option_rows, indent)
+          row_section("Options", option_rows, indent)
         ]
       end
 
@@ -89,10 +89,10 @@ module Dry
       end
 
       # @api private
-      def self.command_examples(example_rows, indent)
-        return if example_rows.empty?
+      def self.row_section(heading, rows, indent)
+        return if rows.empty?
 
-        "\nExamples:\n#{example_rows.map { |row| row.render(indent) }.join("\n")}"
+        "\n#{heading}:\n#{rows.map { |row| row.render(indent) }.join("\n")}"
       end
 
       # @api private
@@ -106,18 +106,6 @@ module Dry
         return if command.subcommands.empty?
 
         "\nSubcommands:\n#{build_subcommands_list(command.subcommands)}"
-      end
-
-      # @api private
-      def self.command_arguments(argument_rows, indent)
-        return if argument_rows.empty?
-
-        "\nArguments:\n#{argument_rows.map { |row| row.render(indent) }.join("\n")}"
-      end
-
-      # @api private
-      def self.command_options(option_rows, indent)
-        "\nOptions:\n#{option_rows.map { |row| row.render(indent) }.join("\n")}"
       end
 
       # @api private
