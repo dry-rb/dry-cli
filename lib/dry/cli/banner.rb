@@ -71,21 +71,11 @@ module Dry
 
       # @api private
       def self.command_name_and_arguments(command, name)
-        usage = "\nUsage:\n"
+        parts = []
+        parts << "#{name}#{arguments(command)}" if command.new.respond_to?(:call)
+        parts << "#{name} SUBCOMMAND" if command.subcommands.any?
 
-        callable_root_command = false
-        if command.new.respond_to?(:call)
-          callable_root_command = true
-          usage += "  #{name}#{arguments(command)}"
-        end
-
-        if command.subcommands.any?
-          usage += " "
-          usage += "|" if callable_root_command
-          usage += " #{name} SUBCOMMAND"
-        end
-
-        usage
+        "\nUsage:\n  #{parts.join(" | ")}" unless parts.empty?
       end
 
       # @api private
