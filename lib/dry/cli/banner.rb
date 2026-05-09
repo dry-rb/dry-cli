@@ -44,9 +44,9 @@ module Dry
           command_name_and_arguments(command, name),
           command_description(command),
           command_subcommands(command),
-          row_section("Arguments", argument_rows, indent),
-          row_section("Options", option_rows, indent),
-          row_section("Examples", example_rows, indent)
+          section("Arguments", argument_rows, indent),
+          section("Options", option_rows, indent),
+          section("Examples", example_rows, indent)
         ]
       end
 
@@ -61,7 +61,7 @@ module Dry
           command_name_and_arguments(namespace, name),
           command_description(namespace),
           command_subcommands(namespace),
-          row_section("Options", option_rows, indent)
+          section("Options", option_rows, indent)
         ]
       end
 
@@ -80,7 +80,7 @@ module Dry
       end
 
       # @api private
-      def self.row_section(heading, rows, indent)
+      def self.section(heading, rows, indent)
         return if rows.empty?
 
         "\n#{heading}:\n#{rows.map { |row| row.render(indent) }.join("\n")}"
