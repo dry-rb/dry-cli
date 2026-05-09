@@ -95,7 +95,7 @@ module Dry
       def self.command_subcommands(command)
         return if command.subcommands.empty?
 
-        "\nSubcommands:\n#{build_subcommands_list(command.subcommands)}"
+        "\nSubcommands:\n#{subcommands_list(command.subcommands)}"
       end
 
       # @api private
@@ -130,13 +130,13 @@ module Dry
       # @api private
       def self.command_option_rows(command)
         result = command.options.map { |option|
-          Row.new(label: build_option_left(option), description: build_option_right(option))
+          Row.new(label: option_label(option), description: option_description(option))
         }
         result << Row.new(label: "--help, -h", description: "Print this help")
       end
 
       # @api private
-      def self.build_option_right(option)
+      def self.option_description(option)
         description = option.desc
         unless option.default.nil?
           description = "#{description}, default: #{option.default.inspect}"
@@ -145,7 +145,7 @@ module Dry
       end
 
       # @api private
-      def self.build_option_left(option)
+      def self.option_label(option)
         name = Inflector.dasherize(option.name)
         name = if option.boolean?
                  "--[no-]#{name}"
@@ -160,7 +160,7 @@ module Dry
         name
       end
 
-      def self.build_subcommands_list(subcommands)
+      def self.subcommands_list(subcommands)
         subcommands.map do |subcommand_name, subcommand|
           "  #{subcommand_name.ljust(32)}  # #{subcommand.command.description}"
         end.join("\n")
