@@ -22,13 +22,14 @@ module Dry
       #
       # @api private
       def self.call(command, name)
-        b = if CLI.command?(command)
-              command_banner(command, name)
-            else
-              namespace_banner(command, name)
-            end
+        banner_lines =
+          if CLI.command?(command)
+            command_banner(command, name)
+          else
+            namespace_banner(command, name)
+          end
 
-        b.compact.join("\n")
+        banner_lines.compact.join("\n")
       end
 
       # @api private
