@@ -8,10 +8,10 @@ module Dry
     #
     # @api private
     module Banner
-      # A two-column row in the banner: a label and its description.
+      # An entry in a banner section: a label and its description.
       #
       # @api private
-      Row = Data.define(:label, :description) do
+      Entry = Data.define(:label, :description) do
         def render(indent) = "  #{label.ljust(indent)} # #{description}"
       end
 
@@ -34,34 +34,34 @@ module Dry
 
       # @api private
       def self.command_banner(command, name)
-        argument_rows = command_argument_rows(command)
-        example_rows = command_example_rows(command, name)
-        option_rows = command_option_rows(command)
-        indent = capture_indent(argument_rows + option_rows + example_rows)
+        argument_entries = command_argument_entries(command)
+        example_entries = command_example_entries(command, name)
+        option_entries = command_option_entries(command)
+        indent = capture_indent(argument_entries + option_entries + example_entries)
 
         [
           command_name(name),
           command_name_and_arguments(command, name),
           command_description(command),
           command_subcommands(command),
-          section("Arguments", argument_rows, indent),
-          section("Options", option_rows, indent),
-          section("Examples", example_rows, indent)
+          section("Arguments", argument_entries, indent),
+          section("Options", option_entries, indent),
+          section("Examples", example_entries, indent)
         ]
       end
 
       # @since 1.1.1
       # @api private
       def self.namespace_banner(namespace, name)
-        option_rows = command_option_rows(namespace)
-        indent = capture_indent(option_rows)
+        option_entries = command_option_entries(namespace)
+        indent = capture_indent(option_entries)
 
         [
           command_name(name, "Namespace"),
           command_name_and_arguments(namespace, name),
           command_description(namespace),
           command_subcommands(namespace),
-          section("Options", option_rows, indent)
+          section("Options", option_entries, indent)
         ]
       end
 
@@ -80,10 +80,10 @@ module Dry
       end
 
       # @api private
-      def self.section(heading, rows, indent)
-        return if rows.empty?
+      def self.section(heading, entries, indent)
+        return if entries.empty?
 
-        "\n#{heading}:\n#{rows.map { |row| row.render(indent) }.join("\n")}"
+        "\n#{heading}:\n#{entries.map { |entry| entry.render(indent) }.join("\n")}"
       end
 
       # @api private
@@ -109,9 +109,9 @@ module Dry
       end
 
       # @api private
-      def self.command_argument_rows(command)
+      def self.command_argument_entries(command)
         command.arguments.map do |argument|
-          Row.new(
+          Entry.new(
             label: argument.name.to_s.upcase,
             description: "#{"REQUIRED " if argument.required?}#{argument.desc}"
           )
@@ -119,18 +119,18 @@ module Dry
       end
 
       # @api private
-      def self.command_example_rows(command, name)
+      def self.command_example_entries(command, name)
         command.examples.map do |example, description|
-          Row.new(label: "#{name} #{example}", description: description)
+          Entry.new(label: "#{name} #{example}", description: description)
         end
       end
 
       # @api private
-      def self.command_option_rows(command)
+      def self.command_option_entries(command)
         result = command.options.map { |option|
-          Row.new(label: option_label(option), description: option_description(option))
+          Entry.new(label: option_label(option), description: option_description(option))
         }
-        result << Row.new(label: "--help, -h", description: "Print this help")
+        result << Entry.new(label: "--help, -h", description: "Print this help")
       end
 
       # @api private
@@ -166,8 +166,8 @@ module Dry
       end
 
       # @api private
-      def self.capture_indent(rows)
-        rows.map { |row| row.label.length }.max + 1
+      def self.capture_indent(entries)
+        entries.map { |entry| entry.label.length }.max + 1
       end
     end
   end
