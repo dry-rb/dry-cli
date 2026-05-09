@@ -11,7 +11,9 @@ module Dry
       # A two-column row in the banner: a label and its description.
       #
       # @api private
-      Row = Data.define(:label, :description)
+      Row = Data.define(:label, :description) do
+        def render(indent) = "  #{label.ljust(indent)} # #{description}"
+      end
 
       # Prints command/namespace banner
       #
@@ -90,10 +92,7 @@ module Dry
       def self.command_examples(example_rows, indent)
         return if example_rows.empty?
 
-        examples = example_rows.map { |row|
-          "  #{row.label.ljust(indent)} # #{row.description}"
-        }
-        "\nExamples:\n#{examples.join("\n")}"
+        "\nExamples:\n#{example_rows.map { |row| row.render(indent) }.join("\n")}"
       end
 
       # @api private
@@ -113,18 +112,12 @@ module Dry
       def self.command_arguments(argument_rows, indent)
         return if argument_rows.empty?
 
-        arguments = argument_rows.map { |row|
-          "  #{row.label.ljust(indent)} # #{row.description}"
-        }
-        "\nArguments:\n#{arguments.join("\n")}"
+        "\nArguments:\n#{argument_rows.map { |row| row.render(indent) }.join("\n")}"
       end
 
       # @api private
       def self.command_options(option_rows, indent)
-        options = option_rows.map { |row|
-          "  #{row.label.ljust(indent)} # #{row.description}"
-        }
-        "\nOptions:\n#{options.join("\n")}"
+        "\nOptions:\n#{option_rows.map { |row| row.render(indent) }.join("\n")}"
       end
 
       # @api private
