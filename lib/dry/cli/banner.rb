@@ -146,18 +146,19 @@ module Dry
 
       # @api private
       def self.option_label(option)
-        name = Inflector.dasherize(option.name)
-        name = if option.boolean?
-                 "--[no-]#{name}"
-               elsif option.flag?
-                 "--#{name}"
-               elsif option.array?
-                 "--#{name}=VALUE1,VALUE2,.."
-               else
-                 "--#{name}=VALUE"
-               end
-        name = "#{name}, #{option.alias_names.join(", ")}" if option.aliases.any?
-        name
+        base = Inflector.dasherize(option.name)
+        label =
+          if option.boolean?
+            "--[no-]#{base}"
+          elsif option.flag?
+            "--#{base}"
+          elsif option.array?
+            "--#{base}=VALUE1,VALUE2,.."
+          else
+            "--#{base}=VALUE"
+          end
+        label = "#{label}, #{option.alias_names.join(", ")}" if option.aliases.any?
+        label
       end
 
       def self.subcommands_list(subcommands)
