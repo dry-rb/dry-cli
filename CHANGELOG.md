@@ -13,6 +13,24 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ### Changed
 
+- The `example` DSL now takes the example and its description as separate arguments, called once per example. Previously, examples were passed as a single array of strings with the description embedded after a `#`. (@aaronmallen and @timriley in #152)
+
+  ```ruby
+  class Server < Dry::CLI::Command
+    # Now:
+    example "--server=webrick",    "Force `webrick` server engine"
+    example "--host=0.0.0.0",      "Bind to a host"
+    example "--port=2306",         "Bind to a port"
+    example "--no-code-reloading", "Disable code reloading"
+    
+    # Before:
+    example [
+      "--server=webrick    # Force `webrick` server engine",
+      "--host=0.0.0.0      # Bind to a host",
+      # ...
+    ]
+  end
+
 ### Deprecated
 
 ### Removed
