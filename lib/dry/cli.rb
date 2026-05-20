@@ -18,13 +18,6 @@ module Dry
     require "dry/cli/spell_checker"
     require "dry/cli/banner"
     require "dry/cli/inflector"
-    require "dry/cli/extensions"
-
-    extend Dry::CLI::Extensions
-
-    register_extension(:dry_types) do
-      require "dry/types"
-    end
 
     # Check if command
     #

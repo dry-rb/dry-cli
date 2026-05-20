@@ -47,6 +47,12 @@ module Dry
         options[:type]
       end
 
+      # @since NEXT
+      # @api private
+      def cast_callable
+        options[:cast]
+      end
+
       # @since 0.1.0
       # @api private
       def values
@@ -134,17 +140,22 @@ module Dry
         end
       end
 
-      def type_cast(value)
-        if Dry::CLI.loaded_extension?(:dry_types) &&
-           type.is_a?(Dry::Types::Type)
-          begin
-            type.call(value)
-          rescue Dry::Types::CoercionError
-            raise ValueError
-          end
+      def cast(value)
+        return value unless cast_callable.respond_to?(:call)
+
+        if type == :array
+          value.map { |el| cast_single(el) }
         else
-          value
+          cast_single(value)
         end
+      end
+
+      private
+
+      def cast_single(value)
+        cast_callable.call(value)
+      rescue StandardError => exception
+        raise CastError.new(arg_name: name, original_exception: exception)
       end
     end
 

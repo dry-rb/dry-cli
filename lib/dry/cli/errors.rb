@@ -13,6 +13,23 @@ module Dry
     class ValueError < Error
     end
 
+    # @since NEXT
+    class CastError < Error
+      def initialize(arg_name:, original_exception: nil)
+        super
+        @arg_name = arg_name
+        @original_exception = original_exception
+      end
+
+      def message
+        msg = "ERROR when casting #{@arg_name}"
+        if @original_exception
+          msg += ": #{@original_exception.message}."
+        end
+        msg
+      end
+    end
+
     # @since 0.2.1
     class UnknownCommandError < Error
       # @since 0.2.1

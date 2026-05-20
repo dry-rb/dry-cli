@@ -20,7 +20,7 @@ module Dry
         OptionParser.new do |opts|
           command.options.each do |option|
             opts.on(*option.parser_options) do |value|
-              parsed_options[option.name.to_sym] = option.type_cast(value)
+              parsed_options[option.name.to_sym] = option.cast(value)
             end
           end
 
@@ -33,6 +33,8 @@ module Dry
         parse_required_params(command, arguments, prog_name, parsed_options)
       rescue ::OptionParser::ParseError, ValueError
         Result.failure("ERROR: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(" ")}\"")
+      rescue CastError => exception
+        Result.failure(exception.message)
       end
 
       # @since 0.1.0
@@ -84,7 +86,7 @@ module Dry
             value = arguments.at(index) || default_values[cmd_arg.name]
             raise ValueError unless cmd_arg.valid_value?(value)
 
-            result[cmd_arg.name] = cmd_arg.type_cast(value)
+            result[cmd_arg.name] = cmd_arg.cast(value)
           end
         end
 

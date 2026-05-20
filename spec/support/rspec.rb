@@ -18,10 +18,6 @@ RSpec.configure do |config|
     meta[:aggregate_failures] = true
   end
 
-  config.after(:each) do
-    Dry::CLI.unload_extension(:dry_types) if Dry::CLI.available_extension?(:dry_types)
-  end
-
   if ENV["CI"]
     # No focused specs should be committed. This ensures
     # builds fail when this happens.
