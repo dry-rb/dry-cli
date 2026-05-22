@@ -10,6 +10,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 ### Added
 
 - Support for command namespaces (@gustavothecoder in #135)
+- New `:cast` option for options and arguments, allowing to leverage Dry Types or simple procs/lambdas to cast values from string to some other type of value (@katafrakt in #157)
 
 ### Changed
 
