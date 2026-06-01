@@ -31,6 +31,21 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
       # ...
     ]
   end
+  
+- As with options, optional arguments can now be omitted even if list of acceptable values is defined. (@svoop in #155)
+
+  ```ruby
+  argument :required_arg, required: true, values: %w(one two)
+  argument :optional_arg, required: false, values: %w(one two)
+  ```
+
+  ```
+  cmd             # ERROR
+  cmd one         # OKAY
+  cmd three       # ERROR 
+  cmd one two     # OKAY
+  cmd one three   # ERROR
+  ```
 
 ### Deprecated
 
