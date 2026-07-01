@@ -202,4 +202,44 @@ RSpec.describe "CLI" do
       end
     end
   end
+
+  context "IO streams" do
+    it "uses custom stdout for help output" do
+      registry = Module.new do
+        extend Dry::CLI::Registry
+        register "foo", Class.new(Dry::CLI::Command) { desc "A foo command"; def call(*); end }
+      end
+      cli = Dry::CLI.new(registry)
+
+      io = StringIO.new
+      expect { cli.call(arguments: ["foo", "--help"], stdout: io) }.to raise_error(SystemExit)
+      expect(io.string).to include("A foo command")
+    end
+
+    it "uses custom stderr for error output" do
+      registry = Module.new do
+        extend Dry::CLI::Registry
+        register "foo", Class.new(Dry::CLI::Command) { desc "A foo command"; def call(*); end }
+      end
+      cli = Dry::CLI.new(registry)
+
+      io = StringIO.new
+      expect { cli.call(arguments: ["foo", "--unknown"], stderr: io) }.to raise_error(SystemExit)
+      expect(io.string).to eq("ERROR: \"rspec foo\" was called with arguments \"--unknown\"\n")
+    end
+
+    it "passes stdin to command and writes to custom stdout" do
+      command_class = Class.new(Dry::CLI::Command) do
+        def call(**)
+          stdout.puts stdin.gets
+        end
+      end
+      cli = Dry.CLI(command_class)
+
+      input = StringIO.new("hello\n")
+      output = StringIO.new
+      cli.call(arguments: [], stdin: input, stdout: output)
+      expect(output.string).to eq("hello\n")
+    end
+  end
 end
