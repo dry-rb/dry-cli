@@ -33,8 +33,8 @@ module Dry
         parse_required_params(command, arguments, prog_name, parsed_options)
       rescue ::OptionParser::ParseError => exception
         Result.failure("ERROR: \"#{prog_name}\" was called with #{exception.reason} \"#{exception.args.join(" ")}\"")
-      rescue ValueError
-        Result.failure("ERROR: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(" ")}\"")
+      rescue ValueError => exception
+        Result.failure(exception.message)
       rescue CastError => exception
         Result.failure(exception.message)
       end
@@ -80,13 +80,13 @@ module Dry
         command_arguments.each_with_index do |cmd_arg, index|
           if cmd_arg.array?
             arg = arguments[index..] || default_values[cmd_arg.name]
-            raise ValueError unless cmd_arg.valid_value?(arg)
+            raise ValueError.new(value: arg, argument: cmd_arg) unless cmd_arg.valid_value?(arg)
 
             result[cmd_arg.name] = arg
             break
           else
             value = arguments.at(index) || default_values[cmd_arg.name]
-            raise ValueError unless cmd_arg.valid_value?(value)
+            raise ValueError.new(value: value, argument: cmd_arg) unless cmd_arg.valid_value?(value)
 
             result[cmd_arg.name] = cmd_arg.cast(value)
           end

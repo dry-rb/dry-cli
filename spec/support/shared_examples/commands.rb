@@ -180,14 +180,14 @@ RSpec.shared_examples "Commands" do |cli|
       context "with an unknown argument" do
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[db rollback 4]) }
-          expect(error).to eq("ERROR: \"rspec db rollback\" was called with arguments \"4\"\n")
+          expect(error).to eq("ERROR: invalid argument \"4\" for \"steps\"; accepted values: 1, 2, 3\n")
         end
       end
 
       context "without a required argument limited by values array" do
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[db vacuum]) }
-          expect(error).to eq("ERROR: \"rspec db vacuum\" was called with arguments \"\"\n")
+          expect(error).to eq("ERROR: \"mode\" is required\n")
         end
       end
 
