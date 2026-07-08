@@ -48,6 +48,8 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
   cmd one three   # ERROR
   ```
 
+- Improved error messages to be more precise and helpful (@katafrakt in #158)
+
 ### Deprecated
 
 ### Removed
