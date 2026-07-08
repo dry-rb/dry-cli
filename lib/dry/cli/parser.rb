@@ -14,7 +14,6 @@ module Dry
       # @api private
       #
       def self.call(command, arguments, prog_name)
-        original_arguments = arguments.dup
         parsed_options = {}
 
         OptionParser.new do |opts|
