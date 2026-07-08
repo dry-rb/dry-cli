@@ -31,7 +31,9 @@ module Dry
 
         parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, prog_name, parsed_options)
-      rescue ::OptionParser::ParseError, ValueError
+      rescue ::OptionParser::ParseError => exception
+        Result.failure("ERROR: \"#{prog_name}\" was called with #{exception.reason} \"#{exception.args.join(" ")}\"")
+      rescue ValueError
         Result.failure("ERROR: \"#{prog_name}\" was called with arguments \"#{original_arguments.join(" ")}\"")
       rescue CastError => exception
         Result.failure(exception.message)
