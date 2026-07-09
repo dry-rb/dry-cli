@@ -160,6 +160,16 @@ RSpec.shared_examples "Commands" do |cli|
         output = capture_output { cli.call(arguments: %w[exec test api admin]) }
         expect(output).to eq("exec - Task: test - Directories: [\"api\", \"admin\"]\n")
       end
+
+      it "captures repeated array options" do
+        output = capture_output { cli.call(arguments: %w[server --deps=dep42 --deps=dep43]) }
+
+        if RUBY_VERSION < "3.4"
+          expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep42\", \"dep43\"]}\n")
+        else
+          expect(output).to eq("server - {code_reloading: true, deps: [\"dep42\", \"dep43\"]}\n")
+        end
+      end
     end
 
     context "with supported values" do
