@@ -5,7 +5,7 @@ module Baz
     desc "Baz command line interface"
     argument :mandatory_arg, required: true, aliases: %w[m], desc: "Mandatory argument"
     argument :optional_arg, aliases: %w[o],
-                            desc: "Optional argument (has to have default value in call method)"
+      desc: "Optional argument (has to have default value in call method)"
     option :option_one, aliases: %w[1], desc: "Option one"
     option :boolean_option, aliases: %w[b], desc: "Option boolean", type: :boolean
     option :option_with_default, aliases: %w[d], desc: "Option default", default: "test"

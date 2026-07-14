@@ -14,6 +14,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ### Changed
 
+- [POTENTIALLY BREAKING] `Dry::CLI::Command`'s constructor now takes three keyword arguments: `stdout:`, `stdin:`, and `:stderr`. They can be used to inject I/O stream, which is useful for testing.
 - The `example` DSL now takes the example and its description as separate arguments, called once per example. Previously, examples were passed as a single array of strings with the description embedded after a `#`. (@aaronmallen and @timriley in #152)
 
   ```ruby

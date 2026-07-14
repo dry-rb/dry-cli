@@ -201,45 +201,45 @@ RSpec.describe "CLI" do
         )
       end
     end
+  end
 
-    it "exposes @out and @err to command without overriding pre-existing ivars" do
-      # @out and @err are exposed by default
+  context "IO streams" do
+    it "uses custom stdout for help output" do
+      registry = Module.new do
+        extend Dry::CLI::Registry
+        register "foo", Class.new(Dry::CLI::Command) { desc "A foo command"; def call(*); end }
+      end
+      cli = Dry::CLI.new(registry)
+
+      io = StringIO.new
+      expect { cli.call(arguments: ["foo", "--help"], stdout: io) }.to raise_error(SystemExit)
+      expect(io.string).to include("A foo command")
+    end
+
+    it "uses custom stderr for error output" do
+      registry = Module.new do
+        extend Dry::CLI::Registry
+        register "foo", Class.new(Dry::CLI::Command) { desc "A foo command"; def call(*); end }
+      end
+      cli = Dry::CLI.new(registry)
+
+      io = StringIO.new
+      expect { cli.call(arguments: ["foo", "--unknown"], stderr: io) }.to raise_error(SystemExit)
+      expect(io.string).to eq("ERROR: \"rspec foo\" was called with arguments \"--unknown\"\n")
+    end
+
+    it "passes stdin to command and writes to custom stdout" do
       command_class = Class.new(Dry::CLI::Command) do
         def call(**)
-          @out.puts "out"
-          @err.puts "err"
+          stdout.puts stdin.gets
         end
       end
-      cli = Dry.CLI(command_class.new)
+      cli = Dry.CLI(command_class)
 
-      default_out = StringIO.new
-      default_err = StringIO.new
-      cli.call(arguments: [], out: default_out, err: default_err)
-
-      expect(default_out.string).to eq("out\n")
-      expect(default_err.string).to eq("err\n")
-
-      # @out and @err do not override pre-existing ivars
-      custom_command_class = Class.new(command_class) do
-        define_method(:initialize) do |out, err|
-          super()
-          @out = out
-          @err = err
-        end
-      end
-
-      custom_out = StringIO.new
-      custom_err = StringIO.new
-      cli = Dry.CLI(custom_command_class.new(custom_out, custom_err))
-
-      default_out = StringIO.new
-      default_err = StringIO.new
-      cli.call(arguments: [], out: default_out, err: default_err)
-
-      expect(custom_out.string).to eq("out\n")
-      expect(custom_err.string).to eq("err\n")
-      expect(default_out.string).to eq("")
-      expect(default_err.string).to eq("")
+      input = StringIO.new("hello\n")
+      output = StringIO.new
+      cli.call(arguments: [], stdin: input, stdout: output)
+      expect(output.string).to eq("hello\n")
     end
   end
 end
