@@ -11,6 +11,24 @@ module Dry
 
     # @since 1.4.0
     class ValueError < Error
+      attr_reader :value, :argument
+
+      def initialize(value: nil, argument: nil)
+        @value = value
+        @argument = argument
+        super
+      end
+
+      def message
+        if @value.nil? && @argument
+          "ERROR: \"#{@argument.name}\" is required"
+        elsif @argument
+          accepted = @argument.values
+          "ERROR: invalid argument \"#{@value}\" for \"#{@argument.name}\"; accepted values: #{accepted.join(', ')}"
+        else
+          "ERROR: invalid argument \"#{@value}\""
+        end
+      end
     end
 
     # @since NEXT

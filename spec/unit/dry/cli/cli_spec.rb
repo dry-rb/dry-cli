@@ -225,7 +225,7 @@ RSpec.describe "CLI" do
 
       io = StringIO.new
       expect { cli.call(arguments: ["foo", "--unknown"], stderr: io) }.to raise_error(SystemExit)
-      expect(io.string).to eq("ERROR: \"rspec foo\" was called with arguments \"--unknown\"\n")
+      expect(io.string).to eq("ERROR: \"rspec foo\" was called with invalid option \"--unknown\"\n")
     end
 
     it "passes stdin to command and writes to custom stdout" do

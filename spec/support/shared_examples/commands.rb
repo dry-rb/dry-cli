@@ -111,7 +111,7 @@ RSpec.shared_examples "Commands" do |cli|
 
     it "a param with unknown param" do
       error = capture_error { cli.call(arguments: %w[server --unknown 1234]) }
-      expect(error).to eq("ERROR: \"rspec server\" was called with arguments \"--unknown 1234\"\n")
+      expect(error).to eq("ERROR: \"rspec server\" was called with invalid option \"--unknown\"\n")
     end
 
     it "with boolean param" do
@@ -173,21 +173,21 @@ RSpec.shared_examples "Commands" do |cli|
       context "and with an unknown value passed" do
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[console --engine=unknown]) }
-          expect(error).to eq("ERROR: \"rspec console\" was called with arguments \"--engine=unknown\"\n")
+          expect(error).to eq("ERROR: \"rspec console\" was called with invalid argument \"--engine=unknown\"\n")
         end
       end
 
       context "with an unknown argument" do
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[db rollback 4]) }
-          expect(error).to eq("ERROR: \"rspec db rollback\" was called with arguments \"4\"\n")
+          expect(error).to eq("ERROR: invalid argument \"4\" for \"steps\"; accepted values: 1, 2, 3\n")
         end
       end
 
       context "without a required argument limited by values array" do
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[db vacuum]) }
-          expect(error).to eq("ERROR: \"rspec db vacuum\" was called with arguments \"\"\n")
+          expect(error).to eq("ERROR: \"mode\" is required\n")
         end
       end
 
@@ -243,7 +243,7 @@ RSpec.shared_examples "Commands" do |cli|
 
       it "with unknown param" do
         error = capture_error { cli.call(arguments: %w[new bookshelf --unknown 1234]) }
-        expect(error).to eq("ERROR: \"rspec new\" was called with arguments \"bookshelf --unknown 1234\"\n")
+        expect(error).to eq("ERROR: \"rspec new\" was called with invalid option \"--unknown\"\n")
       end
 
       it "no required" do
