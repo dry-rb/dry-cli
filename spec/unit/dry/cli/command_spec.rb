@@ -16,6 +16,20 @@ RSpec.describe "Command" do
     end
   end
 
+  describe "long description definition" do
+    class CommandWithLongDesc < Dry::CLI::Command
+      desc "Short description"
+      long_desc "A much longer description of what this command does"
+    end
+
+    it "stores the long description separately from the short one" do
+      expect(CommandWithLongDesc.description).to eq("Short description")
+      expect(CommandWithLongDesc.long_description).to eq(
+        "A much longer description of what this command does"
+      )
+    end
+  end
+
   describe "argument definition" do
     class CommandWithDuplicateArgs < Dry::CLI::Command
       argument :version, desc: "1"
