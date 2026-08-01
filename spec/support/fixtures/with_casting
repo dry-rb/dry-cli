@@ -26,7 +26,18 @@ module WithDryTypes
     end
   end
 
+  class Tags < Dry::CLI::Command
+    desc "Display tags"
+
+    argument :tags, desc: "Tags to display", type: :array, cast: ->(t) { t.upcase }
+
+    def call(**options)
+      puts JSON.dump(options)
+    end
+  end
+
   register "info", Info
+  register "tags", Tags
 end
 
 Dry.CLI(WithDryTypes).call
