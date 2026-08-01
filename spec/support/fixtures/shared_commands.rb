@@ -17,12 +17,14 @@ module Commands
   class Console < Dry::CLI::Command
     desc "Starts Foo console"
     option :engine, desc: "Force a console engine", values: %w[irb pry ripl]
+    option :require, desc: "Libraries to require", type: :array, values: %w[foo bar baz]
 
     example "", "Uses the bundled engine"
     example "--engine=pry", "Force to use Pry"
 
-    def call(engine: nil, **)
+    def call(engine: nil, **options)
       puts "console - engine: #{engine}"
+      puts "console - require: #{options[:require].inspect}" if options.key?(:require)
     end
   end
 

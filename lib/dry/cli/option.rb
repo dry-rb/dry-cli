@@ -15,11 +15,20 @@ module Dry
       # @api private
       attr_reader :options
 
+      # The accepted values, as strings.
+      #
+      # Values are given on the command line as strings, so they're normalized rather than compared
+      # across types. `options[:values]` keeps whatever was declared.
+      #
+      # @api private
+      attr_reader :values
+
       # @since 0.1.0
       # @api private
       def initialize(name, options = {})
         @name = name
         @options = options
+        @values = options[:values]&.map(&:to_s)
       end
 
       # @since 0.1.0
@@ -51,12 +60,6 @@ module Dry
       # @api private
       def cast_callable
         options[:cast]
-      end
-
-      # @since 0.1.0
-      # @api private
-      def values
-        options[:values]
       end
 
       # @since 0.1.0
@@ -97,9 +100,10 @@ module Dry
       # @since 0.1.0
       # @api private
       #
+      # rubocop:disable Metrics/PerceivedComplexity
       def parser_options
         dasherized_name = Inflector.dasherize(name)
-        parser_options  = []
+        parser_options = []
 
         if boolean?
           parser_options << "--[no-]#{dasherized_name}"
@@ -110,12 +114,20 @@ module Dry
           parser_options << "--#{dasherized_name} #{name}"
         end
 
-        parser_options << Array if array?
-        parser_options << values if values
+        if array?
+          # Array options can't also give `values` to OptionParser. This would match against the
+          # values array and return a single string member, skipping the `Array` conversion itself.
+          # {Parser} validates their values instead.
+          parser_options << Array
+        elsif values
+          parser_options << values
+        end
+
         parser_options.unshift(*alias_names) if aliases.any?
         parser_options << desc if desc
         parser_options
       end
+      # rubocop:enable Metrics/PerceivedComplexity
 
       # @since 0.1.0
       # @api private
@@ -131,28 +143,30 @@ module Dry
       # @api private
       def valid_value?(value)
         return true if value.nil? && !required?
-
-        available_values = values
-        return true if available_values.nil?
+        return true if values.nil?
 
         if array?
-          (value - available_values).empty?
+          value.all? { accepted_value?(_1) }
         else
-          available_values.map(&:to_s).include?(value.to_s)
+          accepted_value?(value)
         end
       end
 
       def cast(value)
         return value unless cast_callable.respond_to?(:call)
 
-        if type == :array
-          value.map { |el| cast_single(el) }
+        if array?
+          value.map { cast_single(_1) }
         else
           cast_single(value)
         end
       end
 
       private
+
+      def accepted_value?(value)
+        values.include?(value.to_s)
+      end
 
       def cast_single(value)
         cast_callable.call(value)

@@ -177,6 +177,25 @@ RSpec.shared_examples "Commands" do |cli|
         end
       end
 
+      context "and the option is an array" do
+        it "returns an array for a single value" do
+          output = capture_output { cli.call(arguments: %w[console --require=foo]) }
+          expect(output).to eq("console - engine: \nconsole - require: [\"foo\"]\n")
+        end
+
+        it "returns an array for comma-separated values" do
+          output = capture_output { cli.call(arguments: %w[console --require=foo,bar]) }
+          expect(output).to eq("console - engine: \nconsole - require: [\"foo\", \"bar\"]\n")
+        end
+
+        it "prints error when one of the values is unsupported" do
+          error = capture_error { cli.call(arguments: %w[console --require=foo,unknown]) }
+          expect(error).to eq(
+            "ERROR: invalid argument \"[\"foo\", \"unknown\"]\" for \"require\"; accepted values: foo, bar, baz\n"
+          )
+        end
+      end
+
       context "with an unknown argument" do
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[db rollback 4]) }
