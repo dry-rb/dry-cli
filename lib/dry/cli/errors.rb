@@ -23,8 +23,8 @@ module Dry
         if @value.nil? && @argument
           "ERROR: \"#{@argument.name}\" is required"
         elsif @argument
-          accepted = @argument.values
-          "ERROR: invalid argument \"#{@value}\" for \"#{@argument.name}\"; accepted values: #{accepted.join(', ')}"
+          "ERROR: invalid argument \"#{@value}\" for \"#{@argument.name}\"; " \
+            "accepted values: #{@argument.values_description}"
         else
           "ERROR: invalid argument \"#{@value}\""
         end

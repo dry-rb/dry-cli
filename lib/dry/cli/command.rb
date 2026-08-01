@@ -260,7 +260,7 @@ module Dry
       #   # # ...
       #   #
       #   # Options:
-      #   #   --engine=VALUE                  # Force a console engine: (irb/pry/ripl)
+      #   #   --engine=VALUE                  # Force a console engine: (irb, pry, ripl)
       #   #   --help, -h                      # Print this help
       #
       # @example Boolean

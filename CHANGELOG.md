@@ -49,6 +49,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
   ```
 
 - Improved error messages to be more precise and helpful (@katafrakt in #158)
+- Accepted values are now listed the same way in help output as in error messages, separated by commas rather than slashes. (@timriley in #163)
 
 ### Deprecated
 
