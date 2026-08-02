@@ -76,6 +76,16 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
   ```
   cmd --level=1  # was an error, now "1"
   ```
+- Arguments combining `type: :array` with `cast:` are now cast. Previously the cast was silently ignored for array arguments, and applied to array options only. (@timriley in #162)
+
+  ```ruby
+  argument :lines, type: :array, cast: ->(v) { Integer(v) }
+  ```
+
+  ```
+  cmd 1 2  # was ["1", "2"], now [1, 2]
+  ```
+- An `argument` with `type: :array` is now always given to the command as an array. When the command declared more arguments than were given, it previously received no value at all. (@timriley in #162)
 
 ### Security
 

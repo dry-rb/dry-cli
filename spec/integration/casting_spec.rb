@@ -53,5 +53,19 @@ RSpec.describe "arguments casting" do
         {"lines" => 10, "sudo_mode" => false, "type" => "system", "flags" => ["oof", "zab", "hazooh"]}
       )
     end
+
+    it "with :array type casts every element of an argument" do
+      output, _ = Open3.capture3("with_casting tags foo baz")
+
+      expect(JSON.parse(output.chomp)).to eq(
+        {"tags" => ["FOO", "BAZ"], "args" => ["foo", "baz"]}
+      )
+    end
+
+    it "with :array type leaves an omitted argument uncast" do
+      output, _ = Open3.capture3("with_casting tags")
+
+      expect(JSON.parse(output.chomp)).to eq({"tags" => []})
+    end
   end
 end
