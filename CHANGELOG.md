@@ -57,6 +57,25 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 ### Fixed
 
 - Optional arguments were incorrectly displayed at the end of usage message (@gustavothecoder in #145)
+- Options combining `type: :array` with `values:` no longer return a single string instead of an array, and now accept comma-separated values. (@timriley in #161)
+
+  ```ruby
+  option :require, type: :array, values: %w[foo bar baz]
+  ```
+
+  ```
+  cmd --require=foo      # was "foo", now ["foo"]
+  cmd --require=foo,bar  # was an error, now ["foo", "bar"]
+  ```
+- Allow options and arguments to specify non-string `values:`, such as integers. These are cast to strings when declared, then compared against the strings given on the command line. (@timriley in #161)
+
+  ```ruby
+  option :level, values: [1, 2, 3]
+  ```
+
+  ```
+  cmd --level=1  # was an error, now "1"
+  ```
 - Arguments combining `type: :array` with `cast:` are now cast. Previously the cast was silently ignored for array arguments, and applied to array options only. (@timriley in #162)
 
   ```ruby
