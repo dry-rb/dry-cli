@@ -41,7 +41,7 @@ module Dry
       # @api private
       def desc
         desc = options[:desc]
-        values ? "#{desc}: (#{values.join("/")})" : desc
+        values ? "#{desc}: (#{values_description})" : desc
       end
 
       # @since 0.1.0
@@ -60,6 +60,13 @@ module Dry
       # @api private
       def cast_callable
         options[:cast]
+      end
+
+      # Returns a human-readable list of this option's accepted `values`, e.g. "irb, pry, ripl".
+      #
+      # @api private
+      def values_description
+        values&.join(", ")
       end
 
       # @since 0.1.0
