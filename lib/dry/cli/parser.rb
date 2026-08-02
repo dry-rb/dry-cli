@@ -13,12 +13,15 @@ module Dry
       # @since 0.1.0
       # @api private
       #
+      # rubocop:disable Metrics/AbcSize
       def self.call(command, arguments, prog_name)
         parsed_options = {}
 
         OptionParser.new do |opts|
           command.options.each do |option|
             opts.on(*option.parser_options) do |value|
+              raise ValueError.new(value: value, argument: option) unless option.valid_value?(value)
+
               parsed_options[option.name.to_sym] = option.cast(value)
             end
           end
@@ -37,6 +40,7 @@ module Dry
       rescue CastError => exception
         Result.failure(exception.message)
       end
+      # rubocop:enable Metrics/AbcSize
 
       # @since 0.1.0
       # @api private
