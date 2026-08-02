@@ -23,12 +23,11 @@ module Dry
               raise ValueError.new(value: value, argument: option) unless option.valid_value?(value)
 
               option_name = option.name.to_sym
-              value = option.cast(value)
               if option.array?
                 parsed_options[option_name] ||= []
-                parsed_options[option_name] += value
+                parsed_options[option_name] += option.cast(value)
               else
-                parsed_options[option_name] = value
+                parsed_options[option_name] = option.cast(value)
               end
             end
           end
