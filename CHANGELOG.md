@@ -11,6 +11,13 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - Support for command namespaces (@gustavothecoder in #135)
 - New `:cast` option for options and arguments, allowing to leverage Dry Types or simple procs/lambdas to cast values from string to some other type of value (@katafrakt in #157)
+- Array options can be supplied by repeated flags. (@Drowze in #159)
+
+    The following are now equivalent:
+    ```
+    my-cli --array-flag foo,bar
+    my-cli --array-flag foo --array-flag bar
+    ```
 
 ### Changed
 
