@@ -22,7 +22,13 @@ module Dry
             opts.on(*option.parser_options) do |value|
               raise ValueError.new(value: value, argument: option) unless option.valid_value?(value)
 
-              parsed_options[option.name.to_sym] = option.cast(value)
+              option_name = option.name.to_sym
+              if option.array?
+                parsed_options[option_name] ||= []
+                parsed_options[option_name] += option.cast(value)
+              else
+                parsed_options[option_name] = option.cast(value)
+              end
             end
           end
 
