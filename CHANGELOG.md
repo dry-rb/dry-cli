@@ -11,6 +11,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - Support for command namespaces (@gustavothecoder in #135)
 - New `:cast` option for options and arguments, allowing to leverage Dry Types or simple procs/lambdas to cast values from string to some other type of value (@katafrakt in #157)
+- `long_desc` method for a long command description. This will show when `--help` is given, whereas `-h` will show the short description. When no long description is provided, both `--help` and `-h` show the short description. (@aaronmallen in #160)
 
 ### Changed
 
