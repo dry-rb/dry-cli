@@ -12,7 +12,7 @@ RSpec.describe "Command" do
       expect(opts.size).to eq(1)
       op = opts.first
       expect(op.name).to eq(:engine)
-      expect(op.desc).to eq("2: (test1/test2/test3)")
+      expect(op.desc).to eq("2: (test1, test2, test3)")
     end
   end
 

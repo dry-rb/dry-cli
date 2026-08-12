@@ -11,6 +11,13 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - Support for command namespaces (@gustavothecoder in #135)
 - New `:cast` option for options and arguments, allowing to leverage Dry Types or simple procs/lambdas to cast values from string to some other type of value (@katafrakt in #157)
+- Array options can be supplied by repeated flags. (@Drowze in #159)
+
+    The following are now equivalent:
+    ```
+    my-cli --array-flag foo,bar
+    my-cli --array-flag foo --array-flag bar
+    ```
 - `long_desc` method for a long command description. This will show when `--help` is given, whereas `-h` will show the short description. When no long description is provided, both `--help` and `-h` show the short description. (@aaronmallen in #160)
 
 ### Changed
@@ -50,6 +57,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
   ```
 
 - Improved error messages to be more precise and helpful (@katafrakt in #158)
+- Accepted values are now listed the same way in help output as in error messages, separated by commas rather than slashes. (@timriley in #163)
 
 ### Deprecated
 
@@ -58,6 +66,35 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 ### Fixed
 
 - Optional arguments were incorrectly displayed at the end of usage message (@gustavothecoder in #145)
+- Options combining `type: :array` with `values:` no longer return a single string instead of an array, and now accept comma-separated values. (@timriley in #161)
+
+  ```ruby
+  option :require, type: :array, values: %w[foo bar baz]
+  ```
+
+  ```
+  cmd --require=foo      # was "foo", now ["foo"]
+  cmd --require=foo,bar  # was an error, now ["foo", "bar"]
+  ```
+- Allow options and arguments to specify non-string `values:`, such as integers. These are cast to strings when declared, then compared against the strings given on the command line. (@timriley in #161)
+
+  ```ruby
+  option :level, values: [1, 2, 3]
+  ```
+
+  ```
+  cmd --level=1  # was an error, now "1"
+  ```
+- Arguments combining `type: :array` with `cast:` are now cast. Previously the cast was silently ignored for array arguments, and applied to array options only. (@timriley in #162)
+
+  ```ruby
+  argument :lines, type: :array, cast: ->(v) { Integer(v) }
+  ```
+
+  ```
+  cmd 1 2  # was ["1", "2"], now [1, 2]
+  ```
+- An `argument` with `type: :array` is now always given to the command as an array. When the command declared more arguments than were given, it previously received no value at all. (@timriley in #162)
 
 ### Security
 

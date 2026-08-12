@@ -20,7 +20,15 @@ module Dry
         OptionParser.new do |opts|
           command.options.each do |option|
             opts.on(*option.parser_options) do |value|
-              parsed_options[option.name.to_sym] = option.cast(value)
+              raise ValueError.new(value: value, argument: option) unless option.valid_value?(value)
+
+              option_name = option.name.to_sym
+              if option.array?
+                parsed_options[option_name] ||= []
+                parsed_options[option_name] += option.cast(value)
+              else
+                parsed_options[option_name] = option.cast(value)
+              end
             end
           end
 
@@ -56,7 +64,9 @@ module Dry
         unused_arguments = arguments.drop(command.required_arguments.length)
 
         unless all_required_params_satisfied
-          parsed_required_params_values = parsed_required_params.values.compact
+          # Drop nils as well as empty arrays; an array argument that consumed nothing was not
+          # given, so it shouldn't be listed among the arguments that were.
+          parsed_required_params_values = parsed_required_params.values.compact.reject { |v| v.is_a?(Array) && v.empty? }
 
           usage = "\nUsage: \"#{prog_name} #{command.required_arguments.map(&:description_name).join(" ")}"
 
@@ -78,27 +88,30 @@ module Dry
       end
       # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity, Layout/LineLength
 
+      # rubocop:disable Metrics/PerceivedComplexity
       def self.match_arguments(command_arguments, arguments, default_values)
         result = {}
 
-        arg = nil
         command_arguments.each_with_index do |cmd_arg, index|
-          if cmd_arg.array?
-            arg = arguments[index..] || default_values[cmd_arg.name]
-            raise ValueError.new(value: arg, argument: cmd_arg) unless cmd_arg.valid_value?(arg)
+          value =
+            if cmd_arg.array?
+              # An array argument consumes all the remaining arguments, so it's always the last.
+              # The slice is nil when the command declares more arguments than were given.
+              arguments[index..] || default_values[cmd_arg.name] || []
+            else
+              arguments.at(index) || default_values[cmd_arg.name]
+            end
 
-            result[cmd_arg.name] = arg
-            break
-          else
-            value = arguments.at(index) || default_values[cmd_arg.name]
-            raise ValueError.new(value: value, argument: cmd_arg) unless cmd_arg.valid_value?(value)
+          raise ValueError.new(value: value, argument: cmd_arg) unless cmd_arg.valid_value?(value)
 
-            result[cmd_arg.name] = cmd_arg.cast(value)
-          end
+          result[cmd_arg.name] = cmd_arg.cast(value)
+
+          break if cmd_arg.array?
         end
 
         result
       end
+      # rubocop:enable Metrics/PerceivedComplexity
 
       # @since 0.1.0
       # @api private
