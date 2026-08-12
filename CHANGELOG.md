@@ -18,6 +18,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     my-cli --array-flag foo,bar
     my-cli --array-flag foo --array-flag bar
     ```
+- `long_desc` method for a long command description. This will show when `--help` is given, whereas `-h` will show the short description. When no long description is provided, both `--help` and `-h` show the short description. (@aaronmallen in #160)
 
 ### Changed
 

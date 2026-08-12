@@ -167,7 +167,7 @@ module Dry
 
       result = Parser.call(command, arguments, prog_name)
 
-      return help(command, prog_name) if result.help?
+      return help(command, prog_name, long: result.long_help?) if result.help?
 
       return error(result) if result.error?
 
@@ -185,8 +185,8 @@ module Dry
 
     # @since 0.6.0
     # @api private
-    def help(command, prog_name)
-      stdout.puts Banner.call(command, prog_name)
+    def help(command, prog_name, long: false)
+      stdout.puts Banner.call(command, prog_name, long: long)
       exit(0) # Successful exit
     end
 

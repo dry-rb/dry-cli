@@ -14,10 +14,11 @@ module Dry
       def self.inherited(base)
         super
         base.class_eval do
-          @_mutex       = Mutex.new
-          @description  = nil
-          @examples     = []
-          @subcommands  = []
+          @_mutex           = Mutex.new
+          @description      = nil
+          @long_description = nil
+          @examples         = []
+          @subcommands      = []
           @arguments = base.superclass_arguments || []
           @options = base.superclass_options || []
         end
@@ -30,6 +31,9 @@ module Dry
         # @since 0.1.0
         # @api private
         attr_reader :description
+
+        # @api private
+        attr_reader :long_description
 
         # @since 0.1.0
         # @api private
@@ -52,8 +56,6 @@ module Dry
       #
       # @param description [String] the description
       #
-      # @since 0.1.0
-      #
       # @example
       #   require "dry/cli"
       #
@@ -64,8 +66,41 @@ module Dry
       #       # ...
       #     end
       #   end
+      #
+      # @api public
+      # @since 0.1.0
       def self.desc(description)
         @description = description
+      end
+
+      # Set the long description of the command
+      #
+      # It is printed in the "Description" section of the full command help (`--help`). Short help
+      # (`-h`) and command listings keep using the short description set via `.desc`. When no long
+      # description is set, `--help` falls back to the short description.
+      #
+      # @param long_description [String] the long description
+      #
+      # @example
+      #   require "dry/cli"
+      #
+      #   class Echo < Dry::CLI::Command
+      #     desc "Prints given input"
+      #     long_desc <<~DESC
+      #       Prints the given input back to standard output.
+      #
+      #       When no input is given, it prints an empty line.
+      #     DESC
+      #
+      #     def call(*)
+      #       # ...
+      #     end
+      #   end
+      #
+      # @api public
+      # @since unreleased
+      def self.long_desc(long_description)
+        @long_description = long_description
       end
 
       # Describe the usage of the command
@@ -399,7 +434,6 @@ module Dry
         superclass_variable_dup(:@options)
       end
 
-      # @since unreleased
       # @api private
       def initialize(stderr: $stderr, stdin: $stdin, stdout: $stdout)
         @stderr = stderr
@@ -411,6 +445,7 @@ module Dry
 
       delegate %i[
         description
+        long_description
         examples
         arguments
         options

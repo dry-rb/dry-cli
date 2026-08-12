@@ -21,19 +21,19 @@ module Dry
       # @param out [IO] standard output
       #
       # @api private
-      def self.call(command, name)
+      def self.call(command, name, long: false)
         banner_lines =
           if CLI.command?(command)
-            command_banner(command, name)
+            command_banner(command, name, long)
           else
-            namespace_banner(command, name)
+            namespace_banner(command, name, long)
           end
 
         banner_lines.compact.join("\n")
       end
 
       # @api private
-      def self.command_banner(command, name)
+      def self.command_banner(command, name, long = false)
         argument_entries = command_argument_entries(command)
         example_entries = command_example_entries(command, name)
         option_entries = command_option_entries(command)
@@ -42,7 +42,7 @@ module Dry
         [
           command_name(name),
           command_name_and_arguments(command, name),
-          command_description(command),
+          command_description(command, long),
           command_subcommands(command),
           section("Arguments", argument_entries, indent),
           section("Options", option_entries, indent),
@@ -52,14 +52,14 @@ module Dry
 
       # @since 1.1.1
       # @api private
-      def self.namespace_banner(namespace, name)
+      def self.namespace_banner(namespace, name, long = false)
         option_entries = command_option_entries(namespace)
         indent = capture_indent(option_entries)
 
         [
           command_name(name, "Namespace"),
           command_name_and_arguments(namespace, name),
-          command_description(namespace),
+          command_description(namespace, long),
           command_subcommands(namespace),
           section("Options", option_entries, indent)
         ]
@@ -86,11 +86,21 @@ module Dry
         "\n#{heading}:\n#{entries.map { |entry| entry.render(indent) }.join("\n")}"
       end
 
+      # Renders the "Description" section.
+      #
+      # The long description is only shown on full help (`--help`), falling back to the short
+      # description when it is not set. Short help (`-h`) always shows the short description.
+      #
       # @api private
-      def self.command_description(command)
-        return if command.description.nil?
+      def self.command_description(command, long = false)
+        description = (command.long_description if long) || command.description
+        return if description.nil?
 
-        "\nDescription:\n  #{command.description}"
+        body = description.chomp.lines.map { |line|
+          line.strip.empty? ? "" : "  #{line.rstrip}"
+        }.join("\n")
+
+        "\nDescription:\n#{body}"
       end
 
       def self.command_subcommands(command)

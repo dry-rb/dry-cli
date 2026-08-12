@@ -32,8 +32,12 @@ module Dry
             end
           end
 
-          opts.on_tail("-h", "--help") do
+          opts.on_tail("-h") do
             return Result.help
+          end
+
+          opts.on_tail("--help") do
+            return Result.help(long: true)
           end
         end.parse!(arguments)
 
@@ -114,8 +118,8 @@ module Dry
       class Result
         # @since 0.1.0
         # @api private
-        def self.help
-          new(help: true)
+        def self.help(long: false)
+          new(help: true, long_help: long)
         end
 
         # @since 0.1.0
@@ -140,10 +144,11 @@ module Dry
 
         # @since 0.1.0
         # @api private
-        def initialize(arguments: {}, error: nil, help: false)
+        def initialize(arguments: {}, error: nil, help: false, long_help: false)
           @arguments = arguments
           @error     = error
           @help      = help
+          @long_help = long_help
         end
 
         # @since 0.1.0
@@ -156,6 +161,11 @@ module Dry
         # @api private
         def help?
           @help
+        end
+
+        # @api private
+        def long_help?
+          @long_help
         end
       end
     end
