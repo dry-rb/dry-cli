@@ -28,7 +28,6 @@ module Dry
         # @api private
         attr_reader :description
 
-        # @since unreleased
         # @api private
         attr_reader :long_description
 
@@ -53,8 +52,6 @@ module Dry
       #
       # @param description [String] the description
       #
-      # @since 1.1.1
-      #
       # @example
       #   require "dry/cli"
       #
@@ -65,6 +62,9 @@ module Dry
       #       # ...
       #     end
       #   end
+      #
+      # @api public
+      # @since 1.1.1
       def self.desc(description)
         @description = description
       end
@@ -77,8 +77,6 @@ module Dry
       # `--help` falls back to the short description.
       #
       # @param long_description [String] the long description
-      #
-      # @since unreleased
       #
       # @example
       #   require "dry/cli"
@@ -94,6 +92,9 @@ module Dry
       #       # ...
       #     end
       #   end
+      #
+      # @api public
+      # @since unreleased
       def self.long_desc(long_description)
         @long_description = long_description
       end

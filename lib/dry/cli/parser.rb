@@ -150,7 +150,6 @@ module Dry
           @help
         end
 
-        # @since unreleased
         # @api private
         def long_help?
           @long_help
