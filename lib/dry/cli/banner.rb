@@ -93,12 +93,7 @@ module Dry
       #
       # @api private
       def self.command_description(command, long = false)
-        description =
-          if long
-            command.long_description || command.description
-          else
-            command.description
-          end
+        description = (command.long_description if long) || command.description
         return if description.nil?
 
         body = description.chomp.lines.map { |line|
