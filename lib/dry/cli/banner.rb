@@ -88,9 +88,8 @@ module Dry
 
       # Renders the "Description" section.
       #
-      # The long description is only shown on full help (`--help`), falling
-      # back to the short description when it is not set. Short help (`-h`)
-      # always shows the short description.
+      # The long description is only shown on full help (`--help`), falling back to the short
+      # description when it is not set. Short help (`-h`) always shows the short description.
       #
       # @api private
       def self.command_description(command, long = false)

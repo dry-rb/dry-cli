@@ -75,10 +75,9 @@ module Dry
 
       # Set the long description of the command
       #
-      # It is printed in the "Description" section of the full command help
-      # (`--help`). Short help (`-h`) and command listings keep using the
-      # short description set via `.desc`. When no long description is set,
-      # `--help` falls back to the short description.
+      # It is printed in the "Description" section of the full command help (`--help`). Short help
+      # (`-h`) and command listings keep using the short description set via `.desc`. When no long
+      # description is set, `--help` falls back to the short description.
       #
       # @param long_description [String] the long description
       #
