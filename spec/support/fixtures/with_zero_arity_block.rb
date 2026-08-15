@@ -89,4 +89,15 @@ WithZeroArityBlock = Dry.CLI do
   after "callbacks",  Callbacks::AfterClass
   before "callbacks", Callbacks::Before.new
   after "callbacks",  Callbacks::After.new
+
+  register "externally-extended", ExternallyExtended::Command
+
+  after "externally-extended", ExternallyExtended::Callback
+  option "externally-extended", :skip_tests, type: :flag, default: false,
+    desc: "Skip test generation"
+  argument "externally-extended", :suite, required: false, desc: "Test suite"
+
+  before("externally-extended") do |args|
+    puts "before block: skip_tests: #{args.fetch(:skip_tests)}"
+  end
 end

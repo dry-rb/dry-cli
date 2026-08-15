@@ -487,6 +487,25 @@ module Webpack
   end
 end
 
+# these deliberately declare no `**`, to be sure a command and a hook only need their own params
+module ExternallyExtended
+  class Command < Dry::CLI::Command
+    desc "Command extended by third parties"
+    argument :name, required: true, desc: "The name"
+    option :quiet, type: :flag, default: false, desc: "Be quiet"
+
+    def call(name:, quiet:)
+      puts "command: name: #{name}, quiet: #{quiet}"
+    end
+  end
+
+  class Callback
+    def call(skip_tests:, suite: nil)
+      puts "callback: skip_tests: #{skip_tests}, suite: #{suite.inspect}"
+    end
+  end
+end
+
 module Callbacks
   class BeforeClass
     def call(args)

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/cli/command_registry"
+require "dry/cli/option"
 
 module Dry
   class CLI
@@ -172,7 +173,7 @@ module Dry
       #   end
       def before(command_name, callback = nil, &blk)
         @_mutex.synchronize do
-          command(command_name).before_callbacks.append(&_callback(callback, blk))
+          lookup(command_name).before_callbacks.append(&_callback(callback, blk))
         end
       end
 
@@ -260,8 +261,108 @@ module Dry
       #   end
       def after(command_name, callback = nil, &blk)
         @_mutex.synchronize do
-          command(command_name).after_callbacks.append(&_callback(callback, blk))
+          lookup(command_name).after_callbacks.append(&_callback(callback, blk))
         end
+      end
+
+      # Returns the command registered under the given name.
+      #
+      # This is the escape hatch for third-party gems that need to extend a command they don't
+      # own: everything {Dry::CLI::Command}'s class-level DSL offers is reachable through it.
+      # Prefer {#option} and {#argument}, which guard against clashing declarations.
+      #
+      # Note this returns whatever was registered, which may be a command instance rather than a
+      # class, and that any change made through it applies to the command class itself: it is not
+      # scoped to this registration.
+      #
+      # @param command_name [String] the name used for command registration
+      #
+      # @return [Dry::CLI::Command] the registered command
+      #
+      # @raise [Dry::CLI::UnknownCommandError] if the command isn't registered
+      #
+      # @since NEXT
+      #
+      # @example
+      #   require "dry/cli"
+      #
+      #   module Foo
+      #     module Commands
+      #       extend Dry::CLI::Registry
+      #
+      #       class Hello < Dry::CLI::Command
+      #       end
+      #
+      #       register "hello", Hello
+      #     end
+      #   end
+      #
+      #   Foo::Commands.command("hello") # => Foo::Commands::Hello
+      def command(command_name)
+        lookup(command_name).command
+      end
+
+      # Add an option to an already registered command.
+      #
+      # Adding the same option more than once is allowed, so that independent gems can each
+      # contribute it without coordinating, as long as they agree on `:type`, `:required`,
+      # `:values` and `:default`. Repeat declarations are otherwise ignored, so the first `:desc`
+      # wins.
+      #
+      # @param command_name [String] the name used for command registration
+      # @param name [Symbol] the option name
+      # @param options [Hash] a set of options, as per `Dry::CLI::Command.option`
+      #
+      # @raise [Dry::CLI::UnknownCommandError] if the command isn't registered
+      # @raise [Dry::CLI::IncompatibleOptionError] if the command already declares an option with
+      #   the same name, but with incompatible settings
+      #
+      # @since NEXT
+      #
+      # @example
+      #   require "dry/cli"
+      #
+      #   # In the gem that owns the command:
+      #   module Foo
+      #     module Commands
+      #       extend Dry::CLI::Registry
+      #
+      #       class Generate < Dry::CLI::Command
+      #         def call(name:)
+      #           # ...
+      #         end
+      #       end
+      #
+      #       register "generate", Generate
+      #     end
+      #   end
+      #
+      #   # In a third-party gem, alongside its own hook:
+      #   Foo::Commands.after "generate", Bar::Callbacks::Generate
+      #   Foo::Commands.option "generate", :skip_tests, type: :flag, default: false,
+      #                                                 desc: "Skip test generation"
+      def option(command_name, name, options = {})
+        add_param(command_name, Option.new(name, options))
+      end
+
+      # Add an argument to an already registered command.
+      #
+      # Externally added arguments should be optional: arguments are matched to the command line
+      # by position, so adding a required one changes the meaning of the arguments that follow it.
+      #
+      # @param command_name [String] the name used for command registration
+      # @param name [Symbol] the argument name
+      # @param options [Hash] a set of options, as per `Dry::CLI::Command.argument`
+      #
+      # @raise [Dry::CLI::UnknownCommandError] if the command isn't registered
+      # @raise [Dry::CLI::IncompatibleOptionError] if the command already declares an argument
+      #   with the same name, but with incompatible settings
+      #
+      # @since NEXT
+      #
+      # @see #option
+      def argument(command_name, name, options = {})
+        add_param(command_name, Argument.new(name, options))
       end
 
       # @since 0.1.0
@@ -276,10 +377,41 @@ module Dry
 
       # @since 0.2.0
       # @api private
-      def command(command_name)
+      def lookup(command_name)
         get(command_name.split(COMMAND_NAME_SEPARATOR)).tap do |result|
           raise UnknownCommandError, command_name unless result.found?
         end
+      end
+
+      # @since NEXT
+      # @api private
+      def add_param(command_name, param)
+        @_mutex.synchronize do
+          klass = command_class(command_name)
+          existing = (param.argument? ? klass.arguments : klass.options).find { _1.name == param.name }
+
+          if existing
+            differences = param.differences_from(existing)
+            unless differences.empty?
+              raise IncompatibleOptionError.new(command_name, param.name, differences)
+            end
+          elsif param.argument?
+            klass.argument(param.name, param.options)
+          else
+            klass.option(param.name, param.options)
+          end
+
+          nil
+        end
+      end
+
+      # The class to extend, for commands registered as an instance.
+      #
+      # @since NEXT
+      # @api private
+      def command_class(command_name)
+        registered = command(command_name)
+        registered.is_a?(Class) ? registered : registered.class
       end
 
       # @since 0.2.0

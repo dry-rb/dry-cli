@@ -104,6 +104,33 @@ module Dry
         false
       end
 
+      # The settings that must match for two declarations of the same option to be interchangeable.
+      #
+      # `:cast` is excluded because it's typically a proc or a Dry::Types object, neither of which
+      # compares meaningfully. `:desc`, `:label` and `:aliases` are excluded because they don't
+      # change how a value is parsed; the first declaration wins.
+      #
+      # @since NEXT
+      # @api private
+      COMPARED_SETTINGS = %i[type required values default].freeze
+
+      # @since NEXT
+      # @api private
+      def comparable_settings
+        {type: type, required: !!required?, values: values, default: default}
+      end
+
+      # The names of the settings that differ from `other`, if any.
+      #
+      # @since NEXT
+      # @api private
+      def differences_from(other)
+        mine = comparable_settings
+        theirs = other.comparable_settings
+
+        COMPARED_SETTINGS.reject { mine[_1] == theirs[_1] }
+      end
+
       # @since 0.1.0
       # @api private
       #
