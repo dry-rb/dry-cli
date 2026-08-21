@@ -1,47 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Dry::CLI::Registry do
-  describe ".before" do
-    context "when command can't be found" do
-      it "raises error" do
-        expect do
-          Bar::CLI::Commands.before("pixel") { puts "hello" }
-        end.to raise_error(
-          Dry::CLI::UnknownCommandError,
-          "unknown command: `pixel'"
-        )
-      end
-    end
-
-    context "when object is given" do
-      it "raises error when it doesn't respond to #call" do
-        callback = Object.new
-
-        expect do
-          Bar::CLI::Commands.before("alpha", callback)
-        end.to raise_error(
-          Dry::CLI::InvalidCallbackError,
-          "expected `#{callback.inspect}' to respond to `#call'"
-        )
-      end
-    end
-
-    context "when class is given" do
-      it "raises error when #initialize arity is not equal to 0" do
-        callback = Class.new do
-          def initialize(foo); end
-        end
-
-        expect do
-          Bar::CLI::Commands.before("alpha", callback)
-        end.to raise_error(
-          Dry::CLI::InvalidCallbackError,
-          "expected `#{callback.inspect}' to respond to `#initialize' with arity 0"
-        )
-      end
-    end
-  end
-
   # adding an option mutates the command class, so each example needs its own command
   def build_registry(command)
     Module.new do
@@ -60,6 +19,12 @@ RSpec.describe Dry::CLI::Registry do
   end
 
   let(:registry) { build_registry(command) }
+
+  # Registers `hook` ("before"/"after") for "alpha", then runs that chain against `args`.
+  def run_hook(hook, callback = nil, &blk)
+    registry.public_send(hook, "alpha", callback, &blk)
+    registry.get(["alpha"]).public_send(:"#{hook}_callbacks").run(command.new, **args)
+  end
 
   describe ".command" do
     it "returns the registered command" do
@@ -212,40 +177,37 @@ RSpec.describe Dry::CLI::Registry do
     end
   end
 
-  describe ".after" do
-    context "when command can't be found" do
-      it "raises error" do
-        expect do
-          Bar::CLI::Commands.after("peta") { puts "hello" }
-        end.to raise_error(Dry::CLI::UnknownCommandError, "unknown command: `peta'")
-      end
-    end
-
-    context "when object is given" do
-      it "raises error when it doesn't respond to #call" do
-        callback = Object.new
-
-        expect do
-          Bar::CLI::Commands.after("alpha", callback)
-        end.to raise_error(
-          Dry::CLI::InvalidCallbackError,
-          "expected `#{callback.inspect}' to respond to `#call'"
+  %w[before after].each do |hook|
+    describe ".#{hook}" do
+      it "raises error when the command can't be found" do
+        expect { registry.public_send(hook, "pixel") { puts "hello" } }.to raise_error(
+          Dry::CLI::UnknownCommandError,
+          "unknown command: `pixel'"
         )
       end
-    end
 
-    context "when class is given" do
-      it "raises error when #initialize arity is not equal to 0" do
-        callback = Class.new do
-          def initialize(foo); end
+      context "when object is given" do
+        it "raises error when it doesn't respond to #call" do
+          callback = Object.new
+
+          expect { registry.public_send(hook, "alpha", callback) }.to raise_error(
+            Dry::CLI::InvalidCallbackError,
+            "expected `#{callback.inspect}' to respond to `#call'"
+          )
         end
+      end
 
-        expect do
-          Bar::CLI::Commands.after("alpha", callback)
-        end.to raise_error(
-          Dry::CLI::InvalidCallbackError,
-          "expected `#{callback.inspect}' to respond to `#initialize' with arity 0"
-        )
+      context "when class is given" do
+        it "raises error when #initialize arity is not equal to 0" do
+          callback = Class.new do
+            def initialize(foo); end
+          end
+
+          expect { registry.public_send(hook, "alpha", callback) }.to raise_error(
+            Dry::CLI::InvalidCallbackError,
+            "expected `#{callback.inspect}' to respond to `#initialize' with arity 0"
+          )
+        end
       end
     end
   end
