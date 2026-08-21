@@ -37,7 +37,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - Commands and callbacks are now passed only the params their `#call` actually declares, so they no longer need a `**` catch-all to tolerate params contributed by other gems. (@afomera in #165)
 
-    Params are passed through in full when `#call` can take them as a whole: when it declares a keyword splat or a positional. Otherwise they're matched against the keywords it declares. This only affects signatures that raise `ArgumentError` today; nothing that currently works changes behavior.
+    Params are passed through in full when `#call` can take them as a whole: when it declares a keyword splat or a positional. Otherwise they're matched against the keywords it declares.
 
 - [POTENTIALLY BREAKING] `Dry::CLI::Command`'s constructor now takes three keyword arguments: `stdout:`, `stdin:`, and `:stderr`. They can be used to inject I/O stream, which is useful for testing.
 - The `example` DSL now takes the example and its description as separate arguments, called once per example. Previously, examples were passed as a single array of strings with the description embedded after a `#`. (@aaronmallen and @timriley in #152)
