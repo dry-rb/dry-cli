@@ -63,9 +63,9 @@ module Dry
     # Adding the very same option twice is allowed, so that independent third-party gems can each
     # contribute the option they need without having to coordinate.
     #
+    # @api public
     # @since NEXT
     class IncompatibleOptionError < Error
-      # @since NEXT
       # @api private
       def initialize(command_name, name, differences)
         super("`#{name}' is already declared for command `#{command_name}' " \

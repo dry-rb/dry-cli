@@ -8,7 +8,6 @@ module Dry
     # carry whatever other gems have contributed to the same command (see {Registry#option}). This
     # keeps each of them free of a catch-all `**` just to tolerate params they know nothing about.
     #
-    # @since NEXT
     # @api private
     module Dispatch
       # The params from `args` that `callable` can accept.
@@ -22,9 +21,6 @@ module Dry
       # @param args [Hash] the parsed params
       #
       # @return [Hash]
-      #
-      # @since NEXT
-      # @api private
       def self.args_for(callable, args)
         parameters = callable.parameters
         return args if parameters.any? { |type, _| type == :keyrest }
@@ -44,9 +40,6 @@ module Dry
       # @param args [Hash] the parsed params
       #
       # @return [Hash]
-      #
-      # @since NEXT
-      # @api private
       def self.command_args_for(command, args)
         args_for(command.method(:call), args)
       rescue NameError
