@@ -420,6 +420,11 @@ module Dry
       def _callback(callback, blk)
         return blk if blk.respond_to?(:to_proc)
 
+        # Use a given proc directly. Taking `method(:call)` on a proc gives us `Proc#call`, whose
+        # parameters are `[[:rest]]` regardless of the proc's own signature, leaving {Dispatch}
+        # nothing to match against.
+        return callback if callback.is_a?(Proc)
+
         case callback
         when ->(c) { c.respond_to?(:call) }
           callback.method(:call)

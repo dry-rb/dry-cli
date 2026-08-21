@@ -209,6 +209,56 @@ RSpec.describe Dry::CLI::Registry do
           )
         end
       end
+
+      context "when the callback runs" do
+        let(:args) { {name: "web", skip_tests: true} }
+
+        it "passes only the declared params to a lambda" do
+          received = nil
+          run_hook(hook, ->(name:) { received = name })
+
+          expect(received).to eq("web")
+        end
+
+        it "passes only the declared params to a proc" do
+          received = nil
+          run_hook(hook, proc { |name:| received = name })
+
+          expect(received).to eq("web")
+        end
+
+        it "passes only the declared params to a block" do
+          received = nil
+          run_hook(hook) { |name:| received = name }
+
+          expect(received).to eq("web")
+        end
+
+        it "passes only the declared params to an object" do
+          received = nil
+          callback = Class.new do
+            define_method(:call) { |name:| received = name }
+          end.new
+
+          run_hook(hook, callback)
+
+          expect(received).to eq("web")
+        end
+
+        it "passes every param to a lambda taking a single positional" do
+          received = nil
+          run_hook(hook, ->(params) { received = params })
+
+          expect(received).to eq(args)
+        end
+
+        it "passes every param to a lambda declaring a keyword splat" do
+          received = nil
+          run_hook(hook, ->(name:, **rest) { received = [name, rest] })
+
+          expect(received).to eq(["web", {skip_tests: true}])
+        end
+      end
     end
   end
 end

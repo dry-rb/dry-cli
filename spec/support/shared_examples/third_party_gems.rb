@@ -32,10 +32,12 @@ RSpec.shared_examples "Third-party gems" do |cli|
           before command callback Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
           before callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
           before callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+          before callback (lambda), url: "https://hanamirb.test"
           dir: ., url: "https://hanamirb.test"
           after command callback Webpack::CLI::CallbacksCommand {:url=>"https://hanamirb.test", :dir=>"."}
           after callback (class), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
           after callback (object), 2 arg(s): {:url=>"https://hanamirb.test", :dir=>"."}
+          after callback (lambda), url: "https://hanamirb.test"
         OUTPUT
 
       else
@@ -43,10 +45,12 @@ RSpec.shared_examples "Third-party gems" do |cli|
           before command callback Webpack::CLI::CallbacksCommand {url: "https://hanamirb.test", dir: "."}
           before callback (class), 2 arg(s): {url: "https://hanamirb.test", dir: "."}
           before callback (object), 2 arg(s): {url: "https://hanamirb.test", dir: "."}
+          before callback (lambda), url: "https://hanamirb.test"
           dir: ., url: "https://hanamirb.test"
           after command callback Webpack::CLI::CallbacksCommand {url: "https://hanamirb.test", dir: "."}
           after callback (class), 2 arg(s): {url: "https://hanamirb.test", dir: "."}
           after callback (object), 2 arg(s): {url: "https://hanamirb.test", dir: "."}
+          after callback (lambda), url: "https://hanamirb.test"
         OUTPUT
 
       end

@@ -86,6 +86,8 @@ module Foo
       after("callbacks",  ::Callbacks::AfterClass)
       before("callbacks", ::Callbacks::Before.new)
       after("callbacks",  ::Callbacks::After.new)
+      before("callbacks", ->(url:) { puts "before callback (lambda), url: #{url.inspect}" })
+      after("callbacks",  ->(url:) { puts "after callback (lambda), url: #{url.inspect}" })
 
       register "externally-extended", ::ExternallyExtended::Command
 
