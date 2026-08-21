@@ -10,12 +10,17 @@ module Dry
     #
     # @api private
     module Dispatch
+      # Parameter kinds that mean the callable can be given every param. See {.args_for}.
+      WHOLE_HASH = %i[keyrest req opt rest].freeze
+
       # The params from `args` that `callable` can accept.
       #
-      # Params are passed through untouched unless the callable declares keywords and no keyword
-      # splat. That's deliberate: a callable that declares no keywords at all (`def call(*args)`,
-      # or a block) receives the params as a single positional Hash, and must keep receiving all
-      # of them.
+      # Two kinds of callable are given every param: one declaring a keyword splat, which absorbs
+      # whatever it doesn't name; and one declaring a positional, because `**` collapses to a
+      # single Hash when the callable declares no keywords.
+      #
+      # Every other callable is given only the keywords it declares. This also means that a callable
+      # declaring no params (e.g. `def call`) will receive none.
       #
       # @param callable [Method, Proc] the command's `#call` method, or a callback
       # @param args [Hash] the parsed params
@@ -23,12 +28,9 @@ module Dry
       # @return [Hash]
       def self.args_for(callable, args)
         parameters = callable.parameters
-        return args if parameters.any? { |type, _| type == :keyrest }
+        return args if parameters.any? { |type, _| WHOLE_HASH.include?(type) }
 
-        keywords = parameters.filter_map { |type, name| name if type == :key || type == :keyreq }
-        return args if keywords.empty?
-
-        args.slice(*keywords)
+        args.slice(*parameters.filter_map { |type, name| name if type == :key || type == :keyreq })
       end
 
       # The params that `command` can accept, for commands implementing `#call`.

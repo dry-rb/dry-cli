@@ -22,10 +22,17 @@ RSpec.describe Dry::CLI::Dispatch do
       end
     end
 
-    context "when the callable declares no keywords at all" do
-      # they read the params from a single positional Hash, which filtering would empty
+    context "when the callable takes a positional" do
+      # `**` collapses to a single Hash for a callable declaring no keywords, and that Hash lands
+      # in the positional, so filtering it would leave them with nothing to read
       it "passes everything through for `*args`" do
         method = callable { |*positional| positional }
+
+        expect(described_class.args_for(method, args)).to eq(args)
+      end
+
+      it "passes everything through for one required positional" do
+        method = callable { |params| params }
 
         expect(described_class.args_for(method, args)).to eq(args)
       end
@@ -35,11 +42,19 @@ RSpec.describe Dry::CLI::Dispatch do
 
         expect(described_class.args_for(block, args)).to eq(args)
       end
+    end
 
-      it "passes everything through for a block taking nothing" do
+    context "when the callable declares nothing at all" do
+      it "passes nothing to a method taking no params" do
+        method = callable { nil }
+
+        expect(described_class.args_for(method, args)).to eq({})
+      end
+
+      it "passes nothing to a block taking nothing" do
         block = proc { nil }
 
-        expect(described_class.args_for(block, args)).to eq(args)
+        expect(described_class.args_for(block, args)).to eq({})
       end
     end
 
@@ -72,6 +87,13 @@ RSpec.describe Dry::CLI::Dispatch do
       expect { method.call(**args) }.to raise_error(ArgumentError, /unknown keyword/)
       expect { method.call(**described_class.args_for(method, args)) }.not_to raise_error
     end
+
+    it "lets a signature declaring no params be called at all" do
+      method = callable { nil }
+
+      expect { method.call(**args) }.to raise_error(ArgumentError, /wrong number of arguments/)
+      expect { method.call(**described_class.args_for(method, args)) }.not_to raise_error
+    end
   end
 
   describe ".command_args_for" do
@@ -81,6 +103,14 @@ RSpec.describe Dry::CLI::Dispatch do
       end.new
 
       expect(described_class.command_args_for(command, args)).to eq(name: "web")
+    end
+
+    it "passes nothing to a command declaring no params" do
+      command = Class.new(Dry::CLI::Command) do
+        def call; end
+      end.new
+
+      expect(described_class.command_args_for(command, args)).to eq({})
     end
 
     it "passes everything through when #call has no inspectable signature" do
