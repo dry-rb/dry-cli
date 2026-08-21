@@ -487,7 +487,7 @@ module Webpack
   end
 end
 
-# these deliberately declare no `**`, to be sure a command and a hook only need their own params
+# These deliberately declare no `**`, to be sure a command and a hook only need their own params
 module ExternallyExtended
   class Command < Dry::CLI::Command
     desc "Command extended by third parties"

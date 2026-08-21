@@ -92,7 +92,7 @@ WithBlock = Dry::CLI.new do |cli|
 
   cli.register "externally-extended", ExternallyExtended::Command
 
-  # the same declarations `with_registry.rb` makes, as two bundled gems adding the same option would
+  # The same declarations `with_registry.rb` makes, as two bundled gems adding the same option would
   cli.after "externally-extended", ExternallyExtended::Callback
   cli.option "externally-extended", :skip_tests, type: :flag, default: false,
     desc: "Skip test generation"
