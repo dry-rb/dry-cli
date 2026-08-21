@@ -72,23 +72,22 @@ module Dry
         false
       end
 
-      # The settings that must match for two declarations of the same option to be interchangeable.
+      # The subset of `#options` that must match for two declarations of the same option to be
+      # interchangeable, normalized for comparison.
       #
       # `:cast` is excluded because it's typically a proc or a Dry::Types object, neither of which
       # compares meaningfully. `:desc`, `:label` and `:aliases` are excluded because they don't
       # change how a value is parsed; the first declaration wins.
-      COMPARED_SETTINGS = %i[type required values default].freeze
-
-      def comparable_settings
+      def compatibility_options
         {type: type, required: !!required?, values: values, default: default}
       end
 
-      # The names of the settings that differ from `other`, if any.
-      def differences_from(other)
-        mine = comparable_settings
-        theirs = other.comparable_settings
+      # The names of the `#compatibility_options` that stop this and `other` being interchangeable,
+      # if any.
+      def incompatible_options(other)
+        theirs = other.compatibility_options
 
-        COMPARED_SETTINGS.reject { mine[_1] == theirs[_1] }
+        compatibility_options.reject { |name, value| theirs[name] == value }.keys
       end
 
       # rubocop:disable Metrics/PerceivedComplexity

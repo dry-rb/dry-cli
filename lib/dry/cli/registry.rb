@@ -358,9 +358,9 @@ module Dry
           existing = klass.options.find { _1.name == new_option.name }
 
           if existing
-            differences = new_option.differences_from(existing)
-            unless differences.empty?
-              raise IncompatibleOptionError.new(command_name, new_option.name, differences)
+            incompatible = new_option.incompatible_options(existing)
+            unless incompatible.empty?
+              raise IncompatibleOptionError.new(command_name, new_option.name, incompatible)
             end
           else
             klass.option(new_option.name, new_option.options)
