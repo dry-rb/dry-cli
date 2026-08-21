@@ -138,45 +138,6 @@ RSpec.describe Dry::CLI::Registry do
     end
   end
 
-  describe ".argument" do
-    it "adds the argument to the command" do
-      registry.argument("alpha", :suite, required: false, desc: "Test suite")
-
-      argument = command.arguments.find { _1.name == :suite }
-      expect(argument.desc).to eq("Test suite")
-      expect(argument).to be_argument
-    end
-
-    it "doesn't add it to the command's options" do
-      registry.argument("alpha", :suite, required: false)
-
-      expect(command.options.map(&:name)).not_to include(:suite)
-    end
-
-    it "is a no-op when added twice with matching settings" do
-      registry.argument("alpha", :suite, required: false)
-      registry.argument("alpha", :suite, required: false)
-
-      expect(command.arguments.count { _1.name == :suite }).to be(1)
-    end
-
-    it "raises error when added twice with differing settings" do
-      registry.argument("alpha", :suite, required: false)
-
-      expect { registry.argument("alpha", :suite, required: true) }.to raise_error(
-        Dry::CLI::IncompatibleOptionError,
-        "`suite' is already declared for command `alpha' with a different required"
-      )
-    end
-
-    it "raises error when the command can't be found" do
-      expect { registry.argument("pixel", :suite) }.to raise_error(
-        Dry::CLI::UnknownCommandError,
-        "unknown command: `pixel'"
-      )
-    end
-  end
-
   %w[before after].each do |hook|
     describe ".#{hook}" do
       it "raises error when the command can't be found" do

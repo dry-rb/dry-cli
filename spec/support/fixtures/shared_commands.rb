@@ -500,8 +500,8 @@ module ExternallyExtended
   end
 
   class Callback
-    def call(skip_tests:, suite: nil)
-      puts "callback: skip_tests: #{skip_tests}, suite: #{suite.inspect}"
+    def call(skip_tests:)
+      puts "callback: skip_tests: #{skip_tests}"
     end
   end
 end

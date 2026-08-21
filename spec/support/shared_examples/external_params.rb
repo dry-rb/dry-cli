@@ -11,7 +11,7 @@ RSpec.shared_examples "External params" do |cli|
     expect(output).to eq(<<~OUTPUT)
       before block: skip_tests: true
       command: name: web, quiet: false
-      callback: skip_tests: true, suite: nil
+      callback: skip_tests: true
     OUTPUT
   end
 
@@ -21,7 +21,7 @@ RSpec.shared_examples "External params" do |cli|
     expect(output).to eq(<<~OUTPUT)
       before block: skip_tests: false
       command: name: web, quiet: false
-      callback: skip_tests: false, suite: nil
+      callback: skip_tests: false
     OUTPUT
   end
 
@@ -31,17 +31,7 @@ RSpec.shared_examples "External params" do |cli|
     expect(output).to eq(<<~OUTPUT)
       before block: skip_tests: true
       command: name: web, quiet: true
-      callback: skip_tests: true, suite: nil
-    OUTPUT
-  end
-
-  it "parses an externally added argument" do
-    output = capture_output { cli.call(arguments: %w[externally-extended web rspec]) }
-
-    expect(output).to eq(<<~OUTPUT)
-      before block: skip_tests: false
-      command: name: web, quiet: false
-      callback: skip_tests: false, suite: "rspec"
+      callback: skip_tests: true
     OUTPUT
   end
 
@@ -53,14 +43,13 @@ RSpec.shared_examples "External params" do |cli|
         #{cmd} externally-extended
 
       Usage:
-        #{cmd} externally-extended NAME [SUITE]
+        #{cmd} externally-extended NAME
 
       Description:
         Command extended by third parties
 
       Arguments:
         NAME          # REQUIRED The name
-        SUITE         # Test suite
 
       Options:
         --quiet       # Be quiet, default: false

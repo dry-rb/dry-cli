@@ -342,27 +342,23 @@ module Dry
       #   Foo::Commands.option "generate", :skip_tests, type: :flag, default: false,
       #                                                 desc: "Skip test generation"
       def option(command_name, name, options = {})
-        add_param(command_name, Option.new(name, options))
-      end
+        new_option = Option.new(name, options)
 
-      # Add an argument to an already registered command.
-      #
-      # Externally added arguments should be optional: arguments are matched to the command line
-      # by position, so adding a required one changes the meaning of the arguments that follow it.
-      #
-      # @param command_name [String] the name used for command registration
-      # @param name [Symbol] the argument name
-      # @param options [Hash] a set of options, as per `Dry::CLI::Command.argument`
-      #
-      # @raise [Dry::CLI::UnknownCommandError] if the command isn't registered
-      # @raise [Dry::CLI::IncompatibleOptionError] if the command already declares an argument
-      #   with the same name, but with incompatible settings
-      #
-      # @since NEXT
-      #
-      # @see #option
-      def argument(command_name, name, options = {})
-        add_param(command_name, Argument.new(name, options))
+        @_mutex.synchronize do
+          klass = command_class(command_name)
+          existing = klass.options.find { _1.name == new_option.name }
+
+          if existing
+            differences = new_option.differences_from(existing)
+            unless differences.empty?
+              raise IncompatibleOptionError.new(command_name, new_option.name, differences)
+            end
+          else
+            klass.option(new_option.name, new_option.options)
+          end
+
+          nil
+        end
       end
 
       # @since 0.1.0
@@ -380,28 +376,6 @@ module Dry
       def lookup(command_name)
         get(command_name.split(COMMAND_NAME_SEPARATOR)).tap do |result|
           raise UnknownCommandError, command_name unless result.found?
-        end
-      end
-
-      # @since NEXT
-      # @api private
-      def add_param(command_name, param)
-        @_mutex.synchronize do
-          klass = command_class(command_name)
-          existing = (param.argument? ? klass.arguments : klass.options).find { _1.name == param.name }
-
-          if existing
-            differences = param.differences_from(existing)
-            unless differences.empty?
-              raise IncompatibleOptionError.new(command_name, param.name, differences)
-            end
-          elsif param.argument?
-            klass.argument(param.name, param.options)
-          else
-            klass.option(param.name, param.options)
-          end
-
-          nil
         end
       end
 

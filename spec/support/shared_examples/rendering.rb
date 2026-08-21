@@ -15,7 +15,7 @@ RSpec.shared_examples "Rendering" do |cli|
         #{cmd} db [SUBCOMMAND]
         #{cmd} destroy [SUBCOMMAND]
         #{cmd} exec TASK [DIRS]                                        # Execute a task
-        #{cmd} externally-extended NAME [SUITE]                        # Command extended by third parties
+        #{cmd} externally-extended NAME                                # Command extended by third parties
         #{cmd} generate [SUBCOMMAND]
         #{cmd} greeting [RESPONSE]
         #{cmd} hello                                                   # Print a greeting
@@ -78,7 +78,7 @@ RSpec.shared_examples "Rendering" do |cli|
         #{cmd} db [SUBCOMMAND]
         #{cmd} destroy [SUBCOMMAND]
         #{cmd} exec TASK [DIRS]                                        # Execute a task
-        #{cmd} externally-extended NAME [SUITE]                        # Command extended by third parties
+        #{cmd} externally-extended NAME                                # Command extended by third parties
         #{cmd} generate [SUBCOMMAND]
         #{cmd} greeting [RESPONSE]
         #{cmd} hello                                                   # Print a greeting
@@ -109,7 +109,7 @@ RSpec.shared_examples "Rendering" do |cli|
         #{cmd} db [SUBCOMMAND]
         #{cmd} destroy [SUBCOMMAND]
         #{cmd} exec TASK [DIRS]                                        # Execute a task
-        #{cmd} externally-extended NAME [SUITE]                        # Command extended by third parties
+        #{cmd} externally-extended NAME                                # Command extended by third parties
         #{cmd} generate [SUBCOMMAND]
         #{cmd} greeting [RESPONSE]
         #{cmd} hello                                                   # Print a greeting

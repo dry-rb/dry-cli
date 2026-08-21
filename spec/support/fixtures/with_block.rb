@@ -96,7 +96,6 @@ WithBlock = Dry::CLI.new do |cli|
   cli.after "externally-extended", ExternallyExtended::Callback
   cli.option "externally-extended", :skip_tests, type: :flag, default: false,
     desc: "Skip test generation"
-  cli.argument "externally-extended", :suite, required: false, desc: "Test suite"
 
   cli.before("externally-extended") do |args|
     puts "before block: skip_tests: #{args.fetch(:skip_tests)}"
