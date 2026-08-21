@@ -19,7 +19,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     my-cli --array-flag foo --array-flag bar
     ```
 - `long_desc` method for a long command description. This will show when `--help` is given, whereas `-h` will show the short description. When no long description is provided, both `--help` and `-h` show the short description. (@aaronmallen in #160)
-- `Registry#command` and `Registry#option`, for extending a command that another gem owns. (@afomera in #165)
+- `Registry#command_class` and `Registry#option`, for extending a command that another gem owns. (@afomera in #165)
 
     A third-party gem can now contribute the option its own hooks need, instead of that option having to be declared upfront by the gem that owns the command:
 
@@ -29,7 +29,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
                        type: :flag, default: false, desc: "Skip test generation"
     ```
 
-    `Registry#command` returns the registered command, as an escape hatch for anything else its class-level DSL offers.
+    `Registry#command_class` returns the registered command's class, as an escape hatch for anything else its class-level DSL offers.
 
     Adding the same option twice is allowed, so independent gems can each contribute the option they need without coordinating, as long as they agree on `:type`, `:required`, `:values` and `:default`. Otherwise `Dry::CLI::IncompatibleOptionError` is raised. `:cast` is not compared, since procs aren't meaningfully comparable.
 

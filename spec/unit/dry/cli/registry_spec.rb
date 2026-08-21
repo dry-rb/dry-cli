@@ -26,29 +26,36 @@ RSpec.describe Dry::CLI::Registry do
     registry.get(["alpha"]).public_send(:"#{hook}_callbacks").run(command.new, **args)
   end
 
-  describe ".command" do
+  describe ".command_class" do
     it "returns the registered command" do
-      expect(registry.command("alpha")).to be(command)
-    end
-
-    it "returns the registered instance, when one was registered" do
-      instance = command.new
-      registry = build_registry(instance)
-
-      expect(registry.command("alpha")).to be(instance)
+      expect(registry.command_class("alpha")).to be(command)
     end
 
     it "raises error when the command can't be found" do
-      expect { registry.command("pixel") }.to raise_error(
+      expect { registry.command_class("pixel") }.to raise_error(
         Dry::CLI::UnknownCommandError,
         "unknown command: `pixel'"
       )
     end
 
     it "allows the command to be extended directly" do
-      registry.command("alpha").option(:added, type: :flag)
+      registry.command_class("alpha").option(:added, type: :flag)
 
       expect(command.options.map(&:name)).to include(:added)
+    end
+
+    context "when an instance was registered" do
+      let(:registry) { build_registry(command.new) }
+
+      it "returns the instance's class, which is what the DSL is on" do
+        expect(registry.command_class("alpha")).to be(command)
+      end
+
+      it "allows the command to be extended just the same" do
+        registry.command_class("alpha").option(:added, type: :flag)
+
+        expect(command.options.map(&:name)).to include(:added)
+      end
     end
   end
 

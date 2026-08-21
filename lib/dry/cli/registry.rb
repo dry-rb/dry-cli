@@ -265,19 +265,20 @@ module Dry
         end
       end
 
-      # Returns the command registered under the given name.
+      # Returns the class of the command registered under the given name.
       #
       # This is the escape hatch for third-party gems that need to extend a command they don't
       # own: everything {Dry::CLI::Command}'s class-level DSL offers is reachable through it.
-      # Prefer {#option} and {#argument}, which guard against clashing declarations.
       #
-      # Note this returns whatever was registered, which may be a command instance rather than a
-      # class, and that any change made through it applies to the command class itself: it is not
-      # scoped to this registration.
+      # You should prefer {#option}, which guards against clashing declarations.
+      #
+      # A command may be registered as an instance rather than a class, in which case this returns
+      # its class, since that's what the DSL is on. Either way, any change made through it applies
+      # to the command class: it is not scoped to this registration.
       #
       # @param command_name [String] the name used for command registration
       #
-      # @return [Dry::CLI::Command] the registered command
+      # @return [Class] the registered command's class
       #
       # @raise [Dry::CLI::UnknownCommandError] if the command isn't registered
       #
@@ -297,9 +298,10 @@ module Dry
       #     end
       #   end
       #
-      #   Foo::Commands.command("hello") # => Foo::Commands::Hello
-      def command(command_name)
-        lookup(command_name).command
+      #   Foo::Commands.command_class("hello") # => Foo::Commands::Hello
+      def command_class(command_name)
+        registered = lookup(command_name).command
+        registered.is_a?(Class) ? registered : registered.class
       end
 
       # Add an option to an already registered command.
@@ -308,6 +310,13 @@ module Dry
       # contribute it without coordinating, as long as they agree on `:type`, `:required`,
       # `:values` and `:default`. Repeat declarations are otherwise ignored, so the first `:desc`
       # wins.
+      #
+      # Note this extends the command class, so it is not scoped to a single registration, and a
+      # subclass defined before the call won't inherit the option.
+      #
+      # There is no equivalent for arguments. Arguments are matched to the command line by
+      # position, so what an externally added one means would depend on the order the contributing
+      # gems happen to be loaded.
       #
       # @param command_name [String] the name used for command registration
       # @param name [Symbol] the option name
@@ -377,15 +386,6 @@ module Dry
         get(command_name.split(COMMAND_NAME_SEPARATOR)).tap do |result|
           raise UnknownCommandError, command_name unless result.found?
         end
-      end
-
-      # The class to extend, for commands registered as an instance.
-      #
-      # @since NEXT
-      # @api private
-      def command_class(command_name)
-        registered = command(command_name)
-        registered.is_a?(Class) ? registered : registered.class
       end
 
       # @since 0.2.0
