@@ -19,8 +19,25 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     my-cli --array-flag foo --array-flag bar
     ```
 - `long_desc` method for a long command description. This will show when `--help` is given, whereas `-h` will show the short description. When no long description is provided, both `--help` and `-h` show the short description. (@aaronmallen in #160)
+- `Registry#command_class` and `Registry#option`, for extending a command that another gem owns. (@afomera in #165)
+
+    A third-party gem can now contribute the option its own hooks need, instead of that option having to be declared upfront by the gem that owns the command:
+
+    ```ruby
+    Hanami::CLI.after  "generate action", Commands::Generate::Action
+    Hanami::CLI.option "generate action", :skip_tests,
+                       type: :flag, default: false, desc: "Skip test generation"
+    ```
+
+    `Registry#command_class` returns the registered command's class, as an escape hatch for anything else its class-level DSL offers.
+
+    Adding the same option twice is allowed, so independent gems can each contribute the option they need without coordinating, as long as they agree on `:type`, `:required`, `:values` and `:default`. Otherwise `Dry::CLI::IncompatibleOptionError` is raised. `:cast` is not compared, since procs aren't meaningfully comparable.
 
 ### Changed
+
+- Commands and callbacks are now passed only the params their `#call` actually declares, so they no longer need a `**` catch-all to tolerate params contributed by other gems. (@afomera in #165)
+
+    Params are passed through in full when `#call` can take them as a whole: when it declares a keyword splat or a positional. Otherwise they're matched against the keywords it declares.
 
 - [POTENTIALLY BREAKING] `Dry::CLI::Command`'s constructor now takes three keyword arguments: `stdout:`, `stdin:`, and `:stderr`. They can be used to inject I/O stream, which is useful for testing.
 - The `example` DSL now takes the example and its description as separate arguments, called once per example. Previously, examples were passed as a single array of strings with the description embedded after a `#`. (@aaronmallen and @timriley in #152)

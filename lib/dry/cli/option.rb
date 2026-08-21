@@ -4,109 +4,92 @@ module Dry
   class CLI
     # Command line option
     #
-    # @since 0.1.0
     # @api private
     class Option
-      # @since 0.1.0
-      # @api private
       attr_reader :name
 
-      # @since 0.1.0
-      # @api private
       attr_reader :options
 
       # The accepted values, as strings.
       #
       # Values are given on the command line as strings, so they're normalized rather than compared
       # across types. `options[:values]` keeps whatever was declared.
-      #
-      # @api private
       attr_reader :values
 
-      # @since 0.1.0
-      # @api private
       def initialize(name, options = {})
         @name = name
         @options = options
         @values = options[:values]&.map(&:to_s)
       end
 
-      # @since 0.1.0
-      # @api private
       def aliases
         options[:aliases] || []
       end
 
-      # @since 0.1.0
-      # @api private
       def desc
         desc = options[:desc]
         values ? "#{desc}: (#{values_description})" : desc
       end
 
-      # @since 0.1.0
-      # @api private
       def required?
         options[:required]
       end
 
-      # @since 0.1.0
-      # @api private
       def type
         options[:type]
       end
 
-      # @since NEXT
-      # @api private
       def cast_callable
         options[:cast]
       end
 
       # Returns a human-readable list of this option's accepted `values`, e.g. "irb, pry, ripl".
-      #
-      # @api private
       def values_description
         values&.join(", ")
       end
 
-      # @since 0.1.0
-      # @api private
       def boolean?
         type == :boolean
       end
 
-      # @api private
       def flag?
         type == :flag
       end
 
-      # @since 0.3.0
-      # @api private
       def array?
         type == :array
       end
 
-      # @since 0.1.0
-      # @api private
       def default
         options[:default]
       end
 
-      # @since 0.1.0
-      # @api private
       def description_name
         options[:label] || name.upcase
       end
 
-      # @since 0.1.0
-      # @api private
       def argument?
         false
       end
 
-      # @since 0.1.0
-      # @api private
+      # The subset of `#options` that must match for two declarations of the same option to be
+      # interchangeable, normalized for comparison.
       #
+      # `:cast` is excluded because it's typically a proc or a Dry::Types object, neither of which
+      # compares meaningfully. `:desc`, `:label` and `:aliases` are excluded because they don't
+      # change how a value is parsed; the first declaration wins.
+      def compatibility_options
+        {type: type, required: !!required?, values: values, default: default}
+      end
+
+      # The names of the `#compatibility_options` that stop this and `other` being interchangeable,
+      # if any.
+      def incompatible_options(other)
+        theirs = other.compatibility_options
+
+        compatibility_options.reject { |name, value| theirs[name] == value }.keys
+      end
+
       # rubocop:disable Metrics/PerceivedComplexity
       def parser_options
         dasherized_name = Inflector.dasherize(name)
@@ -136,8 +119,6 @@ module Dry
       end
       # rubocop:enable Metrics/PerceivedComplexity
 
-      # @since 0.1.0
-      # @api private
       def alias_names
         aliases
           .map { |name| name.gsub(/^-{1,2}/, "") }
@@ -147,7 +128,6 @@ module Dry
           .map { |name| boolean? || flag? ? name : "#{name} VALUE" }
       end
 
-      # @api private
       def valid_value?(value)
         return true if value.nil? && !required?
         return true if values.nil?
@@ -184,11 +164,8 @@ module Dry
 
     # Command line argument
     #
-    # @since 0.1.0
     # @api private
     class Argument < Option
-      # @since 0.1.0
-      # @api private
       def argument?
         true
       end
