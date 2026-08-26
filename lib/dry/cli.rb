@@ -11,6 +11,8 @@ module Dry
     require "dry/cli/version"
     require "dry/cli/errors"
     require "dry/cli/namespace"
+    require "dry/cli/style"
+    require "dry/cli/style_mixin"
     require "dry/cli/command"
     require "dry/cli/registry"
     require "dry/cli/parser"

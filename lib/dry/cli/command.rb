@@ -2,6 +2,7 @@
 
 require "forwardable"
 require "dry/cli/option"
+require "dry/cli/style_mixin"
 
 module Dry
   class CLI
@@ -9,6 +10,9 @@ module Dry
     #
     # @since 0.1.0
     class Command
+      include StyleMixin
+      extend StyleMixin
+
       # @since 0.1.0
       # @api private
       def self.inherited(base)
