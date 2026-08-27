@@ -9,6 +9,27 @@ module Dry
     class Error < StandardError
     end
 
+    # @since 1.5.0
+    class InvalidColorError < Error
+      attr_reader :value, :expected
+
+      def initialize(value:, expected:)
+        @value = value
+        @expected = expected
+        super()
+      end
+
+      def message
+        "ERROR: invalid color #{@value.inspect}; expected #{@expected}"
+      end
+    end
+
+    # British spelling of {InvalidColorError}. The two names are the same class, so rescuing
+    # either catches both.
+    #
+    # @since 1.5.0
+    InvalidColourError = InvalidColorError
+
     # @since 1.4.0
     class ValueError < Error
       attr_reader :value, :argument

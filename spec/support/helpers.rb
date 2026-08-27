@@ -16,6 +16,15 @@ module RSpec
         $stdout = original_stdout
       end
 
+      # Runs the block with the given environment variables set, then puts ENV back
+      def with_env(vars)
+        original = ENV.to_hash
+        ENV.update(vars)
+        yield
+      ensure
+        ENV.replace(original)
+      end
+
       def capture_error
         require "stringio"
         error = StringIO.new

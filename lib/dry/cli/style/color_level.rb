@@ -1,0 +1,176 @@
+# frozen_string_literal: true
+
+module Dry
+  class CLI
+    class Style
+      # How much color the terminal we write to can show
+      #
+      # There is no way to ask a terminal what it can do, so we go by what it sets in the
+      # environment: `COLORTERM`, and the `TERM` name. We do not keep a list of terminals we know
+      # by name. Such a list is out of date as soon as anyone ships a new terminal, and a terminal
+      # that sets `COLORTERM=truecolor` should get 24-bit color on the day it ships, not on the
+      # day we release. These are conventions any terminal can follow, so one we have never heard
+      # of still works.
+      #
+      # When nothing tells us, we guess low. A degraded color still looks right; 24-bit escapes
+      # on a terminal that cannot read them do not. Anyone who knows better can say so, with
+      # `FORCE_COLOR` or {Dry::CLI::Style.color_level=}.
+      #
+      # @since 1.5.0
+      # @api private
+      module ColorLevel
+        # No color at all
+        #
+        # @since 1.5.0
+        # @api private
+        NONE = :none
+
+        # The 8 base ANSI colors
+        #
+        # @since 1.5.0
+        # @api private
+        ANSI8 = :ansi8
+
+        # The 8 base ANSI colors plus the bright ones
+        #
+        # @since 1.5.0
+        # @api private
+        ANSI16 = :ansi16
+
+        # The 256 color palette
+        #
+        # @since 1.5.0
+        # @api private
+        ANSI256 = :ansi256
+
+        # 24-bit color
+        #
+        # @since 1.5.0
+        # @api private
+        TRUECOLOR = :truecolor
+
+        # Every level, from least color to most
+        #
+        # @since 1.5.0
+        # @api private
+        ALL = [NONE, ANSI8, ANSI16, ANSI256, TRUECOLOR].freeze
+
+        # The levels `FORCE_COLOR` can name, by the value it holds
+        #
+        # Follows what other tools do with `FORCE_COLOR`: any value means "yes, color", and a
+        # digit says how much.
+        #
+        # @since 1.5.0
+        # @api private
+        FORCED = {
+          "0" => NONE,
+          "false" => NONE,
+          "1" => ANSI16,
+          "2" => ANSI256,
+          "3" => TRUECOLOR
+        }.freeze
+
+        # The `COLORTERM` values announcing 24-bit color
+        #
+        # @since 1.5.0
+        # @api private
+        TRUECOLOR_COLORTERMS = %w[truecolor 24bit].freeze
+
+        # The `TERM` fragments terminfo uses for a direct color terminal
+        #
+        # @since 1.5.0
+        # @api private
+        TRUECOLOR_TERMS = %w[direct truecolor].freeze
+
+        # The `TERM` suffixes terminfo uses for a 256 color terminal
+        #
+        # @since 1.5.0
+        # @api private
+        ANSI256_TERMS = %w[-256color -256].freeze
+
+        # The `TERM` values that rule out color
+        #
+        # Names rather than terminals: `dumb` means a terminal that takes no escape sequences,
+        # `unknown` one that terminfo has no entry for.
+        #
+        # @since 1.5.0
+        # @api private
+        COLORLESS_TERMS = %w[dumb unknown].freeze
+
+        # Set by Windows Terminal, which sets no `TERM`
+        #
+        # @since 1.5.0
+        # @api private
+        WINDOWS_TRUECOLOR = "WT_SESSION"
+
+        # Set by the tools that added ANSI support to Windows before Windows had its own
+        #
+        # These, and the one above, are the only terminals we still match by name. The rest of
+        # this module goes by `TERM` and `COLORTERM`, which are Unix conventions, and Windows
+        # consoles set neither. The list will not grow: both tools stopped shipping years ago.
+        #
+        # @since 1.5.0
+        # @api private
+        WINDOWS_ANSI = %w[ConEmuANSI ANSICON].freeze
+
+        class << self
+          # Returns the color level of the terminal we write to
+          #
+          # @return [Symbol] one of {ALL}
+          #
+          # @since 1.5.0
+          # @api private
+          def detect(env = ENV)
+            level = forced(env)
+            return level if level
+
+            term = env["TERM"].to_s.downcase
+            return NONE if COLORLESS_TERMS.include?(term)
+
+            return TRUECOLOR if truecolor?(env, term)
+            return ANSI256 if term.end_with?(*ANSI256_TERMS)
+
+            # If `TERM` is set to anything, assume the 16 colors every terminal has had since
+            # the eighties. An empty `TERM` leaves us nothing to go on.
+            return ANSI16 unless term.empty?
+
+            WINDOWS_ANSI.any? { |name| env.key?(name) } ? ANSI16 : NONE
+          end
+
+          # Returns whether the level is valid
+          #
+          # @since 1.5.0
+          # @api private
+          def valid?(level)
+            ALL.include?(level)
+          end
+
+          private
+
+          # Returns the level `FORCE_COLOR` names, if it names one
+          #
+          # A value we do not recognize still means "yes, color". We just have to work out how
+          # much on our own, so we fall through to detection.
+          #
+          # @since 1.5.0
+          # @api private
+          def forced(env)
+            value = env["FORCE_COLOR"]
+            return nil if value.nil?
+
+            FORCED[value.downcase]
+          end
+
+          # @since 1.5.0
+          # @api private
+          def truecolor?(env, term)
+            return true if TRUECOLOR_COLORTERMS.include?(env["COLORTERM"].to_s.downcase)
+            return true if TRUECOLOR_TERMS.any? { |fragment| term.include?(fragment) }
+
+            env.key?(WINDOWS_TRUECOLOR)
+          end
+        end
+      end
+    end
+  end
+end

@@ -3,8 +3,10 @@
 RSpec.describe Dry::CLI::StyleMixin do
   around do |example|
     Dry::CLI::Style.enabled = true
+    Dry::CLI::Style.color_level = :truecolor
     example.run
     Dry::CLI::Style.enabled = nil
+    Dry::CLI::Style.color_level = nil
   end
 
   let(:subject_module) do
