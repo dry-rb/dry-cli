@@ -190,7 +190,7 @@ module Dry
       # @api private
       attr_reader :steps
 
-      # Returns a new style
+      # Returns a new style.
       #
       # A style with no steps returns text unchanged. It's useful as a neutral value.
       #
@@ -205,176 +205,125 @@ module Dry
         freeze
       end
 
-      # @!method bold(text = nil)
-      # @!method dim(text = nil)
-      # @!method italic(text = nil)
-      # @!method underline(text = nil)
-      # @!method blink(text = nil)
-      # @!method reverse(text = nil)
-      # @!method invisible(text = nil)
-      # @!method black(text = nil)
-      # @!method red(text = nil)
-      # @!method green(text = nil)
-      # @!method yellow(text = nil)
-      # @!method blue(text = nil)
-      # @!method magenta(text = nil)
-      # @!method cyan(text = nil)
-      # @!method white(text = nil)
-      # @!method bright_black(text = nil)
-      # @!method bright_red(text = nil)
-      # @!method bright_green(text = nil)
-      # @!method bright_yellow(text = nil)
-      # @!method bright_blue(text = nil)
-      # @!method bright_magenta(text = nil)
-      # @!method bright_cyan(text = nil)
-      # @!method bright_white(text = nil)
-      # @!method on_black(text = nil)
-      # @!method on_red(text = nil)
-      # @!method on_green(text = nil)
-      # @!method on_yellow(text = nil)
-      # @!method on_blue(text = nil)
-      # @!method on_magenta(text = nil)
-      # @!method on_cyan(text = nil)
-      # @!method on_white(text = nil)
-      # @!method on_bright_black(text = nil)
-      # @!method on_bright_red(text = nil)
-      # @!method on_bright_green(text = nil)
-      # @!method on_bright_yellow(text = nil)
-      # @!method on_bright_blue(text = nil)
-      # @!method on_bright_magenta(text = nil)
-      # @!method on_bright_cyan(text = nil)
-      # @!method on_bright_white(text = nil)
+      # The style builder methods.
       #
-      #   Adds this style to the chain.
+      # This module is both included and extended on {Style}, which makes its builder methods
+      # available to both begin and extend chains of styles.
       #
-      #   Given text, applies the style and returns a `String`. Given nothing, returns a new
-      #   {Dry::CLI::Style} to keep chaining.
-      #
-      #   @param text [String,nil] the text to style
-      #
-      #   @return [Dry::CLI::Style,String]
-      #
-      #   @api public
-      #   @since x.y.z
-      #
-      # When adding styles, keep the signature of these methods stable:
-      #
-      # - The single positional argument is always the text. Never give it another meaning.
-      # - Every styling parameter is a keyword, so it can't be mistaken for the text.
-      # - Prefer a new style name over a parameter (`bright_red`, not `red(bright: true)`).
-      # - Methods taking style _values_ (an RGB triplet, a 256-color code) fill the positional
-      #   slots with those values, so they don't take text. Chain `#call` instead.
-      ATTRIBUTES.each do |name, code|
-        attribute = Attribute.new(name, code)
+      # @api public
+      module Builders
+        # When adding style methods to this module, keep the signature of these methods stable:
+        #
+        # - The single positional argument is always the text. Never give it another meaning.
+        # - Every styling parameter is a keyword, so it can't be mistaken for the text.
+        # - Prefer a new style name over a parameter (`bright_red`, not `red(bright: true)`).
+        # - Methods taking style _values_ (an RGB triplet, a 256-color code) fill the positional
+        #   slots with those values, so they don't take text. Chain `#call` instead.
 
-        define_method(name) do |text = nil|
-          styled = add(attribute)
-          text.nil? ? styled : styled.call(text)
+        # @!method bold(text = nil)
+        # @!method dim(text = nil)
+        # @!method italic(text = nil)
+        # @!method underline(text = nil)
+        # @!method blink(text = nil)
+        # @!method reverse(text = nil)
+        # @!method invisible(text = nil)
+        # @!method black(text = nil)
+        # @!method red(text = nil)
+        # @!method green(text = nil)
+        # @!method yellow(text = nil)
+        # @!method blue(text = nil)
+        # @!method magenta(text = nil)
+        # @!method cyan(text = nil)
+        # @!method white(text = nil)
+        # @!method bright_black(text = nil)
+        # @!method bright_red(text = nil)
+        # @!method bright_green(text = nil)
+        # @!method bright_yellow(text = nil)
+        # @!method bright_blue(text = nil)
+        # @!method bright_magenta(text = nil)
+        # @!method bright_cyan(text = nil)
+        # @!method bright_white(text = nil)
+        # @!method on_black(text = nil)
+        # @!method on_red(text = nil)
+        # @!method on_green(text = nil)
+        # @!method on_yellow(text = nil)
+        # @!method on_blue(text = nil)
+        # @!method on_magenta(text = nil)
+        # @!method on_cyan(text = nil)
+        # @!method on_white(text = nil)
+        # @!method on_bright_black(text = nil)
+        # @!method on_bright_red(text = nil)
+        # @!method on_bright_green(text = nil)
+        # @!method on_bright_yellow(text = nil)
+        # @!method on_bright_blue(text = nil)
+        # @!method on_bright_magenta(text = nil)
+        # @!method on_bright_cyan(text = nil)
+        # @!method on_bright_white(text = nil)
+        #
+        #   Adds this style to the chain.
+        #
+        #   Given text, applies the style and returns a `String`. Given nothing, returns a new
+        #   {Dry::CLI::Style} to keep chaining.
+        #
+        #   @param text [String,nil] the text to style
+        #
+        #   @return [Dry::CLI::Style,String]
+        #
+        #   @api public
+        #   @since x.y.z
+
+        ATTRIBUTES.each do |name, code|
+          attribute = Attribute.new(name, code)
+
+          define_method(name) do |text = nil|
+            styled = add(attribute)
+            text.nil? ? styled : styled.call(text)
+          end
         end
 
-        define_singleton_method(name) do |text = nil|
-          new.public_send(name, text)
+        COLORS.each do |name, index|
+          {name => index, :"bright_#{name}" => index + 8}.each do |color_name, color_index|
+            {foreground: color_name, background: :"on_#{color_name}"}.each do |layer, method_name|
+              color = Color::ANSI.new(layer, color_index, color_name)
+
+              define_method(method_name) do |text = nil|
+                styled = add(color)
+                text.nil? ? styled : styled.call(text)
+              end
+            end
+          end
         end
-      end
 
-      COLORS.each do |name, index|
-        {name => index, :"bright_#{name}" => index + 8}.each do |color_name, color_index|
-          {foreground: color_name, background: :"on_#{color_name}"}.each do |layer, method_name|
-            color = Color::ANSI.new(layer, color_index, color_name)
+        {foreground: :rgb, background: :on_rgb}.each do |layer, method_name|
+          define_method(method_name) do |red, green, blue|
+            add(Color::RGB.new(layer, *Style.validate_components(red, green, blue)))
+          end
+        end
 
-            define_method(method_name) do |text = nil|
-              styled = add(color)
-              text.nil? ? styled : styled.call(text)
-            end
+        {foreground: :hex, background: :on_hex}.each do |layer, method_name|
+          define_method(method_name) do |value|
+            add(Color::RGB.new(layer, *Style.parse_hex(value)))
+          end
+        end
 
-            define_singleton_method(method_name) do |text = nil|
-              new.public_send(method_name, text)
-            end
+        {foreground: :ansi256, background: :on_ansi256}.each do |layer, method_name|
+          define_method(method_name) do |index|
+            add(Color::Xterm.new(layer, Style.validate_index(index)))
           end
         end
       end
 
-      # @!method rgb(red, green, blue)
-      # @!method on_rgb(red, green, blue)
-      #
-      #   Adds a 24-bit color to the chain, degrading it to fit the terminal.
-      #
-      #   @param red [Integer] 0-255
-      #   @param green [Integer] 0-255
-      #   @param blue [Integer] 0-255
-      #
-      #   @return [Dry::CLI::Style]
-      #
-      #   @raise [Dry::CLI::InvalidColorError] if a component is out of range
-      #
-      #   @example
-      #     Dry::CLI::Style.rgb(255, 0, 0).call("Boom")
-      #
-      #   @api public
-      #   @since x.y.z
-      {foreground: :rgb, background: :on_rgb}.each do |layer, method_name|
-        define_method(method_name) do |red, green, blue|
-          add(Color::RGB.new(layer, *Style.validate_components(red, green, blue)))
-        end
+      include Builders
+      extend Builders
 
-        define_singleton_method(method_name) do |red, green, blue|
-          new.public_send(method_name, red, green, blue)
-        end
-      end
-
-      # @!method hex(value)
-      # @!method on_hex(value)
+      # Starts a chain from a class-level style method
       #
-      #   Adds a 24-bit color written as hex to the chain, degrading it to fit the terminal.
+      # This is the class-level counterpart of the private `#add` below, and the only piece
+      # {Builders} needs to serve both the class and its instances.
       #
-      #   @param value [String] a hex color, with or without its leading `#`, in three or six
-      #     digits
-      #
-      #   @return [Dry::CLI::Style]
-      #
-      #   @raise [Dry::CLI::InvalidColorError] if the value isn't a hex color
-      #
-      #   @example
-      #     Dry::CLI::Style.hex("#ff0000").call("Boom")
-      #     Dry::CLI::Style.hex("f00").call("Boom")
-      #
-      #   @api public
-      #   @since x.y.z
-      {foreground: :hex, background: :on_hex}.each do |layer, method_name|
-        define_method(method_name) do |value|
-          add(Color::RGB.new(layer, *Style.parse_hex(value)))
-        end
-
-        define_singleton_method(method_name) do |value|
-          new.public_send(method_name, value)
-        end
-      end
-
-      # @!method ansi256(index)
-      # @!method on_ansi256(index)
-      #
-      #   Adds a color from the 256 color palette to the chain, degrading it to fit the
-      #   terminal.
-      #
-      #   @param index [Integer] a color code, 0-255
-      #
-      #   @return [Dry::CLI::Style]
-      #
-      #   @raise [Dry::CLI::InvalidColorError] if the code is out of range
-      #
-      #   @example
-      #     Dry::CLI::Style.ansi256(196).call("Boom")
-      #
-      #   @api public
-      #   @since x.y.z
-      {foreground: :ansi256, background: :on_ansi256}.each do |layer, method_name|
-        define_method(method_name) do |index|
-          add(Color::Xterm.new(layer, Style.validate_index(index)))
-        end
-
-        define_singleton_method(method_name) do |index|
-          new.public_send(method_name, index)
-        end
+      # @api private
+      private_class_method def self.add(step)
+        new([step])
       end
 
       # Applies the style to the given text
