@@ -1,10 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/cli/style/attribute"
-require "dry/cli/style/color"
-require "dry/cli/style/color_level"
-require "dry/cli/style/palette"
-
 module Dry
   class CLI
     # A text style you can build up and reuse
@@ -47,6 +42,11 @@ module Dry
     # @api public
     # @since x.y.z
     class Style
+      require_relative "style/palette"
+      require_relative "style/attribute"
+      require_relative "style/color"
+      require_relative "style/color_level"
+
       # ANSI escape sequence resetting all styles
       #
       # @api private
