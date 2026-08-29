@@ -171,17 +171,6 @@ module Dry
           @color_level || ColorLevel.detect
         end
 
-        # @!method colour_level
-        # @!method colour_level=(level)
-        #
-        #   British spelling of {color_level} and {color_level=}. The two names are the same
-        #   method, so either reads what the other set.
-        #
-        #   @api public
-        #   @since x.y.z
-        alias_method :colour_level, :color_level
-        alias_method :colour_level=, :color_level=
-
         # Remove all style escape sequences from the given text
         #
         # @param text [String] the text to strip

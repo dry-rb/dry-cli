@@ -25,12 +25,6 @@ module Dry
       end
     end
 
-    # British spelling of {InvalidColorError}. The two names are the same class, so rescuing
-    # either catches both.
-    #
-    # @since x.y.z
-    InvalidColourError = InvalidColorError
-
     # @since 1.4.0
     class ValueError < Error
       attr_reader :value, :argument

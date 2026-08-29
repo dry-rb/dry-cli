@@ -321,34 +321,6 @@ RSpec.describe Dry::CLI::Style do
     end
   end
 
-  describe "British spelling" do
-    it "aliases .color_level" do
-      described_class.colour_level = :ansi256
-
-      expect(described_class.colour_level).to eq :ansi256
-      expect(described_class.color_level).to eq :ansi256
-    end
-
-    it "aliases .color_level=, so either name reads what the other set" do
-      described_class.color_level = :ansi8
-
-      expect(described_class.colour_level).to eq :ansi8
-    end
-
-    it "rejects unknown levels through the alias too" do
-      expect { described_class.colour_level = :ansi64 }.to raise_error(ArgumentError)
-    end
-
-    it "aliases InvalidColorError" do
-      expect(Dry::CLI::InvalidColourError).to be Dry::CLI::InvalidColorError
-    end
-
-    it "rescues a raised error under either name" do
-      expect { described_class.rgb(256, 0, 0) }
-        .to raise_error(Dry::CLI::InvalidColourError)
-    end
-  end
-
   describe "enabling and disabling" do
     it "returns the text unchanged when disabled" do
       described_class.enabled = false
