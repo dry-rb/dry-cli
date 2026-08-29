@@ -12,10 +12,11 @@ module Dry
     #
     #   ERROR.call("Boom") # => "\e[1;31mBoom\e[0m"
     #
-    # Each style name also accepts the text directly, for one-off styling.
+    # Building a style and applying it are always separate steps. For a one-off, apply it
+    # straight away with `#[]`.
     #
     # @example
-    #   Dry::CLI::Style.bold.red("Boom") # => "\e[1;31mBoom\e[0m"
+    #   Dry::CLI::Style.bold.red["Boom"] # => "\e[1;31mBoom\e[0m"
     #
     # ## Color
     #
@@ -212,62 +213,51 @@ module Dry
       #
       # @api public
       module Builders
-        # When adding style methods to this module, keep the signature of these methods stable:
-        #
-        # - The single positional argument is always the text. Never give it another meaning.
-        # - Every styling parameter is a keyword, so it can't be mistaken for the text.
-        # - Prefer a new style name over a parameter (`bright_red`, not `red(bright: true)`).
-        # - Methods taking style _values_ (an RGB triplet, a 256-color code) fill the positional
-        #   slots with those values, so they don't take text. Chain `#call` instead.
-
-        # @!method bold(text = nil)
-        # @!method dim(text = nil)
-        # @!method italic(text = nil)
-        # @!method underline(text = nil)
-        # @!method blink(text = nil)
-        # @!method reverse(text = nil)
-        # @!method invisible(text = nil)
-        # @!method black(text = nil)
-        # @!method red(text = nil)
-        # @!method green(text = nil)
-        # @!method yellow(text = nil)
-        # @!method blue(text = nil)
-        # @!method magenta(text = nil)
-        # @!method cyan(text = nil)
-        # @!method white(text = nil)
-        # @!method bright_black(text = nil)
-        # @!method bright_red(text = nil)
-        # @!method bright_green(text = nil)
-        # @!method bright_yellow(text = nil)
-        # @!method bright_blue(text = nil)
-        # @!method bright_magenta(text = nil)
-        # @!method bright_cyan(text = nil)
-        # @!method bright_white(text = nil)
-        # @!method on_black(text = nil)
-        # @!method on_red(text = nil)
-        # @!method on_green(text = nil)
-        # @!method on_yellow(text = nil)
-        # @!method on_blue(text = nil)
-        # @!method on_magenta(text = nil)
-        # @!method on_cyan(text = nil)
-        # @!method on_white(text = nil)
-        # @!method on_bright_black(text = nil)
-        # @!method on_bright_red(text = nil)
-        # @!method on_bright_green(text = nil)
-        # @!method on_bright_yellow(text = nil)
-        # @!method on_bright_blue(text = nil)
-        # @!method on_bright_magenta(text = nil)
-        # @!method on_bright_cyan(text = nil)
-        # @!method on_bright_white(text = nil)
+        # @!method bold
+        # @!method dim
+        # @!method italic
+        # @!method underline
+        # @!method blink
+        # @!method reverse
+        # @!method invisible
+        # @!method black
+        # @!method red
+        # @!method green
+        # @!method yellow
+        # @!method blue
+        # @!method magenta
+        # @!method cyan
+        # @!method white
+        # @!method bright_black
+        # @!method bright_red
+        # @!method bright_green
+        # @!method bright_yellow
+        # @!method bright_blue
+        # @!method bright_magenta
+        # @!method bright_cyan
+        # @!method bright_white
+        # @!method on_black
+        # @!method on_red
+        # @!method on_green
+        # @!method on_yellow
+        # @!method on_blue
+        # @!method on_magenta
+        # @!method on_cyan
+        # @!method on_white
+        # @!method on_bright_black
+        # @!method on_bright_red
+        # @!method on_bright_green
+        # @!method on_bright_yellow
+        # @!method on_bright_blue
+        # @!method on_bright_magenta
+        # @!method on_bright_cyan
+        # @!method on_bright_white
         #
         #   Adds this style to the chain.
         #
-        #   Given text, applies the style and returns a `String`. Given nothing, returns a new
-        #   {Dry::CLI::Style} to keep chaining.
+        #   Returns a new {Dry::CLI::Style}, to keep chaining or to apply with {#call} or {#[]}.
         #
-        #   @param text [String,nil] the text to style
-        #
-        #   @return [Dry::CLI::Style,String]
+        #   @return [Dry::CLI::Style]
         #
         #   @api public
         #   @since x.y.z
@@ -275,9 +265,8 @@ module Dry
         ATTRIBUTES.each do |name, code|
           attribute = Attribute.new(name, code)
 
-          define_method(name) do |text = nil|
-            styled = add(attribute)
-            text.nil? ? styled : styled.call(text)
+          define_method(name) do
+            add(attribute)
           end
         end
 
@@ -286,9 +275,8 @@ module Dry
             {foreground: color_name, background: :"on_#{color_name}"}.each do |layer, method_name|
               color = Color::ANSI.new(layer, color_index, color_name)
 
-              define_method(method_name) do |text = nil|
-                styled = add(color)
-                text.nil? ? styled : styled.call(text)
+              define_method(method_name) do
+                add(color)
               end
             end
           end

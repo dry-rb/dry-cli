@@ -70,13 +70,13 @@ RSpec.describe Dry::CLI::Style do
     end
   end
 
-  describe "styling text directly" do
-    it "styles the text when given as an argument" do
-      expect(described_class.bold.red("Boom")).to eq "\e[1;31mBoom\e[0m"
+  describe "building a style" do
+    it "returns a style, never styled text" do
+      expect(described_class.bold.red).to be_an_instance_of(described_class)
     end
 
-    it "returns a style when given no argument" do
-      expect(described_class.bold.red).to be_an_instance_of(described_class)
+    it "does not take the text" do
+      expect { described_class.bold.red("Boom") }.to raise_error(ArgumentError)
     end
   end
 

@@ -22,20 +22,17 @@ module Dry
     # @api public
     # @since x.x.x
     module StyleMixin
-      # Returns a neutral style to chain from, or the given text unchanged.
+      # Returns a neutral style to chain from.
       #
-      # @param text [String,nil] the text to return
-      #
-      # @return [Dry::CLI::Style,String]
+      # @return [Dry::CLI::Style]
       #
       # @example
-      #   style.bold.red("Boom") # => "\e[1;31mBoom\e[0m"
+      #   style.bold.red["Boom"] # => "\e[1;31mBoom\e[0m"
       #
       # @api public
       # @since x.x.x
-      def style(text = nil)
-        neutral = Style.new
-        text.nil? ? neutral : neutral.call(text)
+      def style
+        Style.new
       end
 
       # Removes all style escape sequences from the given text.

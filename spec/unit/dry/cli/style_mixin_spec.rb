@@ -20,12 +20,8 @@ RSpec.describe Dry::CLI::StyleMixin do
       expect(subject_module.style.bold.red).to eq Dry::CLI::Style.bold.red
     end
 
-    it "styles text directly" do
-      expect(subject_module.style.bold.red("Boom")).to eq "\e[1;31mBoom\e[0m"
-    end
-
-    it "returns the given text unchanged" do
-      expect(subject_module.style("Boom")).to eq "Boom"
+    it "does not take the text" do
+      expect { subject_module.style("Boom") }.to raise_error(ArgumentError)
     end
   end
 
@@ -41,7 +37,7 @@ RSpec.describe Dry::CLI::StyleMixin do
         error = style.bold.red
 
         define_method(:call) do |**|
-          [error.call("Boom"), style.dim("quiet"), unstyle("\e[32mgreen\e[0m")]
+          [error.call("Boom"), style.dim["quiet"], unstyle("\e[32mgreen\e[0m")]
         end
       end)
     end
