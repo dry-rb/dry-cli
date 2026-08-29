@@ -9,7 +9,8 @@ module Dry
     class Error < StandardError
     end
 
-    # @since 1.5.0
+    # @api public
+    # @since x.y.z
     class InvalidColorError < Error
       attr_reader :value, :expected
 
@@ -27,7 +28,7 @@ module Dry
     # British spelling of {InvalidColorError}. The two names are the same class, so rescuing
     # either catches both.
     #
-    # @since 1.5.0
+    # @since x.y.z
     InvalidColourError = InvalidColorError
 
     # @since 1.4.0

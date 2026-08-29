@@ -9,7 +9,6 @@ module Dry
       # the terminal can show. This module holds the palettes we swap in, and the search that
       # picks from them.
       #
-      # @since 1.5.0
       # @api private
       module Palette
         # The 16 ANSI colors, with the values xterm gives them
@@ -17,9 +16,6 @@ module Dry
         # Codes 0-7 are the base colors, 8-15 the bright ones. Users can change these in their
         # terminal settings, so we use the values to find the closest match, not to say what the
         # screen will show.
-        #
-        # @since 1.5.0
-        # @api private
         ANSI = [
           [0, 0, 0],       # black
           [128, 0, 0],     # red
@@ -40,17 +36,11 @@ module Dry
         ].freeze
 
         # The six levels each of red, green and blue takes in the 6x6x6 color cube
-        #
-        # @since 1.5.0
-        # @api private
         CUBE_STEPS = [0, 95, 135, 175, 215, 255].freeze
 
         # The 256 color palette, as red, green and blue values by color code
         #
         # Codes 0-15 are {ANSI}, 16-231 a 6x6x6 color cube, and 232-255 24 shades of gray.
-        #
-        # @since 1.5.0
-        # @api private
         XTERM = [
           *ANSI,
           *CUBE_STEPS.product(CUBE_STEPS, CUBE_STEPS),
@@ -62,27 +52,12 @@ module Dry
         # Users can change codes 0-15 in their terminal settings. If someone has set their "red"
         # to a pastel, we should not answer `rgb(255, 0, 0)` with that pastel, so we search from
         # 16 up, where the codes have fixed values.
-        #
-        # @since 1.5.0
-        # @api private
         FIXED_RANGE = (16..255)
 
         # The ANSI colors that have a hue, and the ones that are only gray
-        #
-        # @since 1.5.0
-        # @api private
         CHROMATIC = [*1..6, *9..14].freeze
-
-        # @since 1.5.0
-        # @api private
         GRAYS = [0, 7, 8, 15].freeze
-
-        # @since 1.5.0
-        # @api private
         BASE_CHROMATIC = [*1..6].freeze
-
-        # @since 1.5.0
-        # @api private
         BASE_GREYS = [0, 7].freeze
 
         # How much color a shade needs before we match its hue instead of its brightness
@@ -97,9 +72,6 @@ module Dry
         # We measure that as chroma, the gap between the highest and lowest of red, green and
         # blue. Saturation would be wrong here. It runs high for any dark color, so it would
         # turn near blacks into whatever hue their few stray levels tilt toward.
-        #
-        # @since 1.5.0
-        # @api private
         CHROMA_THRESHOLD = 48
 
         class << self
@@ -108,9 +80,6 @@ module Dry
           # @param code [Integer] a color code, 0-255
           #
           # @return [Array<Integer>] the red, green and blue components
-          #
-          # @since 1.5.0
-          # @api private
           def rgb(code)
             XTERM.fetch(code)
           end
@@ -122,9 +91,6 @@ module Dry
           # @param blue [Integer]
           #
           # @return [Integer] a color code, 16-255
-          #
-          # @since 1.5.0
-          # @api private
           def nearest_xterm(red, green, blue)
             nearest(FIXED_RANGE, red, green, blue)
           end
@@ -136,9 +102,6 @@ module Dry
           # @param blue [Integer]
           #
           # @return [Integer] a color code, 0-15
-          #
-          # @since 1.5.0
-          # @api private
           def nearest_ansi(red, green, blue)
             candidates = chromatic?(red, green, blue) ? CHROMATIC : GRAYS
 
@@ -152,9 +115,6 @@ module Dry
           # @param blue [Integer]
           #
           # @return [Integer] a color code, 0-7
-          #
-          # @since 1.5.0
-          # @api private
           def nearest_base_ansi(red, green, blue)
             candidates = chromatic?(red, green, blue) ? BASE_CHROMATIC : BASE_GREYS
 
@@ -164,9 +124,6 @@ module Dry
           private
 
           # Returns whether the color has a hue worth keeping
-          #
-          # @since 1.5.0
-          # @api private
           def chromatic?(red, green, blue)
             components = [red, green, blue]
 
@@ -174,9 +131,6 @@ module Dry
           end
 
           # Returns the code within the range whose color is closest to the given one
-          #
-          # @since 1.5.0
-          # @api private
           def nearest(range, red, green, blue)
             range.min_by { |code| distance(XTERM[code], red, green, blue) }
           end
@@ -192,9 +146,6 @@ module Dry
           # same order.
           #
           # @see https://www.compuphase.com/cmetric.htm
-          #
-          # @since 1.5.0
-          # @api private
           def distance(reference, red, green, blue)
             mean = (reference[0] + red) / 2
             delta_red = reference[0] - red

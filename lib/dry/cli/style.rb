@@ -44,23 +44,21 @@ module Dry
     #
     # Every name here with `color` in it has a `colour` alias, so spell it either way.
     #
-    # @since 1.5.0
+    # @api public
+    # @since x.y.z
     class Style
       # ANSI escape sequence resetting all styles
       #
-      # @since 1.5.0
       # @api private
       RESET = "\e[0m"
 
       # Pattern matching the ANSI escape sequences we emit
       #
-      # @since 1.5.0
       # @api private
       SGR_PATTERN = /\e\[[0-9;]*m/
 
       # Non-color style names mapped to their ANSI code
       #
-      # @since 1.5.0
       # @api private
       ATTRIBUTES = {
         bold: 1,
@@ -76,7 +74,6 @@ module Dry
       #
       # Each has a `bright_` version too, eight places along.
       #
-      # @since 1.5.0
       # @api private
       COLORS = {
         black: 0,
@@ -91,13 +88,11 @@ module Dry
 
       # Pattern matching a hex color, with or without its leading `#`
       #
-      # @since 1.5.0
       # @api private
       HEX_PATTERN = /\A#?(?<digits>\h{3}|\h{6})\z/
 
       # The values an RGB component can take
       #
-      # @since 1.5.0
       # @api private
       COMPONENT_RANGE = (0..255)
 
@@ -115,14 +110,16 @@ module Dry
         # @example
         #   Dry::CLI::Style.enabled = false if args[:no_color]
         #
-        # @since 1.5.0
+        # @api public
+        # @since x.y.z
         attr_writer :enabled
 
         # Whether styling is currently enabled
         #
         # @return [TrueClass,FalseClass]
         #
-        # @since 1.5.0
+        # @api public
+        # @since x.y.z
         def enabled?
           enabled = @enabled
           return enabled unless enabled.nil?
@@ -147,7 +144,8 @@ module Dry
         # @example
         #   Dry::CLI::Style.color_level = :truecolor
         #
-        # @since 1.5.0
+        # @api public
+        # @since x.y.z
         def color_level=(level)
           unless level.nil? || ColorLevel.valid?(level)
             raise ArgumentError,
@@ -165,7 +163,8 @@ module Dry
         # @example
         #   Dry::CLI::Style.color_level # => :truecolor
         #
-        # @since 1.5.0
+        # @api public
+        # @since x.y.z
         def color_level
           return ColorLevel::NONE unless enabled?
 
@@ -178,7 +177,8 @@ module Dry
         #   British spelling of {color_level} and {color_level=}. The two names are the same
         #   method, so either reads what the other set.
         #
-        #   @since 1.5.0
+        #   @api public
+        #   @since x.y.z
         alias_method :colour_level, :color_level
         alias_method :colour_level=, :color_level=
 
@@ -191,13 +191,13 @@ module Dry
         # @example
         #   Dry::CLI::Style.unstyle("\e[31mBoom\e[0m") # => "Boom"
         #
-        # @since 1.5.0
+        # @api public
+        # @since x.y.z
         def unstyle(text)
           text.to_s.gsub(SGR_PATTERN, "")
         end
       end
 
-      # @since 1.5.0
       # @api private
       attr_reader :steps
 
@@ -207,7 +207,6 @@ module Dry
       #
       # @param steps [Array] the attributes and colors to apply
       #
-      # @since 1.5.0
       # @api private
       def initialize(steps = [])
         @steps = steps.freeze
@@ -266,7 +265,8 @@ module Dry
       #
       #   @return [Dry::CLI::Style,String]
       #
-      #   @since 1.5.0
+      #   @api public
+      #   @since x.y.z
       #
       # When adding styles, keep the signature of these methods stable:
       #
@@ -321,7 +321,8 @@ module Dry
       #   @example
       #     Dry::CLI::Style.rgb(255, 0, 0).call("Boom")
       #
-      #   @since 1.5.0
+      #   @api public
+      #   @since x.y.z
       {foreground: :rgb, background: :on_rgb}.each do |layer, method_name|
         define_method(method_name) do |red, green, blue|
           add(Color::RGB.new(layer, *Style.validate_components(red, green, blue)))
@@ -348,7 +349,8 @@ module Dry
       #     Dry::CLI::Style.hex("#ff0000").call("Boom")
       #     Dry::CLI::Style.hex("f00").call("Boom")
       #
-      #   @since 1.5.0
+      #   @api public
+      #   @since x.y.z
       {foreground: :hex, background: :on_hex}.each do |layer, method_name|
         define_method(method_name) do |value|
           add(Color::RGB.new(layer, *Style.parse_hex(value)))
@@ -374,7 +376,8 @@ module Dry
       #   @example
       #     Dry::CLI::Style.ansi256(196).call("Boom")
       #
-      #   @since 1.5.0
+      #   @api public
+      #   @since x.y.z
       {foreground: :ansi256, background: :on_ansi256}.each do |layer, method_name|
         define_method(method_name) do |index|
           add(Color::Xterm.new(layer, Style.validate_index(index)))
@@ -401,7 +404,8 @@ module Dry
       #   ERROR.call("Boom") # => "\e[1;31mBoom\e[0m"
       #   ERROR["Boom"]      # => "\e[1;31mBoom\e[0m"
       #
-      # @since 1.5.0
+      # @api public
+      # @since x.y.z
       def call(text)
         text = text.to_s
         return self.class.unstyle(text) unless self.class.enabled?
@@ -421,7 +425,8 @@ module Dry
       # @example
       #   names.map(&Dry::CLI::Style.bold)
       #
-      # @since 1.5.0
+      # @api public
+      # @since x.y.z
       def to_proc
         method(:call).to_proc
       end
@@ -432,26 +437,22 @@ module Dry
       #
       # @return [Array<Integer>]
       #
-      # @since 1.5.0
       # @api private
       def codes(level = self.class.color_level)
         steps.flat_map { |step| step.codes(level) }
       end
 
-      # @since 1.5.0
       # @api private
       def ==(other)
         other.is_a?(self.class) && other.steps == steps
       end
       alias_method :eql?, :==
 
-      # @since 1.5.0
       # @api private
       def hash
         [self.class, steps].hash
       end
 
-      # @since 1.5.0
       # @api private
       def inspect
         return "#<#{self.class.name}>" if steps.empty?
@@ -459,7 +460,6 @@ module Dry
         "#<#{self.class.name} #{steps.map(&:to_s).join(".")}>"
       end
 
-      # @since 1.5.0
       # @api private
       def self.validate_components(*components)
         components.each do |component|
@@ -472,7 +472,6 @@ module Dry
         end
       end
 
-      # @since 1.5.0
       # @api private
       def self.validate_index(index)
         unless index.is_a?(Integer) && COMPONENT_RANGE.cover?(index)
@@ -485,7 +484,6 @@ module Dry
         index
       end
 
-      # @since 1.5.0
       # @api private
       def self.parse_hex(value)
         digits = HEX_PATTERN.match(value.to_s)&.[](:digits)
@@ -500,14 +498,10 @@ module Dry
 
       private
 
-      # @since 1.5.0
-      # @api private
       def add(step)
         self.class.new(steps + [step])
       end
 
-      # @since 1.5.0
-      # @api private
       def sequence_for(level)
         @sequences[level] ||= begin
           codes = codes(level)

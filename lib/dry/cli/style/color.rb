@@ -12,28 +12,18 @@ module Dry
       # when we know what the terminal can show. Each subclass answers that in its own way:
       # {Ansi} always fits, {Xterm} drops to 16 or 8 colors, and {RGB} drops to any of them.
       #
-      # @since 1.5.0
       # @api private
       class Color
-        # @since 1.5.0
-        # @api private
         EMPTY = [].freeze
 
         # The layer a color applies to, and the ANSI codes each layer starts from
-        #
-        # @since 1.5.0
-        # @api private
         LAYERS = {
           foreground: {base: 30, bright: 90, extended: 38},
           background: {base: 40, bright: 100, extended: 48}
         }.freeze
 
-        # @since 1.5.0
-        # @api private
         attr_reader :layer
 
-        # @since 1.5.0
-        # @api private
         def initialize(layer)
           @layer = layer
         end
@@ -43,28 +33,19 @@ module Dry
         # @param level [Symbol] a {Dry::CLI::Style::ColorLevel}
         #
         # @return [Array<Integer>]
-        #
-        # @since 1.5.0
-        # @api private
         def codes(_level)
           raise NotImplementedError
         end
 
-        # @since 1.5.0
-        # @api private
         def ==(other)
           other.is_a?(self.class) && other.layer == layer && other.value == value
         end
         alias_method :eql?, :==
 
-        # @since 1.5.0
-        # @api private
         def hash
           [self.class, layer, value].hash
         end
 
-        # @since 1.5.0
-        # @api private
         def prefix
           layer == :background ? "on_" : ""
         end
@@ -72,9 +53,6 @@ module Dry
         protected
 
         # The color's defining value, for comparison
-        #
-        # @since 1.5.0
-        # @api private
         def value
           raise NotImplementedError
         end
@@ -84,9 +62,6 @@ module Dry
         # Returns the codes for one of the 16 ANSI colors on this layer
         #
         # @param index [Integer] a color code, 0-15
-        #
-        # @since 1.5.0
-        # @api private
         def ansi_codes(index)
           offsets = LAYERS.fetch(layer)
 
@@ -97,8 +72,6 @@ module Dry
           end
         end
 
-        # @since 1.5.0
-        # @api private
         def extended_code
           LAYERS.fetch(layer)[:extended]
         end
@@ -110,20 +83,9 @@ module Dry
         # color drops to the base color it brightens. We do that on purpose rather than search
         # for the closest color. Someone who asks for `bright_black` wants black, not the light
         # gray that happens to sit nearest it among the eight.
-        #
-        # @since 1.5.0
-        # @api private
         class Ansi < Color
-          # @since 1.5.0
-          # @api private
-          attr_reader :index
+          attr_reader :index, :name
 
-          # @since 1.5.0
-          # @api private
-          attr_reader :name
-
-          # @since 1.5.0
-          # @api private
           def initialize(layer, index, name)
             super(layer)
             @index = index
@@ -131,8 +93,6 @@ module Dry
             freeze
           end
 
-          # @since 1.5.0
-          # @api private
           def codes(level)
             case level
             when ColorLevel::NONE then EMPTY
@@ -141,16 +101,12 @@ module Dry
             end
           end
 
-          # @since 1.5.0
-          # @api private
           def to_s
             "#{prefix}#{name}"
           end
 
           protected
 
-          # @since 1.5.0
-          # @api private
           def value
             index
           end
@@ -161,24 +117,15 @@ module Dry
         # Terminals that show 24-bit color read the 256 color escapes too, so this only degrades
         # downward. To do that we look up the color's red, green and blue values, then find the
         # closest match among the 16 or 8 colors left.
-        #
-        # @since 1.5.0
-        # @api private
         class Xterm < Color
-          # @since 1.5.0
-          # @api private
           attr_reader :index
 
-          # @since 1.5.0
-          # @api private
           def initialize(layer, index)
             super(layer)
             @index = index
             freeze
           end
 
-          # @since 1.5.0
-          # @api private
           def codes(level)
             case level
             when ColorLevel::NONE then EMPTY
@@ -187,24 +134,18 @@ module Dry
             end
           end
 
-          # @since 1.5.0
-          # @api private
           def to_s
             "#{prefix}ansi256(#{index})"
           end
 
           protected
 
-          # @since 1.5.0
-          # @api private
           def value
             index
           end
 
           private
 
-          # @since 1.5.0
-          # @api private
           def nearest(level)
             red, green, blue = Palette.rgb(index)
 
@@ -222,23 +163,10 @@ module Dry
         # 24-bit we swap it for the closest color the terminal can show, taken from whatever
         # palette that level leaves us.
         #
-        # @since 1.5.0
         # @api private
         class RGB < Color
-          # @since 1.5.0
-          # @api private
-          attr_reader :red
+          attr_reader :red, :green, :blue
 
-          # @since 1.5.0
-          # @api private
-          attr_reader :green
-
-          # @since 1.5.0
-          # @api private
-          attr_reader :blue
-
-          # @since 1.5.0
-          # @api private
           def initialize(layer, red, green, blue)
             super(layer)
             @red = red
@@ -247,8 +175,6 @@ module Dry
             freeze
           end
 
-          # @since 1.5.0
-          # @api private
           def codes(level)
             case level
             when ColorLevel::NONE then EMPTY
@@ -260,16 +186,12 @@ module Dry
             end
           end
 
-          # @since 1.5.0
-          # @api private
           def to_s
             "#{prefix}rgb(#{red}, #{green}, #{blue})"
           end
 
           protected
 
-          # @since 1.5.0
-          # @api private
           def value
             [red, green, blue]
           end
