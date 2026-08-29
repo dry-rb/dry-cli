@@ -10,7 +10,7 @@ module Dry
       #
       # You write a color once, in whatever form suits you. We ask it for its ANSI codes later,
       # when we know what the terminal can show. Each subclass answers that in its own way:
-      # {Ansi} always fits, {Xterm} drops to 16 or 8 colors, and {RGB} drops to any of them.
+      # {ANSI} always fits, {Xterm} drops to 16 or 8 colors, and {RGB} drops to any of them.
       #
       # @api private
       class Color
@@ -83,7 +83,7 @@ module Dry
         # color drops to the base color it brightens. We do that on purpose rather than search
         # for the closest color. Someone who asks for `bright_black` wants black, not the light
         # gray that happens to sit nearest it among the eight.
-        class Ansi < Color
+        class ANSI < Color
           attr_reader :index, :name
 
           def initialize(layer, index, name)

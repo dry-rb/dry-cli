@@ -280,7 +280,7 @@ module Dry
       COLORS.each do |name, index|
         {name => index, :"bright_#{name}" => index + 8}.each do |color_name, color_index|
           {foreground: color_name, background: :"on_#{color_name}"}.each do |layer, method_name|
-            color = Color::Ansi.new(layer, color_index, color_name)
+            color = Color::ANSI.new(layer, color_index, color_name)
 
             define_method(method_name) do |text = nil|
               styled = add(color)
