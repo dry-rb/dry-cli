@@ -294,22 +294,112 @@ module Dry
           end
         end
 
-        {foreground: :rgb, background: :on_rgb}.each do |layer, method_name|
-          define_method(method_name) do |red, green, blue|
-            add(Color::RGB.new(layer, *Style.validate_components(red, green, blue)))
-          end
+        # Adds a 24-bit color to the chain, degrading it to fit the terminal
+        #
+        # @param red [Integer] 0-255
+        # @param green [Integer] 0-255
+        # @param blue [Integer] 0-255
+        #
+        # @return [Dry::CLI::Style]
+        #
+        # @raise [Dry::CLI::InvalidColorError] if a component is out of range
+        #
+        # @example
+        #   Dry::CLI::Style.rgb(255, 0, 0).call("Boom")
+        #
+        # @api public
+        # @since x.y.z
+        def rgb(red, green, blue)
+          add(Color::RGB.new(:foreground, *Style.validate_components(red, green, blue)))
         end
 
-        {foreground: :hex, background: :on_hex}.each do |layer, method_name|
-          define_method(method_name) do |value|
-            add(Color::RGB.new(layer, *Style.parse_hex(value)))
-          end
+        # Adds a 24-bit background color to the chain, degrading it to fit the terminal
+        #
+        # @param (see #rgb)
+        #
+        # @return (see #rgb)
+        #
+        # @raise (see #rgb)
+        #
+        # @example
+        #   Dry::CLI::Style.on_rgb(255, 0, 0).call("Boom")
+        #
+        # @api public
+        # @since x.y.z
+        def on_rgb(red, green, blue)
+          add(Color::RGB.new(:background, *Style.validate_components(red, green, blue)))
         end
 
-        {foreground: :ansi256, background: :on_ansi256}.each do |layer, method_name|
-          define_method(method_name) do |index|
-            add(Color::Xterm.new(layer, Style.validate_index(index)))
-          end
+        # Adds a 24-bit color written as hex to the chain, degrading it to fit the terminal
+        #
+        # @param value [String] a hex color, with or without its leading `#`, in three or six
+        #   digits
+        #
+        # @return [Dry::CLI::Style]
+        #
+        # @raise [Dry::CLI::InvalidColorError] if the value isn't a hex color
+        #
+        # @example
+        #   Dry::CLI::Style.hex("#ff0000").call("Boom")
+        #   Dry::CLI::Style.hex("f00").call("Boom")
+        #
+        # @api public
+        # @since x.y.z
+        def hex(value)
+          add(Color::RGB.new(:foreground, *Style.parse_hex(value)))
+        end
+
+        # Adds a 24-bit background color written as hex to the chain, degrading it to fit the
+        # terminal
+        #
+        # @param (see #hex)
+        #
+        # @return (see #hex)
+        #
+        # @raise (see #hex)
+        #
+        # @example
+        #   Dry::CLI::Style.on_hex("#ff0000").call("Boom")
+        #
+        # @api public
+        # @since x.y.z
+        def on_hex(value)
+          add(Color::RGB.new(:background, *Style.parse_hex(value)))
+        end
+
+        # Adds a color from the 256 color palette to the chain, degrading it to fit the terminal
+        #
+        # @param index [Integer] a color code, 0-255
+        #
+        # @return [Dry::CLI::Style]
+        #
+        # @raise [Dry::CLI::InvalidColorError] if the code is out of range
+        #
+        # @example
+        #   Dry::CLI::Style.ansi256(196).call("Boom")
+        #
+        # @api public
+        # @since x.y.z
+        def ansi256(index)
+          add(Color::Xterm.new(:foreground, Style.validate_index(index)))
+        end
+
+        # Adds a background color from the 256 color palette to the chain, degrading it to fit
+        # the terminal
+        #
+        # @param (see #ansi256)
+        #
+        # @return (see #ansi256)
+        #
+        # @raise (see #ansi256)
+        #
+        # @example
+        #   Dry::CLI::Style.on_ansi256(196).call("Boom")
+        #
+        # @api public
+        # @since x.y.z
+        def on_ansi256(index)
+          add(Color::Xterm.new(:background, Style.validate_index(index)))
         end
       end
 
