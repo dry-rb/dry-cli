@@ -117,7 +117,7 @@ module Dry
         # Set to `nil` (the default) to decide automatically: styling is on when the stream
         # being written to is a terminal and `NO_COLOR` is unset. `FORCE_COLOR` overrides both.
         #
-        # @param enabled [TrueClass,FalseClass,NilClass]
+        # @param enabled [Boolean, nil]
         #
         # @example
         #   Dry::CLI::Style.enabled = false if args[:no_color]
@@ -134,7 +134,7 @@ module Dry
         # Each stream decides this for itself as it renders, so this is the answer for
         # `$stdout`: what we fall back to for text written somewhere we don't know about.
         #
-        # @return [TrueClass,FalseClass]
+        # @return [Boolean]
         #
         # @api public
         # @since x.y.z
@@ -150,7 +150,7 @@ module Dry
         #
         # @param stream [IO]
         #
-        # @return [TrueClass,FalseClass]
+        # @return [Boolean]
         #
         # @api private
         def enabled_for?(stream)
@@ -168,7 +168,7 @@ module Dry
         # Set to `nil` (the default) to decide automatically from the environment. Set it
         # explicitly to honour a `--color` flag of your own, or to pin the output in tests.
         #
-        # @param level [Symbol,NilClass] `:truecolor`, `:ansi256`, `:ansi16`, `:ansi8`, `:none`
+        # @param level [Symbol, nil] `:truecolor`, `:ansi256`, `:ansi16`, `:ansi8`, `:none`
         #
         # @raise [ArgumentError] if the level isn't one we know
         #
@@ -211,7 +211,7 @@ module Dry
         #
         # @param stream [IO]
         #
-        # @return [Symbol,NilClass]
+        # @return [Symbol, nil]
         #
         # @api private
         def level_for(stream)
@@ -225,7 +225,7 @@ module Dry
         # Answers for `$stdout`, which keeps this conservative: text we can't place is more
         # use plain in a file than colored in one.
         #
-        # @return [Symbol,NilClass]
+        # @return [Symbol, nil]
         #
         # @api private
         def default_level
@@ -520,7 +520,7 @@ module Dry
       # Renders the given text at the given color level
       #
       # @param text [String] the text to style
-      # @param level [Symbol,NilClass] a color level, or `nil` for no styling at all
+      # @param level [Symbol, nil] a color level, or `nil` for no styling at all
       #
       # @return [String]
       #

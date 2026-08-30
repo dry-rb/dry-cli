@@ -59,7 +59,7 @@ module Dry
 
         # Renders the text at the given color level
         #
-        # @param level [Symbol,NilClass] a color level, or `nil` for no styling at all
+        # @param level [Symbol, nil] a color level, or `nil` for no styling at all
         #
         # @return [String]
         #
