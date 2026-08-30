@@ -35,16 +35,24 @@ module Dry
 
       # @api private
       def puts(*args)
+        # Nearly every write is one string, and going through the general case would build an
+        # array to map over and another to spread back out again
+        return __getobj__.puts(render_value(args[0])) if args.size == 1
+
         __getobj__.puts(*render(args))
       end
 
       # @api private
       def print(*args)
+        return __getobj__.print(render_value(args[0])) if args.size == 1
+
         __getobj__.print(*render(args))
       end
 
       # @api private
       def write(*args)
+        return __getobj__.write(render_value(args[0])) if args.size == 1
+
         __getobj__.write(*render(args))
       end
 
@@ -76,11 +84,25 @@ module Dry
         __getobj__
       end
 
+      # Returns true if the stream underneath is a terminal
+      #
+      # This result is memoized so we can avoid a syscall (the actual `tty?` check) every time we
+      # check {#color_level}.
+      #
+      # @return [Boolean]
+      #
+      # @api private
+      def tty?
+        return @tty if instance_variable_defined?(:@tty)
+
+        @tty = __getobj__.respond_to?(:tty?) && __getobj__.tty?
+      end
+
       # How much color this stream can show, or `nil` when it should show none
       #
       # @api private
       def color_level
-        Style.level_for(__getobj__)
+        Style.level_for(self)
       end
 
       private
