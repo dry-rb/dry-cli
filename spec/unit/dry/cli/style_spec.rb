@@ -54,8 +54,13 @@ RSpec.describe Dry::CLI::Style do
       expect(described_class.red["Boom"]).to eq "\e[31mBoom\e[0m"
     end
 
-    it "returns a String" do
-      expect(described_class.red.call("Boom")).to be_an_instance_of(String)
+    it "returns styled text, rendered when it is written" do
+      expect(described_class.red.call("Boom")).to be_an_instance_of(Dry::CLI::Style::Text)
+    end
+
+    it "renders to a String wherever one is wanted" do
+      expect(described_class.red.call("Boom").to_s).to be_an_instance_of(String)
+      expect("say: " + described_class.red.call("Boom")).to be_an_instance_of(String)
     end
 
     it "coerces the text" do
@@ -207,7 +212,7 @@ RSpec.describe Dry::CLI::Style do
   describe "degrading color" do
     def render(style, level)
       described_class.color_level = level
-      style.call("Boom")
+      style.call("Boom").to_s
     end
 
     context "a 24-bit color" do

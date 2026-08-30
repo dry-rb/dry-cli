@@ -242,4 +242,49 @@ RSpec.describe "CLI" do
       expect(output.string).to eq("hello\n")
     end
   end
+
+  context "styling" do
+    let(:command) do
+      Class.new(Dry::CLI::Command) do
+        def call(**)
+          stdout.puts Dry::CLI::Style.green["done"]
+          stderr.puts Dry::CLI::Style.bold.red["Uh oh"]
+        end
+      end
+    end
+
+    let(:terminal) { StringIO.new.tap { |io| def io.tty? = true } }
+    let(:file) { StringIO.new }
+
+    around do |example|
+      forced = ENV.delete("FORCE_COLOR")
+      Dry::CLI::Style.enabled = nil
+      example.run
+      ENV["FORCE_COLOR"] = forced if forced
+      Dry::CLI::Style.enabled = nil
+    end
+
+    it "styles a terminal and leaves the stream redirected alongside it plain" do
+      Dry.CLI(command).call(arguments: [], stdout: terminal, stderr: file)
+
+      expect(terminal.string).to eq "\e[32mdone\e[0m\n"
+      expect(file.string).to eq "Uh oh\n"
+    end
+
+    it "keeps color on the terminal when it is the other stream redirected" do
+      Dry.CLI(command).call(arguments: [], stdout: file, stderr: terminal)
+
+      expect(file.string).to eq "done\n"
+      expect(terminal.string).to eq "\e[1;31mUh oh\e[0m\n"
+    end
+
+    it "styles nothing when neither stream is a terminal" do
+      err = StringIO.new
+
+      Dry.CLI(command).call(arguments: [], stdout: file, stderr: err)
+
+      expect(file.string).to eq "done\n"
+      expect(err.string).to eq "Uh oh\n"
+    end
+  end
 end

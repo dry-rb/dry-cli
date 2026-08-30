@@ -47,6 +47,7 @@ module Dry
       require_relative "style/attribute"
       require_relative "style/color"
       require_relative "style/color_level"
+      require_relative "style/text"
 
       # ANSI escape sequence resetting all styles
       #
@@ -99,12 +100,11 @@ module Dry
 
       @enabled = nil
       @color_level = nil
-
       class << self
         # Enable or disable styling for the whole program
         #
-        # Set to `nil` (the default) to decide automatically: styling is on when the program
-        # writes to a terminal and `NO_COLOR` is unset. `FORCE_COLOR` overrides both.
+        # Set to `nil` (the default) to decide automatically: styling is on when the stream
+        # being written to is a terminal and `NO_COLOR` is unset. `FORCE_COLOR` overrides both.
         #
         # @param enabled [TrueClass,FalseClass,NilClass]
         #
@@ -115,13 +115,27 @@ module Dry
         # @since x.y.z
         attr_writer :enabled
 
-        # Whether styling is currently enabled
+        # Whether styling is currently enabled for the program's own output
+        #
+        # Each stream decides this for itself as it renders, so this is the answer for
+        # `$stdout`: what we fall back to for text written somewhere we don't know about.
         #
         # @return [TrueClass,FalseClass]
         #
         # @api public
         # @since x.y.z
         def enabled?
+          enabled_for?($stdout)
+        end
+
+        # Whether styling is enabled for the given stream
+        #
+        # @param stream [IO]
+        #
+        # @return [TrueClass,FalseClass]
+        #
+        # @api private
+        def enabled_for?(stream)
           enabled = @enabled
           return enabled unless enabled.nil?
 
@@ -130,7 +144,7 @@ module Dry
           forced = ENV["FORCE_COLOR"]
           return !%w[0 false].include?(forced.downcase) unless forced.nil?
 
-          $stdout.tty?
+          stream.respond_to?(:tty?) && stream.tty?
         end
 
         # Set how much color styles should render with
@@ -168,6 +182,37 @@ module Dry
         # @since x.y.z
         def color_level
           return ColorLevel::NONE unless enabled?
+
+          @color_level || ColorLevel.detect
+        end
+
+        # How much color to render for the given stream, or `nil` for no styling at all
+        #
+        # An explicit {Dry::CLI::Style.enabled=} or {Dry::CLI::Style.color_level=} wins over
+        # anything we would work out ourselves, which is what makes a `--color=always` of your
+        # own reach a stream we would otherwise leave plain.
+        #
+        # @param stream [IO]
+        #
+        # @return [Symbol,NilClass]
+        #
+        # @api private
+        def level_for(stream)
+          return nil unless enabled_for?(stream)
+
+          @color_level || ColorLevel.detect
+        end
+
+        # How much color to render when we don't know which stream the text is bound for
+        #
+        # Answers for `$stdout`, which keeps this conservative: text we can't place is more
+        # use plain in a file than colored in one.
+        #
+        # @return [Symbol,NilClass]
+        #
+        # @api private
+        def default_level
+          return nil unless enabled?
 
           @color_level || ColorLevel.detect
         end
@@ -423,10 +468,22 @@ module Dry
       # @api public
       # @since x.y.z
       def call(text)
-        text = text.to_s
-        return self.class.unstyle(text) unless self.class.enabled?
+        Text.new([[self, text]])
+      end
 
-        opening = sequence_for(self.class.color_level)
+      # Renders the given text at the given color level
+      #
+      # @param text [String] the text to style
+      # @param level [Symbol,NilClass] a color level, or `nil` for no styling at all
+      #
+      # @return [String]
+      #
+      # @api private
+      def render(text, level)
+        text = text.to_s
+        return Style.unstyle(text) if level.nil?
+
+        opening = sequence_for(level)
         return text if opening.empty?
 
         # Reopen our own sequence after any nested reset, so you can nest styled text

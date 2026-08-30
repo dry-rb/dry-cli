@@ -405,7 +405,7 @@ module Dry
 
       # @since unreleased
       # @api private
-      def initialize(stderr: $stderr, stdin: $stdin, stdout: $stdout)
+      def initialize(stderr: nil, stdin: nil, stdout: nil)
         @stderr = stderr
         @stdin  = stdin
         @stdout = stdout
@@ -442,8 +442,10 @@ module Dry
       #   end
       #
       # @since unreleased
-      # @return [IO]
-      attr_reader :stderr
+      # @return [IO] the stream given to this command, or `$stderr`
+      def stderr
+        @stderr || $stderr
+      end
 
       # The standard input stream used for reading input
       #
@@ -456,8 +458,10 @@ module Dry
       #   end
       #
       # @since unreleased
-      # @return [IO]
-      attr_reader :stdin
+      # @return [IO] the stream given to this command, or `$stdin`
+      def stdin
+        @stdin || $stdin
+      end
 
       # The standard output stream used for normal output
       #
@@ -469,8 +473,39 @@ module Dry
       #   end
       #
       # @since unreleased
-      # @return [IO]
-      attr_reader :stdout
+      # @return [IO] the stream given to this command, or `$stdout`
+      def stdout
+        @stdout || $stdout
+      end
+
+      private
+
+      # Writes to {#stdout}, rather than to the program's own output
+      #
+      # Commands are given the streams they write to, so `puts` inside one goes to the stream
+      # this command was given, not to `$stdout`. That's what keeps styling right when the two
+      # differ: text written here is styled for the stream it lands on.
+      #
+      # @example
+      #   class MyCommand
+      #     def call
+      #       puts "Hello World!"
+      #     end
+      #   end
+      #
+      # @since unreleased
+      def puts(*args)
+        stdout.puts(*args)
+      end
+
+      # Writes to {#stdout}, rather than to the program's own output
+      #
+      # @see #puts
+      #
+      # @since unreleased
+      def print(*args)
+        stdout.print(*args)
+      end
     end
   end
 end

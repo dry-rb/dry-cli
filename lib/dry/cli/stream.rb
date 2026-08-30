@@ -1,0 +1,109 @@
+# frozen_string_literal: true
+
+require "delegate"
+
+module Dry
+  class CLI
+    # A stream commands write to, which renders the styled text it is given
+    #
+    # A stream is the only thing that knows both what is being written and what it can show,
+    # so it is the thing that turns styles into escape sequences. Two streams from the one
+    # program can answer differently, which is how a stream that has been redirected gets
+    # plain text while the terminal beside it keeps its color.
+    #
+    # Everything else is passed to the stream underneath, so this behaves as the stream you
+    # gave us in every other way. To write to it without any of this, see {#raw}.
+    #
+    # @api public
+    # @since x.y.z
+    class Stream < SimpleDelegator
+      # The character every escape sequence we render begins with
+      #
+      # @api private
+      ESCAPE = "\e"
+
+      # Returns a stream that renders what is written to it
+      #
+      # @param stream [IO] the stream to write to
+      #
+      # @return [Dry::CLI::Stream]
+      #
+      # @api private
+      def self.for(stream)
+        stream.is_a?(self) ? stream : new(stream)
+      end
+
+      # @api private
+      def puts(*args)
+        __getobj__.puts(*render(args))
+      end
+
+      # @api private
+      def print(*args)
+        __getobj__.print(*render(args))
+      end
+
+      # @api private
+      def write(*args)
+        __getobj__.write(*render(args))
+      end
+
+      # @api private
+      def printf(format, *args)
+        __getobj__.printf(render_value(format), *render(args))
+      end
+
+      # @api private
+      def <<(text)
+        __getobj__ << render_value(text)
+        self
+      end
+
+      # The stream underneath, to write to directly
+      #
+      # Everything written through this stream is rendered for it, which is the wrong thing
+      # when you have written the escape sequences yourself: a progress bar, say, or moving
+      # the cursor about. Writing to this leaves what you write exactly as it is.
+      #
+      # @example
+      #   stdout.raw.print "\e[2K\r"
+      #
+      # @return [IO] the stream this one was made for
+      #
+      # @api public
+      # @since x.y.z
+      def raw
+        __getobj__
+      end
+
+      # How much color this stream can show, or `nil` when it should show none
+      #
+      # @api private
+      def color_level
+        Style.level_for(__getobj__)
+      end
+
+      private
+
+      def render(args)
+        args.map { |arg| render_value(arg) }
+      end
+
+      # Styled text is rendered for this stream. A string has already been rendered by someone
+      # else, so the most we can do is take styling out again when this stream can't show it —
+      # which leaves a forced `--color=always` alone, because that gives us a level to render
+      # at.
+      def render_value(value)
+        case value
+        when Style::Text then value.render(color_level)
+        when Array then value.map { |element| render_value(element) }
+        when String
+          # Most of what a program writes has no styling in it, so look before rewriting it:
+          # searching for one character beats a scan for escape sequences that aren't there.
+          color_level.nil? && value.include?(ESCAPE) ? Style.unstyle(value) : value
+        else value
+        end
+      end
+    end
+  end
+end

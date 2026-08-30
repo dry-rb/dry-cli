@@ -30,4 +30,59 @@ RSpec.describe "Command" do
       expect(op.desc).to eq("2")
     end
   end
+
+  describe "writing output" do
+    let(:command) do
+      Class.new(Dry::CLI::Command) do
+        def call(**)
+          puts "to stdout"
+          print "and more"
+        end
+      end
+    end
+
+    it "sends #puts and #print to the stream the command was given, not $stdout" do
+      out = StringIO.new
+
+      command.new(stdout: out).call
+
+      expect(out.string).to eq "to stdout\nand more"
+    end
+
+    it "keeps them out of the command's public interface, as Kernel does" do
+      expect(command.new).to_not respond_to(:puts)
+      expect(command.new).to_not respond_to(:print)
+    end
+  end
+
+  describe "streams" do
+    let(:command) do
+      Class.new(Dry::CLI::Command) do
+        def call(**) = puts("written")
+      end
+    end
+
+    it "writes to the stream it was given" do
+      out = StringIO.new
+
+      command.new(stdout: out).call
+
+      expect(out.string).to eq "written\n"
+    end
+
+    it "follows the program's own output when it was given none" do
+      instance = command.new
+      swapped = StringIO.new
+      original = $stdout
+
+      begin
+        $stdout = swapped
+        instance.call
+      ensure
+        $stdout = original
+      end
+
+      expect(swapped.string).to eq "written\n"
+    end
+  end
 end
