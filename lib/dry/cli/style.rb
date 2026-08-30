@@ -98,8 +98,19 @@ module Dry
       # @api private
       COMPONENT_RANGE = (0..255)
 
+      # @api private
+      Unchecked = Object.new.freeze
+      private_constant :Unchecked
+
       @enabled = nil
       @color_level = nil
+
+      # Memoized values
+      @env_enabled = Unchecked
+      @detected_level = nil
+      @checked_stdout = nil
+      @stdout_enabled = nil
+
       class << self
         # Enable or disable styling for the whole program
         #
@@ -113,7 +124,10 @@ module Dry
         #
         # @api public
         # @since x.y.z
-        attr_writer :enabled
+        def enabled=(enabled)
+          @enabled = enabled
+          forget_environment
+        end
 
         # Whether styling is currently enabled for the program's own output
         #
@@ -125,7 +139,11 @@ module Dry
         # @api public
         # @since x.y.z
         def enabled?
-          enabled_for?($stdout)
+          out = $stdout
+          return @stdout_enabled if @checked_stdout.equal?(out)
+
+          @checked_stdout = out
+          @stdout_enabled = enabled_for?(out)
         end
 
         # Whether styling is enabled for the given stream
@@ -139,10 +157,8 @@ module Dry
           enabled = @enabled
           return enabled unless enabled.nil?
 
-          return false unless ENV.fetch("NO_COLOR", "").empty?
-
-          forced = ENV["FORCE_COLOR"]
-          return !%w[0 false].include?(forced.downcase) unless forced.nil?
+          from_env = env_enabled
+          return from_env unless from_env.nil?
 
           stream.respond_to?(:tty?) && stream.tty?
         end
@@ -169,6 +185,7 @@ module Dry
           end
 
           @color_level = level
+          forget_environment
         end
 
         # How much color styles will currently render with
@@ -183,7 +200,7 @@ module Dry
         def color_level
           return ColorLevel::NONE unless enabled?
 
-          @color_level || ColorLevel.detect
+          @color_level || detected_level
         end
 
         # How much color to render for the given stream, or `nil` for no styling at all
@@ -200,7 +217,7 @@ module Dry
         def level_for(stream)
           return nil unless enabled_for?(stream)
 
-          @color_level || ColorLevel.detect
+          @color_level || detected_level
         end
 
         # How much color to render when we don't know which stream the text is bound for
@@ -214,7 +231,7 @@ module Dry
         def default_level
           return nil unless enabled?
 
-          @color_level || ColorLevel.detect
+          @color_level || detected_level
         end
 
         # Remove all style escape sequences from the given text
@@ -230,6 +247,35 @@ module Dry
         # @since x.y.z
         def unstyle(text)
           text.to_s.gsub(SGR_PATTERN, "")
+        end
+
+        private
+
+        # Returns whether an explicit env var has turned styling on or off.
+        def env_enabled
+          return @env_enabled unless @env_enabled.eql?(Unchecked)
+
+          @env_enabled = detect_env_enabled
+        end
+
+        def detect_env_enabled
+          return false unless ENV.fetch("NO_COLOR", "").empty?
+
+          forced = ENV["FORCE_COLOR"]
+          return !%w[0 false].include?(forced.downcase) unless forced.nil?
+
+          nil
+        end
+
+        # Returns the color level a terminal can support, based on the environment.
+        def detected_level
+          @detected_level ||= ColorLevel.detect
+        end
+
+        def forget_environment
+          @env_enabled = Unchecked
+          @detected_level = nil
+          @checked_stdout = nil
         end
       end
 
