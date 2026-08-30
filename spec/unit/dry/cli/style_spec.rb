@@ -314,7 +314,7 @@ RSpec.describe Dry::CLI::Style do
     it "detects from the environment when unpinned" do
       described_class.color_level = nil
 
-      with_env("COLORTERM" => "truecolor") do
+      with_env("COLORTERM" => "truecolor", "TERM" => "xterm") do
         expect(described_class.color_level).to eq :truecolor
       end
     end

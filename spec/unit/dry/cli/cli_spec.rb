@@ -256,12 +256,11 @@ RSpec.describe "CLI" do
     let(:terminal) { StringIO.new.tap { |io| def io.tty? = true } }
     let(:file) { StringIO.new }
 
+    # Pin color_level so we can rely on which escape sequences to test for below.
     around do |example|
-      forced = ENV.delete("FORCE_COLOR")
-      Dry::CLI::Style.enabled = nil
+      Dry::CLI::Style.color_level = :ansi16
       example.run
-      ENV["FORCE_COLOR"] = forced if forced
-      Dry::CLI::Style.enabled = nil
+      Dry::CLI::Style.color_level = nil
     end
 
     it "styles a terminal and leaves the stream redirected alongside it plain" do
