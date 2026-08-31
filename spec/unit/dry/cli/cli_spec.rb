@@ -8,6 +8,7 @@ RSpec.describe "CLI" do
       include_examples "Subcommands", WithRegistry
       include_examples "Inherited commands", WithBlock
       include_examples "Third-party gems", WithRegistry
+      include_examples "External params", WithRegistry
     end
 
     context "passing block" do
@@ -16,6 +17,7 @@ RSpec.describe "CLI" do
       include_examples "Subcommands", WithBlock
       include_examples "Inherited commands", WithBlock
       include_examples "Third-party gems", WithBlock
+      include_examples "External params", WithBlock
     end
 
     context "passing block with no arguments" do
@@ -24,6 +26,7 @@ RSpec.describe "CLI" do
       include_examples "Subcommands", WithZeroArityBlock
       include_examples "Inherited commands", WithZeroArityBlock
       include_examples "Third-party gems", WithZeroArityBlock
+      include_examples "External params", WithZeroArityBlock
     end
   end
 

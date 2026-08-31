@@ -12,7 +12,21 @@ RSpec.describe "Command" do
       expect(opts.size).to eq(1)
       op = opts.first
       expect(op.name).to eq(:engine)
-      expect(op.desc).to eq("2: (test1/test2/test3)")
+      expect(op.desc).to eq("2: (test1, test2, test3)")
+    end
+  end
+
+  describe "long description definition" do
+    class CommandWithLongDesc < Dry::CLI::Command
+      desc "Short description"
+      long_desc "A much longer description of what this command does"
+    end
+
+    it "stores the long description separately from the short one" do
+      expect(CommandWithLongDesc.description).to eq("Short description")
+      expect(CommandWithLongDesc.long_description).to eq(
+        "A much longer description of what this command does"
+      )
     end
   end
 

@@ -89,4 +89,16 @@ WithZeroArityBlock = Dry.CLI do
   after "callbacks",  Callbacks::AfterClass
   before "callbacks", Callbacks::Before.new
   after "callbacks",  Callbacks::After.new
+  before "callbacks", ->(url:) { puts "before callback (lambda), url: #{url.inspect}" }
+  after "callbacks",  ->(url:) { puts "after callback (lambda), url: #{url.inspect}" }
+
+  register "externally-extended", ExternallyExtended::Command
+
+  after "externally-extended", ExternallyExtended::Callback
+  option "externally-extended", :skip_tests, type: :flag, default: false,
+    desc: "Skip test generation"
+
+  before("externally-extended") do |args|
+    puts "before block: skip_tests: #{args.fetch(:skip_tests)}"
+  end
 end

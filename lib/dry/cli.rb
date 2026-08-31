@@ -21,6 +21,7 @@ module Dry
     require "dry/cli/spell_checker"
     require "dry/cli/banner"
     require "dry/cli/inflector"
+    require "dry/cli/dispatch"
 
     # Check if command
     #
@@ -128,7 +129,7 @@ module Dry
     # @api private
     def perform_command(arguments)
       command, args = parse(kommand, arguments, [])
-      command.call(**args)
+      command.call(**Dispatch.command_args_for(command, args))
     end
 
     # Invoke the CLI if registry passed
@@ -146,7 +147,7 @@ module Dry
       return stderr.puts(Usage.call(result)) unless command.respond_to?(:call)
 
       result.before_callbacks.run(command, **args)
-      command.call(**args)
+      command.call(**Dispatch.command_args_for(command, args))
       result.after_callbacks.run(command, **args)
     end
 
@@ -167,7 +168,7 @@ module Dry
 
       result = Parser.call(command, arguments, prog_name)
 
-      return help(command, prog_name) if result.help?
+      return help(command, prog_name, long: result.long_help?) if result.help?
 
       return error(result) if result.error?
 
@@ -190,8 +191,8 @@ module Dry
 
     # @since 0.6.0
     # @api private
-    def help(command, prog_name)
-      stdout.puts Banner.call(command, prog_name)
+    def help(command, prog_name, long: false)
+      stdout.puts Banner.call(command, prog_name, long: long)
       exit(0) # Successful exit
     end
 

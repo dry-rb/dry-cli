@@ -87,4 +87,17 @@ WithBlock = Dry::CLI.new do |cli|
   cli.after "callbacks",  Callbacks::AfterClass
   cli.before "callbacks", Callbacks::Before.new
   cli.after "callbacks",  Callbacks::After.new
+  cli.before "callbacks", ->(url:) { puts "before callback (lambda), url: #{url.inspect}" }
+  cli.after "callbacks",  ->(url:) { puts "after callback (lambda), url: #{url.inspect}" }
+
+  cli.register "externally-extended", ExternallyExtended::Command
+
+  # The same declarations `with_registry.rb` makes, as two bundled gems adding the same option would
+  cli.after "externally-extended", ExternallyExtended::Callback
+  cli.option "externally-extended", :skip_tests, type: :flag, default: false,
+    desc: "Skip test generation"
+
+  cli.before("externally-extended") do |args|
+    puts "before block: skip_tests: #{args.fetch(:skip_tests)}"
+  end
 end

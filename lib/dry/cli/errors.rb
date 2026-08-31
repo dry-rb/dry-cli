@@ -39,8 +39,8 @@ module Dry
         if @value.nil? && @argument
           "ERROR: \"#{@argument.name}\" is required"
         elsif @argument
-          accepted = @argument.values
-          "ERROR: invalid argument \"#{@value}\" for \"#{@argument.name}\"; accepted values: #{accepted.join(', ')}"
+          "ERROR: invalid argument \"#{@value}\" for \"#{@argument.name}\"; " \
+            "accepted values: #{@argument.values_description}"
         else
           "ERROR: invalid argument \"#{@value}\""
         end
@@ -70,6 +70,22 @@ module Dry
       # @api private
       def initialize(command_name)
         super("unknown command: `#{command_name}'")
+      end
+    end
+
+    # Raised when an option is added to a command that already declares one with the same name,
+    # but with an incompatible declaration.
+    #
+    # Adding the very same option twice is allowed, so that independent third-party gems can each
+    # contribute the option they need without having to coordinate.
+    #
+    # @api public
+    # @since NEXT
+    class IncompatibleOptionError < Error
+      # @api private
+      def initialize(command_name, name, incompatible_option_names)
+        super("`#{name}' is already declared for command `#{command_name}' " \
+              "with a different #{incompatible_option_names.join(", ")}")
       end
     end
 

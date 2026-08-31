@@ -160,6 +160,16 @@ RSpec.shared_examples "Commands" do |cli|
         output = capture_output { cli.call(arguments: %w[exec test api admin]) }
         expect(output).to eq("exec - Task: test - Directories: [\"api\", \"admin\"]\n")
       end
+
+      it "captures repeated array options" do
+        output = capture_output { cli.call(arguments: %w[server --deps=dep42 --deps=dep43]) }
+
+        if RUBY_VERSION < "3.4"
+          expect(output).to eq("server - {:code_reloading=>true, :deps=>[\"dep42\", \"dep43\"]}\n")
+        else
+          expect(output).to eq("server - {code_reloading: true, deps: [\"dep42\", \"dep43\"]}\n")
+        end
+      end
     end
 
     context "with supported values" do
@@ -174,6 +184,25 @@ RSpec.shared_examples "Commands" do |cli|
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[console --engine=unknown]) }
           expect(error).to eq("ERROR: \"rspec console\" was called with invalid argument \"--engine=unknown\"\n")
+        end
+      end
+
+      context "and the option is an array" do
+        it "returns an array for a single value" do
+          output = capture_output { cli.call(arguments: %w[console --require=foo]) }
+          expect(output).to eq("console - engine: \nconsole - require: [\"foo\"]\n")
+        end
+
+        it "returns an array for comma-separated values" do
+          output = capture_output { cli.call(arguments: %w[console --require=foo,bar]) }
+          expect(output).to eq("console - engine: \nconsole - require: [\"foo\", \"bar\"]\n")
+        end
+
+        it "prints error when one of the values is unsupported" do
+          error = capture_error { cli.call(arguments: %w[console --require=foo,unknown]) }
+          expect(error).to eq(
+            "ERROR: invalid argument \"[\"foo\", \"unknown\"]\" for \"require\"; accepted values: foo, bar, baz\n"
+          )
         end
       end
 

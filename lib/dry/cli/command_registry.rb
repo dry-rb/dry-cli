@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "dry/cli/dispatch"
+
 module Dry
   class CLI
     # Command registry
@@ -255,7 +257,7 @@ module Dry
         # @api private
         def run(context, **args)
           chain.each do |callback|
-            context.instance_exec(**args, &callback)
+            context.instance_exec(**Dispatch.args_for(callback, args), &callback)
           end
         end
       end

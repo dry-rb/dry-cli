@@ -17,12 +17,14 @@ module Commands
   class Console < Dry::CLI::Command
     desc "Starts Foo console"
     option :engine, desc: "Force a console engine", values: %w[irb pry ripl]
+    option :require, desc: "Libraries to require", type: :array, values: %w[foo bar baz]
 
     example "", "Uses the bundled engine"
     example "--engine=pry", "Force to use Pry"
 
-    def call(engine: nil, **)
+    def call(engine: nil, **options)
       puts "console - engine: #{engine}"
+      puts "console - require: #{options[:require].inspect}" if options.key?(:require)
     end
   end
 
@@ -481,6 +483,25 @@ module Webpack
       def call(dir:, url: nil, **)
         puts "dir: #{dir}, url: #{url.inspect}"
       end
+    end
+  end
+end
+
+# These deliberately declare no `**`, to be sure a command and a hook only need their own params
+module ExternallyExtended
+  class Command < Dry::CLI::Command
+    desc "Command extended by third parties"
+    argument :name, required: true, desc: "The name"
+    option :quiet, type: :flag, default: false, desc: "Be quiet"
+
+    def call(name:, quiet:)
+      puts "command: name: #{name}, quiet: #{quiet}"
+    end
+  end
+
+  class Callback
+    def call(skip_tests:)
+      puts "callback: skip_tests: #{skip_tests}"
     end
   end
 end
