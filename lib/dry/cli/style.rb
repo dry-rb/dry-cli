@@ -535,8 +535,11 @@ module Dry
         opening = sequence_for(level)
         return text if opening.empty?
 
-        # Reopen our own sequence after any nested reset, so you can nest styled text
-        "#{opening}#{text.gsub(RESET, RESET + opening)}#{RESET}"
+        # Text that arrived with styling in it has resets of its own, and each would end ours
+        # early. Reopen after them, so styled text can be nested.
+        return "#{opening}#{text.gsub(RESET, RESET + opening)}#{RESET}" if text.include?(RESET)
+
+        "#{opening}#{text}#{RESET}"
       end
       alias_method :[], :call
 
