@@ -62,25 +62,42 @@ RSpec.describe "Command" do
       end
     end
 
-    it "writes to the stream it was given" do
+    it "writes everything to the stream it was given" do
       out = StringIO.new
+      instance = command.new(stdout: out)
 
-      command.new(stdout: out).call
+      instance.call
+      instance.call
 
-      expect(out.string).to eq "written\n"
+      expect(out.string).to eq "written\nwritten\n"
     end
 
-    it "follows the program's own output when it was given none" do
+    it "renders styled text for the stream it was given, not the Ruby default output" do
+      out = StringIO.new
+      styling = Class.new(Dry::CLI::Command) do
+        def call(**) = puts(Dry::CLI::Style.bold.red["Uh oh"])
+      end
+
+      # A terminal for the program's own output, so styling would be rendered if we went by
+      # that instead of by the stream this command was given
+      terminal = StringIO.new.tap { |io| def io.tty? = true }
+      with_stdout(terminal) { styling.new(stdout: out).call }
+
+      expect(out.string).to eq "Uh oh\n"
+    end
+
+    it "follows the Ruby default output when it changes between writes" do
+      instance = command.new
+
+      expect { instance.call }.to output("written\n").to_stdout
+      expect { instance.call }.to output("written\n").to_stdout
+    end
+
+    it "writes to the Ruby default output when given none" do
       instance = command.new
       swapped = StringIO.new
-      original = $stdout
 
-      begin
-        $stdout = swapped
-        instance.call
-      ensure
-        $stdout = original
-      end
+      with_stdout(swapped) { instance.call }
 
       expect(swapped.string).to eq "written\n"
     end

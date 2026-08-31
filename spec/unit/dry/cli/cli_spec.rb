@@ -243,6 +243,60 @@ RSpec.describe "CLI" do
     end
   end
 
+  context "commands registered as instances" do
+    let(:command) do
+      Class.new(Dry::CLI::Command) do
+        def call(**) = puts("wrote it")
+      end
+    end
+
+    it "writes to the streams the CLI was given" do
+      out = StringIO.new
+      cli = Dry.CLI { |c| c.register "run", command.new }
+
+      cli.call(arguments: %w[run], stdout: out, stderr: StringIO.new)
+
+      expect(out.string).to eq "wrote it\n"
+    end
+
+    it "writes to the CLI's streams, even when built with a stream of its own" do
+      cmd_stdout = StringIO.new
+      cli_stdout = StringIO.new
+      cli = Dry.CLI { |c| c.register "run", command.new(stdout: cmd_stdout) }
+
+      cli.call(arguments: %w[run], stdout: cli_stdout, stderr: StringIO.new)
+
+      expect(cli_stdout.string).to eq "wrote it\n"
+      expect(cmd_stdout.string).to be_empty
+    end
+
+    it "leaves the registered command as it found it" do
+      instance = command.new
+      cli_stdout = StringIO.new
+      cli = Dry.CLI { |c| c.register "run", instance }
+
+      cli.call(arguments: %w[run], stdout: cli_stdout, stderr: StringIO.new)
+      direct_stdout = capture_output { instance.call }
+
+      # Had we set the streams on the registered command itself, this second call would have gone to
+      # the CLI's stream too
+      expect(direct_stdout).to eq "wrote it\n"
+      expect(cli_stdout.string).to eq "wrote it\n"
+    end
+
+    it "uses the streams given for each run" do
+      cli = Dry.CLI { |c| c.register "run", command.new }
+      first_stdout = StringIO.new
+      second_stdout = StringIO.new
+
+      cli.call(arguments: %w[run], stdout: first_stdout, stderr: StringIO.new)
+      cli.call(arguments: %w[run], stdout: second_stdout, stderr: StringIO.new)
+
+      expect(first_stdout.string).to eq "wrote it\n"
+      expect(second_stdout.string).to eq "wrote it\n"
+    end
+  end
+
   context "styling" do
     let(:command) do
       Class.new(Dry::CLI::Command) do

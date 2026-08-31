@@ -16,6 +16,15 @@ module RSpec
         $stdout = original_stdout
       end
 
+      # Runs the block with `$stdout` swapped for the given stream, then puts it back
+      def with_stdout(stream)
+        original = $stdout
+        $stdout = stream
+        yield
+      ensure
+        $stdout = original
+      end
+
       # Runs the block with the given environment variables set, then puts ENV back
       def with_env(vars)
         original = ENV.to_hash

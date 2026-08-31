@@ -110,15 +110,12 @@ module Dry
     # @api private
     attr_reader :kommand
 
-    # @since 0.6.0
     # @api private
     attr_reader :stderr
 
-    # @since unreleased
     # @api private
     attr_reader :stdin
 
-    # @since 0.6.0
     # @api private
     attr_reader :stdout
 
@@ -180,8 +177,13 @@ module Dry
     # @since 0.6.0
     # @api private
     def build_command(command)
-      return command unless command.is_a?(Class)
-      return command.new(stderr: stderr, stdin: stdin, stdout: stdout) if CLI.command?(command)
+      unless command.is_a?(Class)
+        return command unless command.is_a?(Command)
+
+        return command.with_streams(stderr:, stdin:, stdout:)
+      end
+
+      return command.new(stderr:, stdin:, stdout:) if CLI.command?(command)
 
       command.new
     end

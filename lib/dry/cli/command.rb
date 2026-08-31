@@ -2,6 +2,7 @@
 
 require "forwardable"
 require "dry/cli/option"
+require "dry/cli/stream"
 require "dry/cli/style_mixin"
 
 module Dry
@@ -403,12 +404,24 @@ module Dry
         superclass_variable_dup(:@options)
       end
 
-      # @since unreleased
-      # @api private
+      # @since x.y.z
+      # @api public
       def initialize(stderr: nil, stdin: nil, stdout: nil)
         @stderr = stderr
         @stdin  = stdin
         @stdout = stdout
+        @stderr_stream = nil
+        @stdout_stream = nil
+      end
+
+      # Returns a copy of this command, configured to write to the given streams.
+      #
+      # Called on a command registered as an instance, since it is constructed before the CLI is
+      # invoked, and therefore before it knows where its output should go.
+      #
+      # @api private
+      def with_streams(stderr:, stdin:, stdout:)
+        dup.set_streams(stderr:, stdin:, stdout:)
       end
 
       extend Forwardable
@@ -430,6 +443,8 @@ module Dry
 
       # The error output used to print error messaging
       #
+      # @return [Dry::CLI::Stream] for the stream given to this command, or `$stderr`
+      #
       # @example
       #   class MyCommand
       #     def call
@@ -441,13 +456,19 @@ module Dry
       #     end
       #   end
       #
-      # @since unreleased
-      # @return [IO] the stream given to this command, or `$stderr`
+      # @since x.y.z
       def stderr
-        @stderr || $stderr
+        # When we haven't been given an underlying stream, build a new one for $stderr each time,
+        # since it can be swapped out from under us. This is the case only when testing commands in
+        # isolation; when the CLI runs normally, we have a real @stderr set.
+        return Stream.for($stderr) unless @stderr
+
+        @stderr_stream ||= Stream.for(@stderr)
       end
 
       # The standard input stream used for reading input
+      #
+      # @return [IO] the stream given to this command, or `$stdin`
       #
       # @example
       #   class MyCommand
@@ -457,13 +478,14 @@ module Dry
       #     end
       #   end
       #
-      # @since unreleased
-      # @return [IO] the stream given to this command, or `$stdin`
+      # @since x.y.z
       def stdin
         @stdin || $stdin
       end
 
       # The standard output stream used for normal output
+      #
+      # @return [Dry::CLI::Stream] for the stream given to this command, or `$stdout`
       #
       # @example
       #   class MyCommand
@@ -472,10 +494,27 @@ module Dry
       #     end
       #   end
       #
-      # @since unreleased
-      # @return [IO] the stream given to this command, or `$stdout`
+      # @since x.y.z
       def stdout
-        @stdout || $stdout
+        # When we haven't been given an underlying stream, build a new one for $stdout each time,
+        # since it can be swapped out from under us. This is the case only when testing commands in
+        # isolation; when the CLI runs normally, we have a real @stdout set.
+        return Stream.for($stdout) unless @stdout
+
+        @stdout_stream ||= Stream.for(@stdout)
+      end
+
+      # @see #with_streams
+      #
+      # @api private
+      def set_streams(stderr:, stdin:, stdout:)
+        @stderr = stderr
+        @stdin = stdin
+        @stdout = stdout
+        @stderr_stream = nil
+        @stdout_stream = nil
+
+        self
       end
 
       private
