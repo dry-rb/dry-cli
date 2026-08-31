@@ -24,6 +24,8 @@ module Dry
 
       # Returns a stream that renders what is written to it
       #
+      # A stream we have already wrapped is given back as it is.
+      #
       # @param stream [IO] the stream to write to
       #
       # @return [Dry::CLI::Stream]

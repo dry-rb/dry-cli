@@ -519,11 +519,11 @@ module Dry
 
       private
 
-      # Writes to {#stdout}, rather than to the program's own output
+      # Writes to the command's own {#stdout}, rather than the default `$stdout`.
       #
-      # Commands are given the streams they write to, so `puts` inside one goes to the stream
-      # this command was given, not to `$stdout`. That's what keeps styling right when the two
-      # differ: text written here is styled for the stream it lands on.
+      # Commands are given the streams they write to, so `puts` inside one goes to the stream this
+      # command was given, not to `$stdout`. That's what keeps styling right when the two differ:
+      # text written here is styled for the stream it lands on.
       #
       # @example
       #   class MyCommand
@@ -532,16 +532,16 @@ module Dry
       #     end
       #   end
       #
-      # @since unreleased
+      # @since x.y.z
       def puts(*args)
         stdout.puts(*args)
       end
 
-      # Writes to {#stdout}, rather than to the program's own output
+      # Writes to the command's own {#stdout}, rather than the default `$stdout`.
       #
       # @see #puts
       #
-      # @since unreleased
+      # @since x.y.z
       def print(*args)
         stdout.print(*args)
       end

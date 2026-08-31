@@ -20,7 +20,7 @@ module Dry
       # Register a command
       #
       # @param name [String] the command name
-      # @param command [NilClass,Dry::CLI::Command] the optional command
+      # @param command [Dry::CLI::Command, nil] the optional command
       # @param aliases [Array<String>] an optional list of aliases
       # @param options [Hash] a set of options
       #

@@ -26,7 +26,7 @@ module Dry
     #
     # @param command [Object] the command to check
     #
-    # @return [TrueClass,FalseClass] true if instance of `Dry::CLI::Command`
+    # @return [Boolean] true if instance of `Dry::CLI::Command`
     #
     # @since 0.1.0
     # @api private
@@ -38,7 +38,7 @@ module Dry
     #
     # @param namespace [Object] the namespace to check
     #
-    # @return [TrueClass,FalseClass] true if instance of `Dry::CLI::Namespace`
+    # @return [Boolean] true if instance of `Dry::CLI::Namespace`
     #
     # @since 1.1.1
     # @api private
@@ -51,7 +51,7 @@ module Dry
     # @param obj [Object] object to check
     # @param klass [Object] class that should be inherited
     #
-    # @return [TrueClass,FalseClass] true if `obj` inherits from `klass`
+    # @return [Boolean] true if `obj` inherits from `klass`
     #
     # @since 1.1.1
     # @api private
@@ -223,7 +223,7 @@ module Dry
     #
     # @param command [Object] the command to check
     #
-    # @return [TrueClass,FalseClass] true if instance of `Dry::CLI::Command`
+    # @return [Boolean] true if instance of `Dry::CLI::Command`
     #
     # @since 0.1.0
     # @api private
