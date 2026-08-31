@@ -57,7 +57,7 @@ module Dry
           freeze
         end
 
-        # Renders the text at the given color level
+        # Returns the text rendered with styles for the given color level.
         #
         # @param level [Symbol, nil] a color level, or `nil` for no styling at all
         #
@@ -65,7 +65,22 @@ module Dry
         #
         # @api private
         def render(level)
+          return plain if level.nil?
+
           parts.map { |style, text| render_part(style, text, level) }.join
+        end
+
+        # Returns the text on its own, with no styles applied.
+        #
+        # Use this as the fast path to render text when styling has been disabled.
+        #
+        # @return [String]
+        #
+        # @api private
+        def plain
+          return plain_text(parts.first.last) if parts.one?
+
+          parts.map { |_style, text| plain_text(text) }.join
         end
 
         # Renders the text for the program's default stream
@@ -168,6 +183,11 @@ module Dry
         end
 
         private
+
+        # @api private
+        def plain_text(text)
+          text.is_a?(Text) ? text.plain : text.to_s
+        end
 
         # @api private
         def render_part(style, text, level)
