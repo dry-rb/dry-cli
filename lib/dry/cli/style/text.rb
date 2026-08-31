@@ -66,6 +66,7 @@ module Dry
         # @api private
         def render(level)
           return plain if level.nil?
+          return render_part(*parts.first, level) if parts.one?
 
           parts.map { |style, text| render_part(style, text, level) }.join
         end
