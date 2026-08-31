@@ -17,11 +17,6 @@ module Dry
     # @api public
     # @since x.y.z
     class Stream < SimpleDelegator
-      # The character every escape sequence we render begins with
-      #
-      # @api private
-      ESCAPE = "\e"
-
       # Returns a stream that renders what is written to it
       #
       # A stream we have already wrapped is given back as it is.
@@ -124,7 +119,7 @@ module Dry
         when String
           # Most of what a program writes has no styling in it, so look before rewriting it:
           # searching for one character beats a scan for escape sequences that aren't there.
-          color_level.nil? && value.include?(ESCAPE) ? Style.unstyle(value) : value
+          color_level.nil? && value.include?(Style::ESCAPE) ? Style.unstyle(value) : value
         else value
         end
       end

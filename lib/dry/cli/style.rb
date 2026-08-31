@@ -54,6 +54,11 @@ module Dry
       # @api private
       RESET = "\e[0m"
 
+      # The character every escape sequence we emit begins with
+      #
+      # @api private
+      ESCAPE = "\e"
+
       # Pattern matching the ANSI escape sequences we emit
       #
       # @api private
@@ -520,15 +525,13 @@ module Dry
       # Renders the given text at the given color level
       #
       # @param text [String] the text to style
-      # @param level [Symbol, nil] a color level, or `nil` for no styling at all
+      # @param level [Symbol] a color level
       #
       # @return [String]
       #
       # @api private
       def render(text, level)
         text = text.to_s
-        return Style.unstyle(text) if level.nil?
-
         opening = sequence_for(level)
         return text if opening.empty?
 
