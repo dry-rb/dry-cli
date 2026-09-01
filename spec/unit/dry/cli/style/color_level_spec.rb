@@ -80,11 +80,6 @@ RSpec.describe Dry::CLI::Style::ColorLevel do
           expect(detect("TERM" => term)).to eq :ansi16
         end
       end
-
-      it "detects the legacy Windows ANSI shims" do
-        expect(detect("ConEmuANSI" => "ON")).to eq :ansi16
-        expect(detect("ANSICON" => "1")).to eq :ansi16
-      end
     end
 
     context "no color" do

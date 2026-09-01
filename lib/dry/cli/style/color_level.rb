@@ -62,13 +62,6 @@ module Dry
         # Set by Windows Terminal, which sets no `TERM`.
         WINDOWS_TRUECOLOR = "WT_SESSION"
 
-        # Set by the tools that added ANSI support to Windows before Windows had its own.
-        #
-        # These, and the one above, are the only terminals we match by name. The rest of this module
-        # goes by `TERM` and `COLORTERM`, which are Unix conventions, and Windows consoles set
-        # neither. This list will not grow: both tools stopped shipping years ago.
-        WINDOWS_ANSI = %w[ConEmuANSI ANSICON].freeze
-
         class << self
           # Returns the color level of the terminal.
           #
@@ -87,7 +80,7 @@ module Dry
             # the eighties. An empty `TERM` leaves us nothing to go on.
             return ANSI16 unless term.empty?
 
-            WINDOWS_ANSI.any? { |name| env.key?(name) } ? ANSI16 : NONE
+            NONE
           end
 
           # Returns whether the level is valid.
