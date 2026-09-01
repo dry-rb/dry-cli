@@ -100,7 +100,7 @@ module Dry
       #
       # @api private
       def color_level
-        Style.level_for(self)
+        Style.color_level_for(self)
       end
 
       private
@@ -109,10 +109,9 @@ module Dry
         args.map { |arg| render_value(arg) }
       end
 
-      # Styled text is rendered for this stream. A string has already been rendered by someone
-      # else, so the most we can do is take styling out again when this stream can't show it —
-      # which leaves a forced `--color=always` alone, because that gives us a level to render
-      # at.
+      # Styled text is rendered for this stream. A string has already been rendered by someone else,
+      # so the most we can do is take styling out again when this stream can't show it — which
+      # leaves a forced `--color=always` alone, because that gives us a color level to render at.
       def render_value(value)
         case value
         when Style::Text then value.render(color_level)

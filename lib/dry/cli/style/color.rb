@@ -28,12 +28,12 @@ module Dry
           @layer = layer
         end
 
-        # Returns the ANSI codes for this color at the given level
+        # Returns the ANSI codes for this color at the given color level
         #
-        # @param level [Symbol] a {Dry::CLI::Style::ColorLevel}
+        # @param color_level [Symbol] a {Dry::CLI::Style::ColorLevel}
         #
         # @return [Array<Integer>]
-        def codes(_level)
+        def codes(_color_level)
           raise NotImplementedError
         end
 
@@ -93,8 +93,8 @@ module Dry
             freeze
           end
 
-          def codes(level)
-            case level
+          def codes(color_level)
+            case color_level
             when ColorLevel::NONE then EMPTY
             when ColorLevel::ANSI8 then ansi_codes(index % 8)
             else ansi_codes(index)
@@ -126,11 +126,11 @@ module Dry
             freeze
           end
 
-          def codes(level)
-            case level
+          def codes(color_level)
+            case color_level
             when ColorLevel::NONE then EMPTY
             when ColorLevel::TRUECOLOR, ColorLevel::ANSI256 then [extended_code, 5, index]
-            else ansi_codes(nearest(level))
+            else ansi_codes(nearest(color_level))
             end
           end
 
@@ -146,10 +146,10 @@ module Dry
 
           private
 
-          def nearest(level)
+          def nearest(color_level)
             red, green, blue = Palette.rgb(index)
 
-            if level == ColorLevel::ANSI8
+            if color_level == ColorLevel::ANSI8
               Palette.nearest_base_ansi(red, green, blue)
             else
               Palette.nearest_ansi(red, green, blue)
@@ -161,7 +161,7 @@ module Dry
         #
         # This is the form you write most styles in, and the one that degrades furthest. Below
         # 24-bit we swap it for the closest color the terminal can show, taken from whatever
-        # palette that level leaves us.
+        # palette that color level leaves us.
         #
         # @api private
         class RGB < Color
@@ -175,8 +175,8 @@ module Dry
             freeze
           end
 
-          def codes(level)
-            case level
+          def codes(color_level)
+            case color_level
             when ColorLevel::NONE then EMPTY
             when ColorLevel::TRUECOLOR then [extended_code, 2, red, green, blue]
             when ColorLevel::ANSI256

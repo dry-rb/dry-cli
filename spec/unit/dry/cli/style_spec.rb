@@ -306,27 +306,27 @@ RSpec.describe Dry::CLI::Style do
     end
   end
 
-  describe ".level_for" do
+  describe ".color_level_for" do
     let(:terminal) { StringIO.new.tap { |io| def io.tty? = true } }
 
     it "can be pinned" do
       described_class.color_level = :ansi256
 
-      expect(described_class.level_for(terminal)).to eq :ansi256
+      expect(described_class.color_level_for(terminal)).to eq :ansi256
     end
 
     it "detects from the environment when unpinned" do
       described_class.color_level = nil
 
       with_env("COLORTERM" => "truecolor", "TERM" => "xterm") do
-        expect(described_class.level_for(terminal)).to eq :truecolor
+        expect(described_class.color_level_for(terminal)).to eq :truecolor
       end
     end
 
     it "is nil when styling is disabled" do
       described_class.enabled = false
 
-      expect(described_class.level_for(terminal)).to be_nil
+      expect(described_class.color_level_for(terminal)).to be_nil
     end
   end
 
@@ -352,40 +352,40 @@ RSpec.describe Dry::CLI::Style do
       let(:file) { StringIO.new }
 
       it "is disabled when not writing to a terminal" do
-        expect(described_class.level_for(file)).to be_nil
+        expect(described_class.color_level_for(file)).to be_nil
       end
 
       it "is enabled when writing to a terminal" do
-        expect(described_class.level_for(terminal)).to_not be_nil
+        expect(described_class.color_level_for(terminal)).to_not be_nil
       end
 
       it "is disabled when NO_COLOR is set" do
         with_env("NO_COLOR" => "1") do
-          expect(described_class.level_for(terminal)).to be_nil
+          expect(described_class.color_level_for(terminal)).to be_nil
         end
       end
 
       it "is enabled when NO_COLOR is empty" do
         with_env("NO_COLOR" => "") do
-          expect(described_class.level_for(terminal)).to_not be_nil
+          expect(described_class.color_level_for(terminal)).to_not be_nil
         end
       end
 
       it "is enabled when FORCE_COLOR is set, terminal or not" do
         with_env("FORCE_COLOR" => "1") do
-          expect(described_class.level_for(file)).to_not be_nil
+          expect(described_class.color_level_for(file)).to_not be_nil
         end
       end
 
       it "is disabled when FORCE_COLOR is set to 0" do
         with_env("FORCE_COLOR" => "0") do
-          expect(described_class.level_for(terminal)).to be_nil
+          expect(described_class.color_level_for(terminal)).to be_nil
         end
       end
 
       it "lets NO_COLOR win over FORCE_COLOR" do
         with_env("NO_COLOR" => "1", "FORCE_COLOR" => "3") do
-          expect(described_class.level_for(terminal)).to be_nil
+          expect(described_class.color_level_for(terminal)).to be_nil
         end
       end
     end

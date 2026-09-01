@@ -59,16 +59,16 @@ module Dry
 
         # Returns the text rendered with styles for the given color level.
         #
-        # @param level [Symbol, nil] a color level, or `nil` for no styling at all
+        # @param color_level [Symbol, nil] a color level, or `nil` for no styling at all
         #
         # @return [String]
         #
         # @api private
-        def render(level)
-          return plain if level.nil?
-          return render_part(*parts.first, level) if parts.one?
+        def render(color_level)
+          return plain if color_level.nil?
+          return render_part(*parts.first, color_level) if parts.one?
 
-          parts.map { |style, text| render_part(style, text, level) }.join
+          parts.map { |style, text| render_part(style, text, color_level) }.join
         end
 
         # Returns the text on its own, with no styles applied.
@@ -91,7 +91,7 @@ module Dry
         # @api public
         # @since x.y.z
         def to_s
-          render(Style.default_stdout_level)
+          render(Style.default_stdout_color_level)
         end
         alias_method :to_str, :to_s
 
@@ -191,9 +191,9 @@ module Dry
         end
 
         # @api private
-        def render_part(style, text, level)
-          rendered = text.is_a?(Text) ? text.render(level) : text.to_s
-          style.nil? ? rendered : style.render(rendered, level)
+        def render_part(style, text, color_level)
+          rendered = text.is_a?(Text) ? text.render(color_level) : text.to_s
+          style.nil? ? rendered : style.render(rendered, color_level)
         end
 
         # @api private

@@ -22,10 +22,10 @@ module Dry
 
         # Returns the ANSI codes for this attribute
         #
-        # @param _level [Symbol] ignored; attributes don't degrade
+        # @param _color_level [Symbol] ignored; attributes don't degrade
         #
         # @return [Array<Integer>]
-        def codes(_level)
+        def codes(_color_level)
           [code]
         end
 

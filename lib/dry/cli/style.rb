@@ -112,8 +112,8 @@ module Dry
 
       # Memoized values
       @env_enabled = Unchecked
-      @detected_level = nil
-      @levels = nil
+      @detected_color_level = nil
+      @color_levels = nil
       @default_stdout_object = nil
       @default_stdout_terminal = nil
 
@@ -140,23 +140,23 @@ module Dry
         # Set to `nil` (the default) to decide automatically from the environment. Set it
         # explicitly to honour a `--color` flag of your own, or to pin the output in tests.
         #
-        # @param level [Symbol, nil] `:truecolor`, `:ansi256`, `:ansi16`, `:ansi8`, `:none`
+        # @param color_level [Symbol, nil] `:truecolor`, `:ansi256`, `:ansi16`, `:ansi8`, `:none`
         #
-        # @raise [ArgumentError] if the level isn't one we know
+        # @raise [ArgumentError] if the color level isn't one we know
         #
         # @example
         #   Dry::CLI::Style.color_level = :truecolor
         #
         # @api public
         # @since x.y.z
-        def color_level=(level)
-          unless level.nil? || ColorLevel.valid?(level)
+        def color_level=(color_level)
+          unless color_level.nil? || ColorLevel.valid?(color_level)
             raise ArgumentError,
-              "unknown color level #{level.inspect}; " \
+              "unknown color level #{color_level.inspect}; " \
               "expected one of #{ColorLevel::ALL.map(&:inspect).join(', ')}, or nil"
           end
 
-          @color_level = level
+          @color_level = color_level
           forget_environment
         end
 
@@ -171,8 +171,8 @@ module Dry
         # @return [Symbol, nil]
         #
         # @api private
-        def level_for(stream)
-          levels[stream.tty?]
+        def color_level_for(stream)
+          color_levels[stream.tty?]
         end
 
         # How much color to render for text that hasn't reached a stream
@@ -183,8 +183,8 @@ module Dry
         # @return [Symbol, nil]
         #
         # @api private
-        def default_stdout_level
-          levels[default_stdout_terminal?]
+        def default_stdout_color_level
+          color_levels[default_stdout_terminal?]
         end
 
         # Remove all style escape sequences from the given text
@@ -221,21 +221,21 @@ module Dry
         end
 
         # Returns the color level a terminal can support, based on the environment.
-        def detected_level
-          @detected_level ||= ColorLevel.detect
+        def detected_color_level
+          @detected_color_level ||= ColorLevel.detect
         end
 
         # Returns a hash with the color levels to render at, keyed true for a terminal, and false
         # for anything else.
-        def levels
-          @levels ||= {
-            true => level_when(terminal: true),
-            false => level_when(terminal: false)
+        def color_levels
+          @color_levels ||= {
+            true => color_level_when(terminal: true),
+            false => color_level_when(terminal: false)
           }.freeze
         end
 
         # Returns the color level for a terminal or non-terminal stream.
-        def level_when(terminal:)
+        def color_level_when(terminal:)
           # Check for enabled/disabled styling, in order of precedence:
           #
           # 1. `Style.enabled`
@@ -246,7 +246,7 @@ module Dry
           # chaining these checks via `||` would skip straight past it.
           enabled = [@enabled, env_enabled, terminal].compact.first
 
-          @color_level || detected_level if enabled
+          @color_level || detected_color_level if enabled
         end
 
         def terminal?(stream)
@@ -267,8 +267,8 @@ module Dry
 
         def forget_environment
           @env_enabled = Unchecked
-          @detected_level = nil
-          @levels = nil
+          @detected_color_level = nil
+          @color_levels = nil
           @default_stdout_object = nil
         end
       end
@@ -285,8 +285,8 @@ module Dry
       # @api private
       def initialize(steps = [])
         @steps = steps.freeze
-        # Rendering a color means searching a palette for the closest match, so we keep each
-        # level's sequence once we have worked it out. Most programs ask for only one.
+        # Rendering a color means searching a palette for the closest match, so we keep the sequence
+        # for each color level once we have worked it out. Most programs ask for one.
         @sequences = {}
         freeze
       end
@@ -491,7 +491,7 @@ module Dry
 
       # Applies the style to the given text
       #
-      # We render colors at whatever level the terminal supports, so one style gives different
+      # We render colors at whatever color level the terminal supports, so one style gives different
       # escape sequences on different terminals. When styling is off, returns the text with any
       # styling stripped out.
       #
@@ -514,14 +514,14 @@ module Dry
       # Renders the given text at the given color level
       #
       # @param text [String] the text to style
-      # @param level [Symbol] a color level
+      # @param color_level [Symbol] a color level
       #
       # @return [String]
       #
       # @api private
-      def render(text, level)
+      def render(text, color_level)
         text = text.to_s
-        opening = sequence_for(level)
+        opening = sequence_for(color_level)
         return text if opening.empty?
 
         # Text that arrived with styling in it has resets of its own, and each would end ours
@@ -547,13 +547,13 @@ module Dry
 
       # Returns the ANSI codes this style renders as at the given color level
       #
-      # @param level [Symbol] a color level
+      # @param color_level [Symbol] a color level
       #
       # @return [Array<Integer>]
       #
       # @api private
-      def codes(level)
-        steps.flat_map { |step| step.codes(level) }
+      def codes(color_level)
+        steps.flat_map { |step| step.codes(color_level) }
       end
 
       # @api private
@@ -616,9 +616,9 @@ module Dry
         self.class.new(steps + [step])
       end
 
-      def sequence_for(level)
-        @sequences[level] ||= begin
-          codes = codes(level)
+      def sequence_for(color_level)
+        @sequences[color_level] ||= begin
+          codes = codes(color_level)
           codes.empty? ? "" : "\e[#{codes.join(";")}m"
         end
       end
