@@ -180,10 +180,20 @@ module Dry
 
         # @api private
         def inspect
-          "#<#{self.class.name} #{to_s.inspect}>"
+          "#<#{self.class.name}#{style_names} #{plain.inspect}>"
         end
 
         private
+
+        # Returns the unique set of styles this text renders with, for including in {#inspect}.
+        #
+        # Returns `"(bold.red, dim)"`, or `""` when it has none.
+        def style_names
+          names = parts.map(&:first).compact.map(&:to_s).reject(&:empty?).uniq
+          return "" if names.empty?
+
+          "(#{names.join(", ")})"
+        end
 
         def plain_text(text)
           text.is_a?(Text) ? text.plain : text.to_s

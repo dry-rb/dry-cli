@@ -577,11 +577,26 @@ module Dry
         [self.class, steps].hash
       end
 
+      # Returns the style's names, chained as they were built.
+      #
+      # A style with no steps has no names, and returns an empty string.
+      #
+      # @return [String]
+      #
+      # @example
+      #   Dry::CLI::Style.bold.red.to_s # => "bold.red"
+      #
+      # @api public
+      # @since x.y.z
+      def to_s
+        steps.map(&:to_s).join(".")
+      end
+
       # @api private
       def inspect
         return "#<#{self.class.name}>" if steps.empty?
 
-        "#<#{self.class.name} #{steps.map(&:to_s).join(".")}>"
+        "#<#{self.class.name} #{self}>"
       end
 
       private
