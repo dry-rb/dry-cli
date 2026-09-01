@@ -245,4 +245,102 @@ RSpec.describe "CLI" do
       expect(output.string).to eq("hello\n")
     end
   end
+
+  context "commands registered as instances" do
+    let(:command) do
+      Class.new(Dry::CLI::Command) do
+        def call(**) = puts("wrote it")
+      end
+    end
+
+    it "writes to the streams the CLI was given" do
+      out = StringIO.new
+      cli = Dry.CLI { |c| c.register "run", command.new }
+
+      cli.call(arguments: %w[run], stdout: out, stderr: StringIO.new)
+
+      expect(out.string).to eq "wrote it\n"
+    end
+
+    it "writes to the CLI's streams, even when built with a stream of its own" do
+      cmd_stdout = StringIO.new
+      cli_stdout = StringIO.new
+      cli = Dry.CLI { |c| c.register "run", command.new(stdout: cmd_stdout) }
+
+      cli.call(arguments: %w[run], stdout: cli_stdout, stderr: StringIO.new)
+
+      expect(cli_stdout.string).to eq "wrote it\n"
+      expect(cmd_stdout.string).to be_empty
+    end
+
+    it "leaves the registered command as it found it" do
+      instance = command.new
+      cli_stdout = StringIO.new
+      cli = Dry.CLI { |c| c.register "run", instance }
+
+      cli.call(arguments: %w[run], stdout: cli_stdout, stderr: StringIO.new)
+      direct_stdout = capture_output { instance.call }
+
+      # Had we set the streams on the registered command itself, this second call would have gone to
+      # the CLI's stream too
+      expect(direct_stdout).to eq "wrote it\n"
+      expect(cli_stdout.string).to eq "wrote it\n"
+    end
+
+    it "uses the streams given for each run" do
+      cli = Dry.CLI { |c| c.register "run", command.new }
+      first_stdout = StringIO.new
+      second_stdout = StringIO.new
+
+      cli.call(arguments: %w[run], stdout: first_stdout, stderr: StringIO.new)
+      cli.call(arguments: %w[run], stdout: second_stdout, stderr: StringIO.new)
+
+      expect(first_stdout.string).to eq "wrote it\n"
+      expect(second_stdout.string).to eq "wrote it\n"
+    end
+  end
+
+  context "styling" do
+    let(:command) do
+      Class.new(Dry::CLI::Command) do
+        def call(**)
+          stdout.puts Dry::CLI::Style.green["done"]
+          stderr.puts Dry::CLI::Style.bold.red["Uh oh"]
+        end
+      end
+    end
+
+    let(:terminal) { StringIO.new.tap { |io| def io.tty? = true } }
+    let(:file) { StringIO.new }
+
+    # Pin color_level so we can rely on which escape sequences to test for below.
+    around do |example|
+      Dry::CLI::Style.color_level = :ansi16
+      example.run
+      Dry::CLI::Style.color_level = nil
+    end
+
+    it "styles a terminal and leaves the stream redirected alongside it plain" do
+      Dry.CLI(command).call(arguments: [], stdout: terminal, stderr: file)
+
+      expect(terminal.string).to eq "\e[32mdone\e[0m\n"
+      expect(file.string).to eq "Uh oh\n"
+    end
+
+    it "keeps color on the terminal when it is the other stream redirected" do
+      Dry.CLI(command).call(arguments: [], stdout: file, stderr: terminal)
+
+      expect(file.string).to eq "done\n"
+      expect(terminal.string).to eq "\e[1;31mUh oh\e[0m\n"
+    end
+
+    it "styles nothing when neither stream is a terminal" do
+      err = StringIO.new
+
+      Dry.CLI(command).call(arguments: [], stdout: file, stderr: err)
+
+      expect(file.string).to eq "done\n"
+      expect(err.string).to eq "Uh oh\n"
+    end
+  end
 end

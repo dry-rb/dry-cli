@@ -11,6 +11,9 @@ module Dry
     require "dry/cli/version"
     require "dry/cli/errors"
     require "dry/cli/namespace"
+    require "dry/cli/style"
+    require "dry/cli/stream"
+    require "dry/cli/style_mixin"
     require "dry/cli/command"
     require "dry/cli/registry"
     require "dry/cli/parser"
@@ -24,7 +27,7 @@ module Dry
     #
     # @param command [Object] the command to check
     #
-    # @return [TrueClass,FalseClass] true if instance of `Dry::CLI::Command`
+    # @return [Boolean] true if instance of `Dry::CLI::Command`
     #
     # @since 0.1.0
     # @api private
@@ -36,7 +39,7 @@ module Dry
     #
     # @param namespace [Object] the namespace to check
     #
-    # @return [TrueClass,FalseClass] true if instance of `Dry::CLI::Namespace`
+    # @return [Boolean] true if instance of `Dry::CLI::Namespace`
     #
     # @since 1.1.1
     # @api private
@@ -49,7 +52,7 @@ module Dry
     # @param obj [Object] object to check
     # @param klass [Object] class that should be inherited
     #
-    # @return [TrueClass,FalseClass] true if `obj` inherits from `klass`
+    # @return [Boolean] true if `obj` inherits from `klass`
     #
     # @since 1.1.1
     # @api private
@@ -90,7 +93,7 @@ module Dry
     #
     # @since 0.1.0
     def call(arguments: ARGV, stderr: $stderr, stdin: $stdin, stdout: $stdout)
-      @stderr, @stdin, @stdout = stderr, stdin, stdout
+      @stderr, @stdin, @stdout = Stream.for(stderr), stdin, Stream.for(stdout)
       kommand ? perform_command(arguments) : perform_registry(arguments)
     rescue SignalException => exception
       signal_exception(exception)
@@ -108,15 +111,12 @@ module Dry
     # @api private
     attr_reader :kommand
 
-    # @since 0.6.0
     # @api private
     attr_reader :stderr
 
-    # @since unreleased
     # @api private
     attr_reader :stdin
 
-    # @since 0.6.0
     # @api private
     attr_reader :stdout
 
@@ -178,8 +178,13 @@ module Dry
     # @since 0.6.0
     # @api private
     def build_command(command)
-      return command unless command.is_a?(Class)
-      return command.new(stderr: stderr, stdin: stdin, stdout: stdout) if CLI.command?(command)
+      unless command.is_a?(Class)
+        return command unless command.is_a?(Command)
+
+        return command.with_streams(stderr:, stdin:, stdout:)
+      end
+
+      return command.new(stderr:, stdin:, stdout:) if CLI.command?(command)
 
       command.new
     end
@@ -219,7 +224,7 @@ module Dry
     #
     # @param command [Object] the command to check
     #
-    # @return [TrueClass,FalseClass] true if instance of `Dry::CLI::Command`
+    # @return [Boolean] true if instance of `Dry::CLI::Command`
     #
     # @since 0.1.0
     # @api private

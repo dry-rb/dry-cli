@@ -2,6 +2,8 @@
 
 require "forwardable"
 require "dry/cli/option"
+require "dry/cli/stream"
+require "dry/cli/style_mixin"
 
 module Dry
   class CLI
@@ -9,6 +11,9 @@ module Dry
     #
     # @since 0.1.0
     class Command
+      include StyleMixin
+      extend StyleMixin
+
       # @since 0.1.0
       # @api private
       def self.inherited(base)
@@ -434,11 +439,24 @@ module Dry
         superclass_variable_dup(:@options)
       end
 
-      # @api private
-      def initialize(stderr: $stderr, stdin: $stdin, stdout: $stdout)
+      # @since x.y.z
+      # @api public
+      def initialize(stderr: nil, stdin: nil, stdout: nil)
         @stderr = stderr
         @stdin  = stdin
         @stdout = stdout
+        @stderr_stream = nil
+        @stdout_stream = nil
+      end
+
+      # Returns a copy of this command, configured to write to the given streams.
+      #
+      # Called on a command registered as an instance, since it is constructed before the CLI is
+      # invoked, and therefore before it knows where its output should go.
+      #
+      # @api private
+      def with_streams(stderr:, stdin:, stdout:)
+        dup.set_streams(stderr:, stdin:, stdout:)
       end
 
       extend Forwardable
@@ -461,6 +479,8 @@ module Dry
 
       # The error output used to print error messaging
       #
+      # @return [Dry::CLI::Stream] for the stream given to this command, or `$stderr`
+      #
       # @example
       #   class MyCommand
       #     def call
@@ -472,11 +492,19 @@ module Dry
       #     end
       #   end
       #
-      # @since unreleased
-      # @return [IO]
-      attr_reader :stderr
+      # @since x.y.z
+      def stderr
+        # When we haven't been given an underlying stream, build a new one for $stderr each time,
+        # since it can be swapped out from under us. This is the case only when testing commands in
+        # isolation; when the CLI runs normally, we have a real @stderr set.
+        return Stream.for($stderr) unless @stderr
+
+        @stderr_stream ||= Stream.for(@stderr)
+      end
 
       # The standard input stream used for reading input
+      #
+      # @return [IO] the stream given to this command, or `$stdin`
       #
       # @example
       #   class MyCommand
@@ -486,11 +514,14 @@ module Dry
       #     end
       #   end
       #
-      # @since unreleased
-      # @return [IO]
-      attr_reader :stdin
+      # @since x.y.z
+      def stdin
+        @stdin || $stdin
+      end
 
       # The standard output stream used for normal output
+      #
+      # @return [Dry::CLI::Stream] for the stream given to this command, or `$stdout`
       #
       # @example
       #   class MyCommand
@@ -499,9 +530,57 @@ module Dry
       #     end
       #   end
       #
-      # @since unreleased
-      # @return [IO]
-      attr_reader :stdout
+      # @since x.y.z
+      def stdout
+        # When we haven't been given an underlying stream, build a new one for $stdout each time,
+        # since it can be swapped out from under us. This is the case only when testing commands in
+        # isolation; when the CLI runs normally, we have a real @stdout set.
+        return Stream.for($stdout) unless @stdout
+
+        @stdout_stream ||= Stream.for(@stdout)
+      end
+
+      # @see #with_streams
+      #
+      # @api private
+      def set_streams(stderr:, stdin:, stdout:)
+        @stderr = stderr
+        @stdin = stdin
+        @stdout = stdout
+        @stderr_stream = nil
+        @stdout_stream = nil
+
+        self
+      end
+
+      private
+
+      # Writes to the command's own {#stdout}, rather than the default `$stdout`.
+      #
+      # Commands are given the streams they write to, so `puts` inside one goes to the stream this
+      # command was given, not to `$stdout`. That's what keeps styling right when the two differ:
+      # text written here is styled for the stream it lands on.
+      #
+      # @example
+      #   class MyCommand
+      #     def call
+      #       puts "Hello World!"
+      #     end
+      #   end
+      #
+      # @since x.y.z
+      def puts(*args)
+        stdout.puts(*args)
+      end
+
+      # Writes to the command's own {#stdout}, rather than the default `$stdout`.
+      #
+      # @see #puts
+      #
+      # @since x.y.z
+      def print(*args)
+        stdout.print(*args)
+      end
     end
   end
 end

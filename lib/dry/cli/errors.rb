@@ -9,6 +9,22 @@ module Dry
     class Error < StandardError
     end
 
+    # @api public
+    # @since x.y.z
+    class InvalidColorError < Error
+      attr_reader :value, :expected
+
+      def initialize(value:, expected:)
+        @value = value
+        @expected = expected
+        super()
+      end
+
+      def message
+        "ERROR: invalid color #{@value.inspect}; expected #{@expected}"
+      end
+    end
+
     # @since 1.4.0
     class ValueError < Error
       attr_reader :value, :argument

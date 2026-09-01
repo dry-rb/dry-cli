@@ -32,6 +32,21 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     `Registry#command_class` returns the registered command's class, as an escape hatch for anything else its class-level DSL offers.
 
     Adding the same option twice is allowed, so independent gems can each contribute the option they need without coordinating, as long as they agree on `:type`, `:required`, `:values` and `:default`. Otherwise `Dry::CLI::IncompatibleOptionError` is raised. `:cast` is not compared, since procs aren't meaningfully comparable.
+- Support for styled text. (@aaronmallen and @timriley in #166)
+
+    Use `style` in your commands (or `Dry::CLI::Style`) directly to build styles, then send text to those styles. Once you pass that text to an output stream, it will be styled (and its colors gracefully degraded if required) based on the terminal's capabilities. Styled text sent to a non-terminal stream (such as when a CLI command has output redirected to a file) will not be styled.
+
+    ```ruby
+    # Dry::CLI::Command gets `style` at both the class and instance level; use Dry::CLI::StyleMixin to add this to your own classes.
+    ERROR = style.bold.red
+
+    def call
+      text = ERROR["boom"]
+      stderr.puts text # renders as "\e[1;31mboom\e[0m"
+    end
+    ```
+
+    `Command#stdout` and `#stderr` are now always instances of `Dry::CLI::Stream`. Use `stdout.raw` to access the underlying IO object directly.
 
 ### Changed
 
