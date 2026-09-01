@@ -4,20 +4,20 @@ require "delegate"
 
 module Dry
   class CLI
-    # A stream commands write to, which renders the styled text it is given
+    # A stream for commands to write their output, which renders the styled text it is given.
     #
-    # A stream is the only thing that knows both what is being written and what it can show,
-    # so it is the thing that turns styles into escape sequences. Two streams from the one
-    # program can answer differently, which is how a stream that has been redirected gets
-    # plain text while the terminal beside it keeps its color.
+    # A stream is the only thing that knows both what is being written and what it can show, so it
+    # is the thing that turns styles into escape sequences. Two streams from the one program can
+    # answer differently, which is how a stream that has been redirected gets plain text while the
+    # terminal beside it keeps its color.
     #
-    # Everything else is passed to the stream underneath, so this behaves as the stream you
-    # gave us in every other way. To write to it without any of this, see {#raw}.
+    # Everything else is passed to the stream underneath, so this behaves as the stream you gave us
+    # in every other way. To write to it without any of this, see {#raw}.
     #
     # @api public
     # @since x.y.z
     class Stream < SimpleDelegator
-      # Returns a stream that renders what is written to it
+      # Returns a stream that renders what is written to it.
       #
       # A stream we have already wrapped is given back as it is.
       #
@@ -32,8 +32,8 @@ module Dry
 
       # @api private
       def puts(*args)
-        # Nearly every write is one string, and going through the general case would build an
-        # array to map over and another to spread back out again
+        # Nearly every write is one string, and going through the general case would build an array
+        # to map over and another to spread back out again
         return __getobj__.puts(render_value(args[0])) if args.size == 1
 
         __getobj__.puts(*render(args))
@@ -64,11 +64,10 @@ module Dry
         self
       end
 
-      # The stream underneath, to write to directly
+      # The underlying stream, to write to directly.
       #
-      # Everything written through this stream is rendered for it, which is the wrong thing
-      # when you have written the escape sequences yourself: a progress bar, say, or moving
-      # the cursor about. Writing to this leaves what you write exactly as it is.
+      # Everything written through this stream is rendered for it. If you need to control rendering
+      # your self (such as displaying a progress bar), write to this raw stream.
       #
       # @example
       #   stdout.raw.print "\e[2K\r"
@@ -81,7 +80,7 @@ module Dry
         __getobj__
       end
 
-      # Returns true if the stream underneath is a terminal
+      # Returns true if the stream underneath is a terminal.
       #
       # This result is memoized so we can avoid a syscall (the actual `tty?` check) every time we
       # check {#color_level}.
@@ -96,7 +95,7 @@ module Dry
         @tty = __getobj__.respond_to?(:tty?) && __getobj__.tty?
       end
 
-      # How much color this stream can show, or `nil` when it should show none
+      # How much color this stream can show, or `nil` when it should show none.
       #
       # @api private
       def color_level

@@ -3,10 +3,10 @@
 module Dry
   class CLI
     class Style
-      # A non-color style, like bold or underline
+      # A non-color style, like bold or underline.
       #
-      # These look the same on every terminal, so unlike a {Dry::CLI::Style::Color} they ignore
-      # the color level.
+      # These look the same on every terminal, so unlike {Dry::CLI::Style::Color}, they ignore the
+      # color level.
       #
       # @api private
       class Attribute
@@ -20,7 +20,7 @@ module Dry
           freeze
         end
 
-        # Returns the ANSI codes for this attribute
+        # Returns the ANSI codes for this attribute.
         #
         # @param _color_level [Symbol] ignored; attributes don't degrade
         #

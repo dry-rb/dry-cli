@@ -2,27 +2,26 @@
 
 module Dry
   class CLI
-    # A text style you can build up and reuse
+    # A text style you can build up and reuse.
     #
-    # A style is a value. Build one by chaining style names, give it a name that means
-    # something, then apply it to text as often as you like.
+    # A style is a value. Build one by chaining style names, give it a name that means something,
+    # then apply it to text as often as you like.
     #
     # @example
     #   ERROR = Dry::CLI::Style.bold.red
     #
     #   ERROR.call("Boom") # => "\e[1;31mBoom\e[0m"
     #
-    # Building a style and applying it are always separate steps. For a one-off, apply it
-    # straight away with `#[]`.
+    # Building a style and applying it are always separate steps. For a one-off, apply it straight
+    # away with `#[]`.
     #
     # @example
     #   Dry::CLI::Style.bold.red["Boom"] # => "\e[1;31mBoom\e[0m"
     #
     # ## Color
     #
-    # Write the color you want and let it degrade. You build a style from 24-bit colors. We
-    # turn it into escape sequences only when you apply it, when we know what the terminal can
-    # show. If it cannot show a color, we swap in the closest one it can.
+    # Choose whichever color you want, and it will automatically degrade to whatever the terminal
+    # supports.
     #
     # @example
     #   ERROR = Dry::CLI::Style.bold.rgb(255, 0, 0)
@@ -34,12 +33,6 @@ module Dry
     #   # on an 8 color one    => "\e[1;31mBoom\e[0m"
     #   # with no color at all => "\e[1mBoom\e[0m"
     #
-    # The style holds the color, not the escape sequence, so one constant serves every
-    # terminal: define it once when your program loads, and each terminal shows the best version
-    # it can.
-    #
-    # Every name here with `color` in it has a `colour` alias, so spell it either way.
-    #
     # @api public
     # @since x.y.z
     class Style
@@ -49,22 +42,22 @@ module Dry
       require_relative "style/color_level"
       require_relative "style/text"
 
-      # ANSI escape sequence resetting all styles
+      # ANSI escape sequence resetting all styles.
       #
       # @api private
       RESET = "\e[0m"
 
-      # The character every escape sequence we emit begins with
+      # The character every escape sequence we emit begins with.
       #
       # @api private
       ESCAPE = "\e"
 
-      # Pattern matching the ANSI escape sequences we emit
+      # Regexp matching the ANSI escape sequences we emit.
       #
       # @api private
       SGR_PATTERN = /\e\[[0-9;]*m/
 
-      # Non-color style names mapped to their ANSI code
+      # Non-color style names mapped to their ANSI code.
       #
       # @api private
       ATTRIBUTES = {
@@ -77,7 +70,7 @@ module Dry
         invisible: 8
       }.freeze
 
-      # Color names, and where they sit in the ANSI palette
+      # Color names, and where they sit in the ANSI palette.
       #
       # Each has a `bright_` version too, eight places along.
       #
@@ -93,12 +86,12 @@ module Dry
         white: 7
       }.freeze
 
-      # Pattern matching a hex color, with or without its leading `#`
+      # Regexp matching a hex color, with or without its leading `#`.
       #
       # @api private
       HEX_PATTERN = /\A#?(?<digits>\h{3}|\h{6})\z/
 
-      # The values an RGB component can take
+      # The values an RGB component can take.
       #
       # @api private
       COMPONENT_RANGE = (0..255)
@@ -118,10 +111,10 @@ module Dry
       @default_stdout_terminal = nil
 
       class << self
-        # Enable or disable styling for the whole program
+        # Enable or disable styling for the whole program.
         #
-        # Set to `nil` (the default) to decide automatically: styling is on when the stream
-        # being written to is a terminal and `NO_COLOR` is unset. `FORCE_COLOR` overrides both.
+        # Set to `nil` (the default) to decide automatically: styling is on when the stream being
+        # written to is a terminal and `NO_COLOR` is unset. `FORCE_COLOR` overrides both.
         #
         # @param enabled [Boolean, nil]
         #
@@ -135,10 +128,9 @@ module Dry
           forget_environment
         end
 
-        # Set how much color styles should render with
+        # Set how much color styles should render with.
         #
-        # Set to `nil` (the default) to decide automatically from the environment. Set it
-        # explicitly to honour a `--color` flag of your own, or to pin the output in tests.
+        # Set to `nil` (the default) to decide automatically from the environment.
         #
         # @param color_level [Symbol, nil] `:truecolor`, `:ansi256`, `:ansi16`, `:ansi8`, `:none`
         #
@@ -160,25 +152,20 @@ module Dry
           forget_environment
         end
 
-        # How much color to render for the given stream, or `nil` for no styling at all
-        #
-        # An explicit {Dry::CLI::Style.enabled=} or {Dry::CLI::Style.color_level=} wins over
-        # anything we would work out ourselves, which is what makes a `--color=always` of your
-        # own reach a stream we would otherwise leave plain.
+        # How much color to render for the given stream, or `nil` for no styling at all.
         #
         # @param stream [IO]
         #
-        # @return [Symbol, nil]
+        # @return [Symbol, nil] `:truecolor`, `:ansi256`, `:ansi16`, `:ansi8`, `:none`
         #
         # @api private
         def color_level_for(stream)
           color_levels[stream.tty?]
         end
 
-        # How much color to render for text that hasn't reached a stream
+        # How much color to render for text that hasn't reached a stream.
         #
-        # Answers for Ruby's own `$stdout`, which keeps this conservative: text we can't place
-        # is more use plain in a file than colored in one.
+        # Returns the color level supported by Ruby's own `$stdout`.
         #
         # @return [Symbol, nil]
         #
@@ -187,7 +174,7 @@ module Dry
           color_levels[default_stdout_terminal?]
         end
 
-        # Remove all style escape sequences from the given text
+        # Removes all style escape sequences from the given text.
         #
         # @param text [String] the text to strip
         #
@@ -367,7 +354,7 @@ module Dry
           end
         end
 
-        # Adds a 24-bit color to the chain, degrading it to fit the terminal
+        # Adds a 24-bit color to the chain.
         #
         # @param red [Integer] 0-255
         # @param green [Integer] 0-255
@@ -386,7 +373,7 @@ module Dry
           add(Color::RGB.new(:foreground, *Style.validate_components(red, green, blue)))
         end
 
-        # Adds a 24-bit background color to the chain, degrading it to fit the terminal
+        # Adds a 24-bit background color to the chain.
         #
         # @param (see #rgb)
         #
@@ -403,10 +390,9 @@ module Dry
           add(Color::RGB.new(:background, *Style.validate_components(red, green, blue)))
         end
 
-        # Adds a 24-bit color written as hex to the chain, degrading it to fit the terminal
+        # Adds a 24-bit color written as hex to the chain.
         #
-        # @param value [String] a hex color, with or without its leading `#`, in three or six
-        #   digits
+        # @param value [String] a hex color, with or without its leading `#`, in three or six digits
         #
         # @return [Dry::CLI::Style]
         #
@@ -422,8 +408,7 @@ module Dry
           add(Color::RGB.new(:foreground, *Style.parse_hex(value)))
         end
 
-        # Adds a 24-bit background color written as hex to the chain, degrading it to fit the
-        # terminal
+        # Adds a 24-bit background color written as hex to the chain.
         #
         # @param (see #hex)
         #
@@ -440,7 +425,7 @@ module Dry
           add(Color::RGB.new(:background, *Style.parse_hex(value)))
         end
 
-        # Adds a color from the 256 color palette to the chain, degrading it to fit the terminal
+        # Adds a color from the 256 color palette to the chain.
         #
         # @param index [Integer] a color code, 0-255
         #
@@ -457,8 +442,7 @@ module Dry
           add(Color::Xterm.new(:foreground, Style.validate_index(index)))
         end
 
-        # Adds a background color from the 256 color palette to the chain, degrading it to fit
-        # the terminal
+        # Adds a background color from the 256 color palette to the chain.
         #
         # @param (see #ansi256)
         #
@@ -479,7 +463,7 @@ module Dry
       include Builders
       extend Builders
 
-      # Starts a chain from a class-level style method
+      # Starts a chain from a class-level style method.
       #
       # This is the class-level counterpart of the private `#add` below, and the only piece
       # {Builders} needs to serve both the class and its instances.
@@ -489,21 +473,11 @@ module Dry
         new([step])
       end
 
-      # Applies the style to the given text
-      #
-      # We render colors at whatever color level the terminal supports, so one style gives different
-      # escape sequences on different terminals. When styling is off, returns the text with any
-      # styling stripped out.
+      # Applies the style to the given text.
       #
       # @param text [String] the text to style
       #
-      # @return [String] the styled text
-      #
-      # @example
-      #   ERROR = Dry::CLI::Style.bold.red
-      #
-      #   ERROR.call("Boom") # => "\e[1;31mBoom\e[0m"
-      #   ERROR["Boom"]      # => "\e[1;31mBoom\e[0m"
+      # @return [Dry::CLI::Style::Text] the styled text
       #
       # @api public
       # @since x.y.z
@@ -511,7 +485,7 @@ module Dry
         Text.new([[self, text]])
       end
 
-      # Renders the given text at the given color level
+      # Renders the given text at the given color level.
       #
       # @param text [String] the text to style
       # @param color_level [Symbol] a color level
@@ -532,7 +506,7 @@ module Dry
       end
       alias_method :[], :call
 
-      # Returns the style as a proc, for use with `&`
+      # Returns the style as a proc, for use with `&`.
       #
       # @return [Proc]
       #
@@ -545,7 +519,7 @@ module Dry
         method(:call).to_proc
       end
 
-      # Returns the ANSI codes this style renders as at the given color level
+      # Returns the ANSI codes this style renders as at the given color level.
       #
       # @param color_level [Symbol] a color level
       #

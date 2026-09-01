@@ -6,17 +6,13 @@ require "dry/cli/style/palette"
 module Dry
   class CLI
     class Style
-      # A color, and what it becomes on a terminal that cannot show it
-      #
-      # You write a color once, in whatever form suits you. We ask it for its ANSI codes later,
-      # when we know what the terminal can show. Each subclass answers that in its own way:
-      # {ANSI} always fits, {Xterm} drops to 16 or 8 colors, and {RGB} drops to any of them.
+      # A color, and what it degrades to on a terminal that cannot show it.
       #
       # @api private
       class Color
         EMPTY = [].freeze
 
-        # The layer a color applies to, and the ANSI codes each layer starts from
+        # The layer a color applies to, and the ANSI codes each layer starts from.
         LAYERS = {
           foreground: {base: 30, bright: 90, extended: 38},
           background: {base: 40, bright: 100, extended: 48}
@@ -28,13 +24,13 @@ module Dry
           @layer = layer
         end
 
-        # Returns the ANSI codes for this color at the given color level
+        # Returns the ANSI codes for this color at the given color level.
         #
         # @param color_level [Symbol] a {Dry::CLI::Style::ColorLevel}
         #
         # @return [Array<Integer>]
         def codes(_color_level)
-          raise NotImplementedError
+          raise NoMethodError
         end
 
         def ==(other)
@@ -52,14 +48,14 @@ module Dry
 
         protected
 
-        # The color's defining value, for comparison
+        # The color's defining value, for comparison.
         def value
-          raise NotImplementedError
+          raise NoMethodError
         end
 
         private
 
-        # Returns the codes for one of the 16 ANSI colors on this layer
+        # Returns the codes for one of the 16 ANSI colors on this layer.
         #
         # @param index [Integer] a color code, 0-15
         def ansi_codes(index)
@@ -76,13 +72,11 @@ module Dry
           LAYERS.fetch(layer)[:extended]
         end
 
-        # One of the 16 ANSI colors
+        # One of the 16 ANSI colors.
         #
-        # Every terminal that shows color at all has these, so they never need to degrade. The
-        # one exception is {ColorLevel::ANSI8}, which has no bright colors: there each bright
-        # color drops to the base color it brightens. We do that on purpose rather than search
-        # for the closest color. Someone who asks for `bright_black` wants black, not the light
-        # gray that happens to sit nearest it among the eight.
+        # Every terminal that shows color at all supports these, so they never need to degrade. The
+        # one exception is {ColorLevel::ANSI8}, which has no bright colors: there each bright color
+        # drops to the base color it brightens.
         class ANSI < Color
           attr_reader :index, :name
 
@@ -112,7 +106,7 @@ module Dry
           end
         end
 
-        # One of the 256 palette colors
+        # One of the 256 palette colors.
         #
         # Terminals that show 24-bit color read the 256 color escapes too, so this only degrades
         # downward. To do that we look up the color's red, green and blue values, then find the
@@ -157,7 +151,7 @@ module Dry
           end
         end
 
-        # A 24-bit color
+        # A 24-bit color.
         #
         # This is the form you write most styles in, and the one that degrades furthest. Below
         # 24-bit we swap it for the closest color the terminal can show, taken from whatever

@@ -9,13 +9,13 @@ module Dry
       # styles, and turns them into escape sequences at the last moment: when it reaches a stream,
       # which knows what it can show.
       #
-      # This structure is what allos for writing colored text to a terminal but plain text to a file
-      # it is redirected to. It also means the text knows how long it is without its escape
+      # This structure is what allows for writing colored text to a terminal but plain text to a
+      # file it is redirected to. It also means the text knows how long it is without its escape
       # sequences, so padding lines up.
       #
       # @example
       #   ERROR = Dry::CLI::Style.bold.red
-      #   ERROR["Boom"].length # => 4, not 15
+      #   ERROR["Boom"].length # => 4
       #
       # Anywhere a `String` is wanted, this renders itself for Ruby's own `$stdout`, so
       # interpolation, `format`, and `puts` all still work.
@@ -23,11 +23,11 @@ module Dry
       # @api public
       # @since x.y.z
       class Text
-        # The runs of text this is made of, each with the style to render it in
+        # The runs of text this is made of, each with the style to render it in.
         #
-        # Each part is a `[style, text]` pair, and they render in order and join together. A
-        # `nil` style means that run is plain: joining styled text to a plain `String` keeps
-        # both, rather than rendering early to make one `String` of them.
+        # Each part is a `[style, text]` pair, and they render in order and join together. A `nil`
+        # style means that run is plain: joining styled text to a plain `String` keeps both, rather
+        # than rendering early to make one `String` of them.
         #
         # @example
         #   (ERROR["failed"] + ": " + reason).parts
@@ -35,9 +35,9 @@ module Dry
         #   #     [nil, ": "],
         #   #     [nil, "no such file"]]
         #
-        # A part's text can be another {Dry::CLI::Style::Text}, which is how a style wraps
-        # text that is already styled. It renders from the inside out, so the outer style
-        # picks up again where the inner one left off.
+        # A part's text can be another {Dry::CLI::Style::Text}, which is how a style wraps text that
+        # is already styled. It renders from the inside out, so the outer style picks up again where
+        # the inner one left off.
         #
         # @example
         #   Dry::CLI::Style.red[Dry::CLI::Style.bold["config.yml"]].parts
@@ -48,8 +48,8 @@ module Dry
         # @api private
         attr_reader :parts
 
-        # @param parts [Array<Array(Dry::CLI::Style,String)>] the runs of text and their
-        #   styles, in the order they render
+        # @param parts [Array<Array(Dry::CLI::Style,String)>] the runs of text and their styles, in
+        #   the order they render
         #
         # @api private
         def initialize(parts)
@@ -84,7 +84,7 @@ module Dry
           parts.map { |_style, text| plain_text(text) }.join
         end
 
-        # Renders the text for Ruby's own `$stdout`
+        # Renders the text for Ruby's own `$stdout`.
         #
         # @return [String]
         #
@@ -95,12 +95,12 @@ module Dry
         end
         alias_method :to_str, :to_s
 
-        # Joins this text to more of it, keeping both sides unrendered
+        # Joins this text to other text, keeping both sides unrendered.
         #
-        # Only works this way around. With a `String` on the left, Ruby asks us for a `String`
-        # in return, so `"read " + styled` renders there and then, for Ruby's own `$stdout`
-        # rather than the stream it ends up on. Put the styled text first, or style the
-        # whole of it, and it stays unrendered until it is written.
+        # Only works this way around. With a `String` on the left, Ruby asks us for a `String` in
+        # return, so `"read " + styled` renders there and then, for Ruby's own `$stdout` rather than
+        # the stream it ends up on. Put the styled text first, or style the whole of it, and it
+        # stays unrendered until it is written.
         #
         # @example
         #   ERROR["failed"] + ": " + reason # stays unrendered
@@ -116,7 +116,7 @@ module Dry
           other.is_a?(Text) ? Text.new(parts + other.parts) : Text.new(parts + [[nil, other]])
         end
 
-        # The length of the text without any styling
+        # The length of the text without any styling.
         #
         # @return [Integer]
         #
@@ -133,7 +133,7 @@ module Dry
           length.zero?
         end
 
-        # Pads the text to the given width, counting only what will be seen
+        # Pads the text to the given width, counting only what will be seen.
         #
         # @param width [Integer]
         # @param padding [String]
@@ -185,18 +185,15 @@ module Dry
 
         private
 
-        # @api private
         def plain_text(text)
           text.is_a?(Text) ? text.plain : text.to_s
         end
 
-        # @api private
         def render_part(style, text, color_level)
           rendered = text.is_a?(Text) ? text.render(color_level) : text.to_s
           style.nil? ? rendered : style.render(rendered, color_level)
         end
 
-        # @api private
         def pad(width, padding)
           missing = width - length
           return "" if missing <= 0
