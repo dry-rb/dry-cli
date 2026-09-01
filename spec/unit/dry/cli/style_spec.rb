@@ -15,14 +15,14 @@ RSpec.describe Dry::CLI::Style do
     end
 
     it "chains styles" do
-      expect(described_class.bold.red.on_white.codes).to eq [1, 31, 47]
+      expect(described_class.bold.red.on_white.codes(:truecolor)).to eq [1, 31, 47]
     end
 
     it "returns a new style for each step, leaving the receiver untouched" do
       bold = described_class.bold
 
       expect(bold.red).to_not eq bold
-      expect(bold.codes).to eq [1]
+      expect(bold.codes(:truecolor)).to eq [1]
     end
 
     it "is frozen" do
@@ -31,16 +31,16 @@ RSpec.describe Dry::CLI::Style do
 
     it "supports every attribute" do
       described_class::ATTRIBUTES.each do |name, code|
-        expect(described_class.public_send(name).codes).to eq [code]
+        expect(described_class.public_send(name).codes(:truecolor)).to eq [code]
       end
     end
 
     it "supports every color, in both layers and both intensities" do
       described_class::COLORS.each do |name, index|
-        expect(described_class.public_send(name).codes).to eq [30 + index]
-        expect(described_class.public_send(:"bright_#{name}").codes).to eq [90 + index]
-        expect(described_class.public_send(:"on_#{name}").codes).to eq [40 + index]
-        expect(described_class.public_send(:"on_bright_#{name}").codes).to eq [100 + index]
+        expect(described_class.public_send(name).codes(:truecolor)).to eq [30 + index]
+        expect(described_class.public_send(:"bright_#{name}").codes(:truecolor)).to eq [90 + index]
+        expect(described_class.public_send(:"on_#{name}").codes(:truecolor)).to eq [40 + index]
+        expect(described_class.public_send(:"on_bright_#{name}").codes(:truecolor)).to eq [100 + index]
       end
     end
   end
@@ -147,7 +147,7 @@ RSpec.describe Dry::CLI::Style do
     end
 
     it "chains with other styles" do
-      expect(described_class.bold.rgb(255, 0, 0).on_rgb(0, 0, 0).codes)
+      expect(described_class.bold.rgb(255, 0, 0).on_rgb(0, 0, 0).codes(:truecolor))
         .to eq [1, 38, 2, 255, 0, 0, 48, 2, 0, 0, 0]
     end
 
@@ -299,30 +299,34 @@ RSpec.describe Dry::CLI::Style do
     end
   end
 
-  describe ".color_level" do
-    it "can be pinned" do
-      described_class.color_level = :ansi256
-
-      expect(described_class.color_level).to eq :ansi256
-    end
-
+  describe ".color_level=" do
     it "rejects unknown levels" do
       expect { described_class.color_level = :ansi64 }
         .to raise_error(ArgumentError, /unknown color level :ansi64/)
+    end
+  end
+
+  describe ".level_for" do
+    let(:terminal) { StringIO.new.tap { |io| def io.tty? = true } }
+
+    it "can be pinned" do
+      described_class.color_level = :ansi256
+
+      expect(described_class.level_for(terminal)).to eq :ansi256
     end
 
     it "detects from the environment when unpinned" do
       described_class.color_level = nil
 
       with_env("COLORTERM" => "truecolor", "TERM" => "xterm") do
-        expect(described_class.color_level).to eq :truecolor
+        expect(described_class.level_for(terminal)).to eq :truecolor
       end
     end
 
-    it "is :none when styling is disabled" do
+    it "is nil when styling is disabled" do
       described_class.enabled = false
 
-      expect(described_class.color_level).to eq :none
+      expect(described_class.level_for(terminal)).to be_nil
     end
   end
 
@@ -344,55 +348,44 @@ RSpec.describe Dry::CLI::Style do
     context "deciding automatically" do
       before { described_class.enabled = nil }
 
-      it "is disabled when not writing to a terminal" do
-        expect($stdout).to receive(:tty?).and_return(false)
+      let(:terminal) { StringIO.new.tap { |io| def io.tty? = true } }
+      let(:file) { StringIO.new }
 
-        expect(described_class).to_not be_enabled
+      it "is disabled when not writing to a terminal" do
+        expect(described_class.level_for(file)).to be_nil
       end
 
       it "is enabled when writing to a terminal" do
-        expect($stdout).to receive(:tty?).and_return(true)
-
-        expect(described_class).to be_enabled
+        expect(described_class.level_for(terminal)).to_not be_nil
       end
 
       it "is disabled when NO_COLOR is set" do
-        allow($stdout).to receive(:tty?).and_return(true)
-
         with_env("NO_COLOR" => "1") do
-          expect(described_class).to_not be_enabled
+          expect(described_class.level_for(terminal)).to be_nil
         end
       end
 
       it "is enabled when NO_COLOR is empty" do
-        allow($stdout).to receive(:tty?).and_return(true)
-
         with_env("NO_COLOR" => "") do
-          expect(described_class).to be_enabled
+          expect(described_class.level_for(terminal)).to_not be_nil
         end
       end
 
       it "is enabled when FORCE_COLOR is set, terminal or not" do
-        allow($stdout).to receive(:tty?).and_return(false)
-
         with_env("FORCE_COLOR" => "1") do
-          expect(described_class).to be_enabled
+          expect(described_class.level_for(file)).to_not be_nil
         end
       end
 
       it "is disabled when FORCE_COLOR is set to 0" do
-        allow($stdout).to receive(:tty?).and_return(true)
-
         with_env("FORCE_COLOR" => "0") do
-          expect(described_class).to_not be_enabled
+          expect(described_class.level_for(terminal)).to be_nil
         end
       end
 
       it "lets NO_COLOR win over FORCE_COLOR" do
-        allow($stdout).to receive(:tty?).and_return(true)
-
         with_env("NO_COLOR" => "1", "FORCE_COLOR" => "3") do
-          expect(described_class).to_not be_enabled
+          expect(described_class.level_for(terminal)).to be_nil
         end
       end
     end

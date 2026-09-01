@@ -135,19 +135,6 @@ module Dry
           forget_environment
         end
 
-        # Whether styling is currently enabled for Ruby's own `$stdout`
-        #
-        # Each stream decides this for itself as it renders, so this answers for `$stdout`:
-        # what we fall back to for text written somewhere we don't know about.
-        #
-        # @return [Boolean]
-        #
-        # @api public
-        # @since x.y.z
-        def enabled?
-          !default_level.nil?
-        end
-
         # Set how much color styles should render with
         #
         # Set to `nil` (the default) to decide automatically from the environment. Set it
@@ -171,19 +158,6 @@ module Dry
 
           @color_level = level
           forget_environment
-        end
-
-        # How much color styles will currently render with
-        #
-        # @return [Symbol] one of `:truecolor`, `:ansi256`, `:ansi16`, `:ansi8`, `:none`
-        #
-        # @example
-        #   Dry::CLI::Style.color_level # => :truecolor
-        #
-        # @api public
-        # @since x.y.z
-        def color_level
-          default_level || ColorLevel::NONE
         end
 
         # How much color to render for the given stream, or `nil` for no styling at all
@@ -573,12 +547,12 @@ module Dry
 
       # Returns the ANSI codes this style renders as at the given color level
       #
-      # @param level [Symbol] a color level; defaults to the one currently in effect
+      # @param level [Symbol] a color level
       #
       # @return [Array<Integer>]
       #
       # @api private
-      def codes(level = self.class.color_level)
+      def codes(level)
         steps.flat_map { |step| step.codes(level) }
       end
 
