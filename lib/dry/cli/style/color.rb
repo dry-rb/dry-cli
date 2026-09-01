@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "dry/cli/style/color_level"
-require "dry/cli/style/palette"
+require_relative "color_level"
+require_relative "palette"
 
 module Dry
   class CLI
