@@ -17,7 +17,7 @@ module Dry
       #   ERROR = Dry::CLI::Style.bold.red
       #   ERROR["Boom"].length # => 4, not 15
       #
-      # Anywhere a `String` is wanted, this renders itself for the program's default stream, so
+      # Anywhere a `String` is wanted, this renders itself for Ruby's own `$stdout`, so
       # interpolation, `format`, and `puts` all still work.
       #
       # @api public
@@ -84,22 +84,22 @@ module Dry
           parts.map { |_style, text| plain_text(text) }.join
         end
 
-        # Renders the text for the program's default stream
+        # Renders the text for Ruby's own `$stdout`
         #
         # @return [String]
         #
         # @api public
         # @since x.y.z
         def to_s
-          render(Style.default_level)
+          render(Style.default_stdout_level)
         end
         alias_method :to_str, :to_s
 
         # Joins this text to more of it, keeping both sides unrendered
         #
         # Only works this way around. With a `String` on the left, Ruby asks us for a `String`
-        # in return, so `"read " + styled` renders there and then, for the program's default
-        # stream rather than the one it ends up on. Put the styled text first, or style the
+        # in return, so `"read " + styled` renders there and then, for Ruby's own `$stdout`
+        # rather than the stream it ends up on. Put the styled text first, or style the
         # whole of it, and it stays unrendered until it is written.
         #
         # @example

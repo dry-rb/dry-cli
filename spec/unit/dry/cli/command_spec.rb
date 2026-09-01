@@ -92,7 +92,7 @@ RSpec.describe "Command" do
         def call(**) = puts(Dry::CLI::Style.bold.red["Uh oh"])
       end
 
-      # A terminal for the program's own output, so styling would be rendered if we went by
+      # A terminal for Ruby's own `$stdout`, so styling would be rendered if we went by
       # that instead of by the stream this command was given
       terminal = StringIO.new.tap { |io| def io.tty? = true }
       with_stdout(terminal) { styling.new(stdout: out).call }

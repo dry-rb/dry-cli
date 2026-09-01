@@ -114,7 +114,7 @@ module Dry
       @env_enabled = Unchecked
       @detected_level = nil
       @levels = nil
-      @default_stdout_checked = nil
+      @default_stdout_object = nil
       @default_stdout_terminal = nil
 
       class << self
@@ -175,15 +175,15 @@ module Dry
           levels[stream.tty?]
         end
 
-        # How much color to render when we don't know which stream the text is bound for
+        # How much color to render for text that hasn't reached a stream
         #
-        # Answers for `$stdout`, which keeps this conservative: text we can't place is more
-        # use plain in a file than colored in one.
+        # Answers for Ruby's own `$stdout`, which keeps this conservative: text we can't place
+        # is more use plain in a file than colored in one.
         #
         # @return [Symbol, nil]
         #
         # @api private
-        def default_level
+        def default_stdout_level
           levels[default_stdout_terminal?]
         end
 
@@ -259,9 +259,9 @@ module Dry
         # swapped `$stdout`, as capturing output in a test does, gets a fresh one.
         def default_stdout_terminal?
           out = $stdout
-          return @default_stdout_terminal if @default_stdout_checked.equal?(out)
+          return @default_stdout_terminal if @default_stdout_object.equal?(out)
 
-          @default_stdout_checked = out
+          @default_stdout_object = out
           @default_stdout_terminal = terminal?(out)
         end
 
@@ -269,7 +269,7 @@ module Dry
           @env_enabled = Unchecked
           @detected_level = nil
           @levels = nil
-          @default_stdout_checked = nil
+          @default_stdout_object = nil
         end
       end
 
