@@ -520,6 +520,21 @@ module Dry
         Text.new([[self, text]])
       end
 
+      alias_method :[], :call
+
+      # Returns the style as a proc, for use with `&`.
+      #
+      # @return [Proc]
+      #
+      # @example
+      #   names.map(&Dry::CLI::Style.bold)
+      #
+      # @api public
+      # @since x.y.z
+      def to_proc
+        method(:call).to_proc
+      end
+
       # Renders the given text at the given color level.
       #
       # @param text [String] the text to style
@@ -538,20 +553,6 @@ module Dry
         return "#{opening}#{text.gsub(RESET, RESET + opening)}#{RESET}" if text.include?(RESET)
 
         "#{opening}#{text}#{RESET}"
-      end
-      alias_method :[], :call
-
-      # Returns the style as a proc, for use with `&`.
-      #
-      # @return [Proc]
-      #
-      # @example
-      #   names.map(&Dry::CLI::Style.bold)
-      #
-      # @api public
-      # @since x.y.z
-      def to_proc
-        method(:call).to_proc
       end
 
       # Returns the ANSI codes this style renders as at the given color level.
