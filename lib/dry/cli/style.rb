@@ -370,7 +370,7 @@ module Dry
         # @api public
         # @since x.y.z
         def rgb(red, green, blue)
-          add(Color::RGB.new(:foreground, *Style.validate_components(red, green, blue)))
+          add(Color::RGB.new(:foreground, *validate_components(red, green, blue)))
         end
 
         # Adds a 24-bit background color to the chain.
@@ -387,7 +387,7 @@ module Dry
         # @api public
         # @since x.y.z
         def on_rgb(red, green, blue)
-          add(Color::RGB.new(:background, *Style.validate_components(red, green, blue)))
+          add(Color::RGB.new(:background, *validate_components(red, green, blue)))
         end
 
         # Adds a 24-bit color written as hex to the chain.
@@ -405,7 +405,7 @@ module Dry
         # @api public
         # @since x.y.z
         def hex(value)
-          add(Color::RGB.new(:foreground, *Style.parse_hex(value)))
+          add(Color::RGB.new(:foreground, *parse_hex(value)))
         end
 
         # Adds a 24-bit background color written as hex to the chain.
@@ -422,7 +422,7 @@ module Dry
         # @api public
         # @since x.y.z
         def on_hex(value)
-          add(Color::RGB.new(:background, *Style.parse_hex(value)))
+          add(Color::RGB.new(:background, *parse_hex(value)))
         end
 
         # Adds a color from the 256 color palette to the chain.
@@ -439,7 +439,7 @@ module Dry
         # @api public
         # @since x.y.z
         def ansi256(index)
-          add(Color::Xterm.new(:foreground, Style.validate_index(index)))
+          add(Color::Xterm.new(:foreground, validate_index(index)))
         end
 
         # Adds a background color from the 256 color palette to the chain.
@@ -456,7 +456,42 @@ module Dry
         # @api public
         # @since x.y.z
         def on_ansi256(index)
-          add(Color::Xterm.new(:background, Style.validate_index(index)))
+          add(Color::Xterm.new(:background, validate_index(index)))
+        end
+
+        private
+
+        def validate_components(*components)
+          components.each do |component|
+            next if component.is_a?(Integer) && COMPONENT_RANGE.cover?(component)
+
+            raise InvalidColorError.new(
+              value: component,
+              expected: "an integer between 0 and 255"
+            )
+          end
+        end
+
+        def validate_index(index)
+          unless index.is_a?(Integer) && COMPONENT_RANGE.cover?(index)
+            raise InvalidColorError.new(
+              value: index,
+              expected: "a color code between 0 and 255"
+            )
+          end
+
+          index
+        end
+
+        def parse_hex(value)
+          digits = HEX_PATTERN.match(value.to_s)&.[](:digits)
+
+          if digits.nil?
+            raise InvalidColorError.new(value: value, expected: %(a hex color, like "#ff0000"))
+          end
+
+          digits = digits.chars.flat_map { |digit| [digit, digit] }.join if digits.length == 3
+          digits.scan(/\h{2}/).map { |pair| pair.to_i(16) }
         end
       end
 
@@ -546,42 +581,6 @@ module Dry
         return "#<#{self.class.name}>" if steps.empty?
 
         "#<#{self.class.name} #{steps.map(&:to_s).join(".")}>"
-      end
-
-      # @api private
-      def self.validate_components(*components)
-        components.each do |component|
-          next if component.is_a?(Integer) && COMPONENT_RANGE.cover?(component)
-
-          raise InvalidColorError.new(
-            value: component,
-            expected: "an integer between 0 and 255"
-          )
-        end
-      end
-
-      # @api private
-      def self.validate_index(index)
-        unless index.is_a?(Integer) && COMPONENT_RANGE.cover?(index)
-          raise InvalidColorError.new(
-            value: index,
-            expected: "a color code between 0 and 255"
-          )
-        end
-
-        index
-      end
-
-      # @api private
-      def self.parse_hex(value)
-        digits = HEX_PATTERN.match(value.to_s)&.[](:digits)
-
-        if digits.nil?
-          raise InvalidColorError.new(value: value, expected: %(a hex color, like "#ff0000"))
-        end
-
-        digits = digits.chars.flat_map { |digit| [digit, digit] }.join if digits.length == 3
-        digits.scan(/\h{2}/).map { |pair| pair.to_i(16) }
       end
 
       private
