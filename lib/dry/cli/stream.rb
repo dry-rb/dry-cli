@@ -90,7 +90,8 @@ module Dry
       #
       # @api private
       def tty?
-        return @tty if instance_variable_defined?(:@tty)
+        # `false` is a legitimate value, so `||=` memoization would check again every time.
+        return @tty unless @tty.nil?
 
         @tty = __getobj__.respond_to?(:tty?) && __getobj__.tty?
       end
