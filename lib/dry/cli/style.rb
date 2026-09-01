@@ -113,8 +113,9 @@ module Dry
       # Memoized values
       @env_enabled = Unchecked
       @detected_level = nil
-      @checked_stdout = nil
-      @stdout_enabled = nil
+      @levels = nil
+      @default_stdout_checked = nil
+      @default_stdout_terminal = nil
 
       class << self
         # Enable or disable styling for the whole program
@@ -134,38 +135,17 @@ module Dry
           forget_environment
         end
 
-        # Whether styling is currently enabled for the program's own output
+        # Whether styling is currently enabled for Ruby's own `$stdout`
         #
-        # Each stream decides this for itself as it renders, so this is the answer for
-        # `$stdout`: what we fall back to for text written somewhere we don't know about.
+        # Each stream decides this for itself as it renders, so this answers for `$stdout`:
+        # what we fall back to for text written somewhere we don't know about.
         #
         # @return [Boolean]
         #
         # @api public
         # @since x.y.z
         def enabled?
-          out = $stdout
-          return @stdout_enabled if @checked_stdout.equal?(out)
-
-          @checked_stdout = out
-          @stdout_enabled = enabled_for?(out)
-        end
-
-        # Whether styling is enabled for the given stream
-        #
-        # @param stream [IO]
-        #
-        # @return [Boolean]
-        #
-        # @api private
-        def enabled_for?(stream)
-          enabled = @enabled
-          return enabled unless enabled.nil?
-
-          from_env = env_enabled
-          return from_env unless from_env.nil?
-
-          stream.respond_to?(:tty?) && stream.tty?
+          !default_level.nil?
         end
 
         # Set how much color styles should render with
@@ -203,9 +183,7 @@ module Dry
         # @api public
         # @since x.y.z
         def color_level
-          return ColorLevel::NONE unless enabled?
-
-          @color_level || detected_level
+          default_level || ColorLevel::NONE
         end
 
         # How much color to render for the given stream, or `nil` for no styling at all
@@ -220,9 +198,7 @@ module Dry
         #
         # @api private
         def level_for(stream)
-          return nil unless enabled_for?(stream)
-
-          @color_level || detected_level
+          levels[stream.tty?]
         end
 
         # How much color to render when we don't know which stream the text is bound for
@@ -234,9 +210,7 @@ module Dry
         #
         # @api private
         def default_level
-          return nil unless enabled?
-
-          @color_level || detected_level
+          levels[default_stdout_terminal?]
         end
 
         # Remove all style escape sequences from the given text
@@ -277,10 +251,51 @@ module Dry
           @detected_level ||= ColorLevel.detect
         end
 
+        # Returns a hash with the color levels to render at, keyed true for a terminal, and false
+        # for anything else.
+        def levels
+          @levels ||= {
+            true => level_when(terminal: true),
+            false => level_when(terminal: false)
+          }.freeze
+        end
+
+        # Returns the color level for a terminal or non-terminal stream.
+        def level_when(terminal:)
+          # Check for enabled/disabled styling, in order of precedence:
+          #
+          # 1. `Style.enabled`
+          # 2. `NO_COLOR`/`FORCE_COLOR` from the env
+          # 3. Whether we're writing to a terminal
+          #
+          # Only `nil` here means "nothing to say". `false` is an explicit disable, so
+          # chaining these checks via `||` would skip straight past it.
+          enabled = [@enabled, env_enabled, terminal].compact.first
+
+          @color_level || detected_level if enabled
+        end
+
+        def terminal?(stream)
+          stream.respond_to?(:tty?) && stream.tty?
+        end
+
+        # Returns whether Ruby's own `$stdout` is a terminal.
+        #
+        # Checking this costs a system call, so we keep the answer against the stream we asked. A
+        # swapped `$stdout`, as capturing output in a test does, gets a fresh one.
+        def default_stdout_terminal?
+          out = $stdout
+          return @default_stdout_terminal if @default_stdout_checked.equal?(out)
+
+          @default_stdout_checked = out
+          @default_stdout_terminal = terminal?(out)
+        end
+
         def forget_environment
           @env_enabled = Unchecked
           @detected_level = nil
-          @checked_stdout = nil
+          @levels = nil
+          @default_stdout_checked = nil
         end
       end
 
