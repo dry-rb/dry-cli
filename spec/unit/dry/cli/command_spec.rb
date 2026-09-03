@@ -45,6 +45,109 @@ RSpec.describe "Command" do
     end
   end
 
+  # Commands are given their streams before `#initialize` runs, so they have no `super` to call
+  # rubocop:disable Lint/MissingSuper
+  describe "construction" do
+    let(:command_class) do
+      Class.new(Dry::CLI::Command) do
+        attr_reader :greeting
+
+        def initialize(greeting: "Hello")
+          @greeting = greeting
+        end
+
+        def call(**) = puts(greeting)
+      end
+    end
+
+    it "gives a subclass its streams without them reaching #initialize" do
+      out = StringIO.new
+
+      command = command_class.new(stdout: out, greeting: "Howdy")
+
+      expect(command.greeting).to eq "Howdy"
+      command.call
+      expect(out.string).to eq "Howdy\n"
+    end
+
+    it "makes the streams available inside #initialize" do
+      out = StringIO.new
+
+      Class.new(Dry::CLI::Command) {
+        def initialize
+          puts "Initialized"
+        end
+      }.new(stdout: out)
+
+      expect(out.string).to eq "Initialized\n"
+    end
+
+    it "passes along everything else the subclass asks for" do
+      command = Class.new(Dry::CLI::Command) do
+        attr_reader :args, :block
+
+        def initialize(*args, **kwargs, &block)
+          @args = [args, kwargs]
+          @block = block
+        end
+      end
+
+      instance = command.new(1, 2, stdout: StringIO.new, dep: "dep") { :called }
+
+      expect(instance.args).to eq [[1, 2], {dep: "dep"}]
+      expect(instance.block.call).to be :called
+    end
+
+    it "rejects keywords the command does not accept" do
+      command = Class.new(Dry::CLI::Command)
+
+      expect { command.new(stdou: StringIO.new) }.to raise_error ArgumentError
+    end
+
+    it "allows a subclass to catch and forward our stream keywords itself" do
+      out = StringIO.new
+      command = Class.new(Dry::CLI::Command) do
+        def initialize(greeting: "Hello", **opts)
+          super(**opts)
+          @greeting = greeting
+        end
+
+        def call(**) = puts(@greeting)
+      end
+
+      command.new(stdout: out, greeting: "Howdy").call
+
+      expect(out.string).to eq "Howdy\n"
+    end
+  end
+
+  describe "#with_streams" do
+    let(:command_class) do
+      Class.new(Dry::CLI::Command) do
+        def initialize(greeting: "Hello")
+          @greeting = greeting
+        end
+
+        def call(**) = puts(@greeting)
+      end
+    end
+
+    it "returns a copy writing to the given streams, leaving the original alone" do
+      original_out = StringIO.new
+      copy_out = StringIO.new
+      command = command_class.new(stdout: original_out, greeting: "Howdy")
+
+      copy = command.with_streams(stderr: StringIO.new, stdin: StringIO.new, stdout: copy_out)
+
+      command.call
+      copy.call
+      copy.call
+      expect(copy_out.string).to eq "Howdy\nHowdy\n"
+      expect(original_out.string).to eq "Howdy\n"
+    end
+  end
+  # rubocop:enable Lint/MissingSuper
+
   describe "writing output" do
     let(:command) do
       Class.new(Dry::CLI::Command) do

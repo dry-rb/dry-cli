@@ -9,6 +9,29 @@ module Dry
   class CLI
     # Base class for commands
     #
+    # ## Streams
+    #
+    # A command should write to the streams it is given, available as {#stdout}, {#stderr} and
+    # {#stdin}. These are set before `#initialize` runs, so you can access them in your
+    # `#initialize` as required.
+    #
+    # A command registered as an instance (instead of a class) is built before the CLI knows where
+    # its output should go, so at that point {#stdout} and {#stderr} fall back to Ruby's standard
+    # `$stdout` and `$stderr`. The CLI's real streams arrive later, when the command is called, so
+    # you should build on top of streams only when you use them:
+    #
+    # ```
+    # # Wrong: built at initialization; captures the fallback stream
+    # def initialize
+    #   @logger = Logger.new(stdout)
+    # end
+    #
+    # # Right: built on first use; captures the stream the CLI is using
+    # def logger
+    #   @logger ||= Logger.new(stdout)
+    # end
+    # ```
+    #
     # @since 0.1.0
     class Command
       include StyleMixin
@@ -439,14 +462,26 @@ module Dry
         superclass_variable_dup(:@options)
       end
 
+      # Returns a new command.
+      #
+      # The command is configured to write to the given streams, which are taken here and set on the
+      # command before `#initialize` runs. This allows a subclass to declare its own `#initialize`
+      # concerned with only its own arguments, and still use {#stdout}, {#stderr} and {#stdin}
+      # inside `#initialize` as needed. All other arguments are passed along untouched.
+      #
+      # @param stderr [IO, Dry::CLI::Stream, nil] the stream for error output
+      # @param stdin [IO, Dry::CLI::Stream, nil] the stream for input
+      # @param stdout [IO, Dry::CLI::Stream, nil] the stream for output
+      #
+      # @return [Dry::CLI::Command]
+      #
       # @since x.y.z
       # @api public
-      def initialize(stderr: nil, stdin: nil, stdout: nil)
-        @stderr = stderr
-        @stdin  = stdin
-        @stdout = stdout
-        @stderr_stream = nil
-        @stdout_stream = nil
+      def self.new(*args, stderr: nil, stdin: nil, stdout: nil, **kwargs, &block)
+        allocate.tap { |command|
+          command.send(:set_streams, stderr:, stdin:, stdout:)
+          command.send(:initialize, *args, **kwargs, &block)
+        }
       end
 
       # Returns a copy of this command, configured to write to the given streams.
