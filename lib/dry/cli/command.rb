@@ -484,16 +484,6 @@ module Dry
         }
       end
 
-      # Returns a copy of this command, configured to write to the given streams.
-      #
-      # Called on a command registered as an instance, since it is constructed before the CLI is
-      # invoked, and therefore before it knows where its output should go.
-      #
-      # @api private
-      def with_streams(stderr:, stdin:, stdout:)
-        dup.set_streams(stderr:, stdin:, stdout:)
-      end
-
       extend Forwardable
 
       delegate %i[
@@ -509,8 +499,6 @@ module Dry
         arguments_sorted_by_usage_order
         subcommands
       ] => "self.class"
-
-      protected
 
       # The error output used to print error messaging
       #
@@ -575,6 +563,18 @@ module Dry
         @stdout_stream ||= Stream.for(@stdout)
       end
 
+      # Returns a copy of this command, configured to write to the given streams.
+      #
+      # Called on a command registered as an instance, since it is constructed before the CLI is
+      # invoked, and therefore before it knows where its output should go.
+      #
+      # @api private
+      def with_streams(stderr:, stdin:, stdout:)
+        dup.send(:set_streams, stderr:, stdin:, stdout:)
+      end
+
+      private
+
       # @see #with_streams
       #
       # @api private
@@ -587,8 +587,6 @@ module Dry
 
         self
       end
-
-      private
 
       # Writes to the command's own {#stdout}, rather than the default `$stdout`.
       #
