@@ -104,6 +104,60 @@ RSpec.describe "Command" do
       expect { command.new(stdou: StringIO.new) }.to raise_error ArgumentError
     end
 
+    describe "auto-assigned keywords" do
+      it "names the keywords .new assigns itself" do
+        expect(Dry::CLI::Command.auto_assign_keywords).to eq %i[stderr stdin stdout]
+      end
+
+      it "lets a subclass auto-assign a keyword of its own and inherit .new" do
+        command_class = Class.new(Dry::CLI::Command) do
+          def self.auto_assign_keywords = super + %i[fs]
+
+          protected def auto_assign(fs: nil, **kwargs)
+            @fs = fs
+            super(**kwargs)
+          end
+
+          attr_reader :dep, :seen
+
+          def initialize(dep: nil)
+            @dep = dep
+            @seen = [stdout, @fs]
+          end
+        end
+
+        out = StringIO.new
+        command = command_class.new(stdout: out, fs: "fs", dep: "dep")
+
+        expect(command_class.auto_assign_keywords).to eq %i[stderr stdin stdout fs]
+        expect(command.dep).to eq "dep"
+        # Both were set before #initialize ran
+        expect(command.seen[0].raw).to be out
+        expect(command.seen[1]).to eq "fs"
+      end
+
+      it "keeps an auto-assigned keyword away from #initialize" do
+        command_class = Class.new(Dry::CLI::Command) do
+          def self.auto_assign_keywords = super + %i[fs]
+
+          protected def auto_assign(fs: nil, **kwargs)
+            @fs = fs
+            super(**kwargs)
+          end
+
+          attr_reader :kwargs
+
+          def initialize(**kwargs)
+            @kwargs = kwargs
+          end
+        end
+
+        command = command_class.new(stdout: StringIO.new, fs: "fs", dep: "dep")
+
+        expect(command.kwargs).to eq({dep: "dep"})
+      end
+    end
+
     it "allows a subclass to catch and forward our stream keywords itself" do
       out = StringIO.new
       command = Class.new(Dry::CLI::Command) do

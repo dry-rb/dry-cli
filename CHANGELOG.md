@@ -47,6 +47,28 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     ```
 
     `Command#stdout` and `#stderr` are now always instances of `Dry::CLI::Stream`. Use `stdout.raw` to access the underlying IO object directly.
+- `Dry::CLI::Command.auto_assign_keywords` and `Dry::CLI::Command#auto_assign`, naming the keywords that `.new` assigns itself, rather than passing on to `#initialize`. (@timriley in #167)
+
+    It is common for a CLI app to set up "standard" dependencies that can be provided to every command class. Making these auto-assigned keywords keeps each command's `#initialize` focused on its own distinct dependencies, while the standard dependencies are still assigned as expected. Command class authors do not need to supply `**kwargs` as an `#initialize` parameter and then call `super(**kwargs)`, which reduces boilerplate, as well as the chance of bugs from these lines being forgotten.
+
+    A subclass adding its own should add to the list of keywords and assign it in `#auto_assign`:
+
+    ```ruby
+    # In a CLI app's base command class
+
+    # `inflector:` is a standard dependency
+    def self.auto_assign_keywords = super + %i[inflector]
+
+    # Supply default values here
+    private def auto_assign(inflector: Dry::Inflector.new, **kwargs)
+      super(**kwargs)
+      @inflector = inflector
+    end
+    ```
+
+    This makes `inflector:` work as an argument to `.new`, and assigns its value to an ivar automatically, before `#initialize` is called.
+
+    Auto-assigned keywords are best used sparingly. Consider these for your CLI app's base command class only. A command cannot use auto-assigned keywords as their own `#initialize` parameters, since it will never receive them.
 
 ### Changed
 

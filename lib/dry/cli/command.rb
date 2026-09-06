@@ -462,25 +462,57 @@ module Dry
         superclass_variable_dup(:@options)
       end
 
+      # Returns the keywords that `.new` assigns itself, rather than passing on to `#initialize`.
+      #
+      # Auto-assigned keywords allow for the command classes in your CLI app to keep their
+      # `#initialize` methods focused on their distinct dependencies only, while "standard"
+      # dependencies (those required for every command) are still assigned as expected.
+      #
+      # This means that command class authors do not need to supply `**kwargs` as an `#initialize`
+      # parameter and then call `super(**kwargs)`. This reduces boilerplate, as well as the chance
+      # of bugs from these lines being forgotten.
+      #
+      # Auto-assigned keywords are best used sparingly. Consider these for your CLI app's base
+      # command class only.
+      #
+      # A command cannot use auto-assigned keywords as its own `#initialize` parameters, since it
+      # will never receive them.
+      #
+      # A subclass adding its own should add to this list and assign them in {#auto_assign}:
+      #
+      # ```
+      # def self.auto_assign_keywords = super + %i[inflector]
+      #
+      # private def auto_assign(inflector: Dry::Inflector.new, **kwargs)
+      #   super(**kwargs)
+      #   @inflector = inflector
+      # end
+      # ```
+      #
+      # @return [Array<Symbol>]
+      #
+      # @since x.y.z
+      # @api public
+      def self.auto_assign_keywords = %i[stderr stdin stdout]
+
       # Returns a new command.
       #
-      # The command is configured to write to the given streams, which are taken here and set on the
-      # command before `#initialize` runs. This allows a subclass to declare its own `#initialize`
-      # concerned with only its own arguments, and still use {#stdout}, {#stderr} and {#stdin}
-      # inside `#initialize` as needed. All other arguments are passed along untouched.
+      # The {.auto_assign_keywords} are taken here and assigned via {#auto_assign} before
+      # `#initialize` runs. This allows a subclass to declare its own `#initialize` concerned with
+      # only its own arguments, and still use {#stdout}, {#stderr} and {#stdin} inside `#initialize`
+      # as needed. All other arguments are passed along untouched.
       #
-      # @param stderr [IO, Dry::CLI::Stream, nil] the stream for error output
-      # @param stdin [IO, Dry::CLI::Stream, nil] the stream for input
-      # @param stdout [IO, Dry::CLI::Stream, nil] the stream for output
+      # @param args [Array] arguments for the command's own `#initialize`
+      # @param kwargs [Hash] the auto-assigned keywords, plus any for the command's own `#initialize`
       #
       # @return [Dry::CLI::Command]
       #
       # @since x.y.z
       # @api public
-      def self.new(*args, stderr: nil, stdin: nil, stdout: nil, **kwargs, &block)
+      def self.new(*args, **kwargs, &block)
         allocate.tap { |command|
-          command.send(:set_streams, stderr:, stdin:, stdout:)
-          command.send(:initialize, *args, **kwargs, &block)
+          command.send(:auto_assign, **kwargs.slice(*auto_assign_keywords))
+          command.send(:initialize, *args, **kwargs.except(*auto_assign_keywords), &block)
         }
       end
 
@@ -574,6 +606,16 @@ module Dry
       end
 
       private
+
+      # Assigns the {.auto_assign_keywords} to the command, before `#initialize` runs.
+      #
+      # @see .auto_assign_keywords
+      #
+      # @since x.y.z
+      # @api public
+      def auto_assign(stderr: nil, stdin: nil, stdout: nil)
+        set_streams(stderr:, stdin:, stdout:)
+      end
 
       # @see #with_streams
       #
