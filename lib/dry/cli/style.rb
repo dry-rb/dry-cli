@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "ansi"
+
 module Dry
   class CLI
     # A text style you can build up and reuse.
@@ -47,7 +49,7 @@ module Dry
       # ANSI escape sequence resetting all styles.
       #
       # @api private
-      RESET = "\e[0m"
+      RESET = ANSI::SGR0
 
       # The character every escape sequence we emit begins with.
       #
