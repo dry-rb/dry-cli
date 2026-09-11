@@ -104,45 +104,37 @@ RSpec.describe "Command" do
       expect { command.new(stdou: StringIO.new) }.to raise_error ArgumentError
     end
 
-    describe "auto-assigned keywords" do
-      it "names the keywords .new assigns itself" do
-        expect(Dry::CLI::Command.auto_assign_keywords).to eq %i[stderr stdin stdout]
+    describe "auto-initialized keywords" do
+      it "names the keywords .new gives to #auto_initialize" do
+        expect(Dry::CLI::Command.auto_initialize_keywords).to eq %i[stderr stdin stdout]
       end
 
-      it "lets a subclass auto-assign a keyword of its own and inherit .new" do
+      it "assigns a subclass's own keyword before #initialize runs" do
         command_class = Class.new(Dry::CLI::Command) do
-          def self.auto_assign_keywords = super + %i[fs]
-
-          protected def auto_assign(fs: nil, **kwargs)
-            @fs = fs
+          private def auto_initialize(fs: nil, **kwargs)
             super(**kwargs)
+            @fs = fs
           end
 
-          attr_reader :dep, :seen
+          attr_reader :seen
 
-          def initialize(dep: nil)
-            @dep = dep
+          def initialize
             @seen = [stdout, @fs]
           end
         end
 
         out = StringIO.new
-        command = command_class.new(stdout: out, fs: "fs", dep: "dep")
+        command = command_class.new(stdout: out, fs: "fs")
 
-        expect(command_class.auto_assign_keywords).to eq %i[stderr stdin stdout fs]
-        expect(command.dep).to eq "dep"
-        # Both were set before #initialize ran
         expect(command.seen[0].raw).to be out
         expect(command.seen[1]).to eq "fs"
       end
 
-      it "keeps an auto-assigned keyword away from #initialize" do
+      it "keeps an auto-initialized keyword away from #initialize" do
         command_class = Class.new(Dry::CLI::Command) do
-          def self.auto_assign_keywords = super + %i[fs]
-
-          protected def auto_assign(fs: nil, **kwargs)
-            @fs = fs
+          private def auto_initialize(fs: nil, **kwargs)
             super(**kwargs)
+            @fs = fs
           end
 
           attr_reader :kwargs
@@ -155,6 +147,82 @@ RSpec.describe "Command" do
         command = command_class.new(stdout: StringIO.new, fs: "fs", dep: "dep")
 
         expect(command.kwargs).to eq({dep: "dep"})
+      end
+
+      it "collects the keywords from every #auto_initialize in the hierarchy" do
+        base = Class.new(Dry::CLI::Command) do
+          private def auto_initialize(fs: nil, **kwargs)
+            super(**kwargs)
+            @fs = fs
+          end
+        end
+
+        command_class = Class.new(base) do
+          attr_reader :seen
+
+          private def auto_initialize(system_call: nil, nested: false, **kwargs)
+            super(**kwargs)
+            @seen = [stdout, @fs, system_call, nested]
+          end
+        end
+
+        out = StringIO.new
+        command = command_class.new(stdout: out, fs: "fs", system_call: "call", nested: true)
+
+        expect(command_class.auto_initialize_keywords)
+          .to eq %i[stderr stdin stdout fs system_call nested]
+        expect(command.seen[0].raw).to be out
+        expect(command.seen[1..]).to eq ["fs", "call", true]
+      end
+
+      it "leaves a class that adds no keywords of its own with those of its superclass" do
+        base = Class.new(Dry::CLI::Command) do
+          private def auto_initialize(fs: nil, **kwargs)
+            super(**kwargs)
+            @fs = fs
+          end
+        end
+
+        expect(Class.new(base).auto_initialize_keywords).to eq %i[stderr stdin stdout fs]
+      end
+
+      it "collects the keywords declared anywhere in the command's ancestry" do
+        prepended = Module.new do
+          def auto_initialize(from_prepend: nil, **kwargs)
+            super(**kwargs)
+            @from_prepend = from_prepend
+          end
+        end
+
+        included = Module.new do
+          def auto_initialize(from_include: nil, **kwargs)
+            super(**kwargs)
+            @from_include = from_include
+          end
+        end
+
+        # Prepending puts the module ahead of the class, including puts it behind, so the class's
+        # own `#auto_initialize` sits between the two
+        command_class = Class.new(Dry::CLI::Command) do
+          prepend prepended
+          include included
+
+          attr_reader :from_prepend, :from_include, :own
+
+          private def auto_initialize(own: nil, **kwargs)
+            super(**kwargs)
+            @own = own
+          end
+        end
+
+        command = command_class.new(
+          stdout: StringIO.new, from_prepend: "prepend", from_include: "include", own: "own"
+        )
+
+        expect(command_class.auto_initialize_keywords)
+          .to eq %i[stderr stdin stdout from_include own from_prepend]
+        expect([command.from_prepend, command.from_include, command.own])
+          .to eq %w[prepend include own]
       end
     end
 
