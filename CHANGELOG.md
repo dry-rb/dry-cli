@@ -67,6 +67,14 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
     Auto-initialized keywords are best used sparingly. Consider these for your CLI app's base command class only. A command cannot use auto-initialized keywords as their own `#initialize` parameters, since it will never receive them.
 
+- Formatting support for styled text. (@alassek in #168)
+
+    `Dry::CLI::Style::Text` objects have a `#%` method that behaves like `String#%` but respects the style information.
+
+    ```ruby
+    style.bold.red["%s"] % "boom" # => "\e[1;31mboom\e[0m"
+    ```
+
 ### Changed
 
 - Commands and callbacks are now passed only the params their `#call` actually declares, so they no longer need a `**` catch-all to tolerate params contributed by other gems. (@afomera in #165)

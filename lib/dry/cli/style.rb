@@ -42,6 +42,8 @@ module Dry
       require_relative "style/color_level"
       require_relative "style/text"
 
+      autoload :Formatter, "dry/cli/style/formatter"
+
       # ANSI escape sequence resetting all styles.
       #
       # @api private
