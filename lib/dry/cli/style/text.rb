@@ -116,6 +116,22 @@ module Dry
           other.is_a?(Text) ? Text.new(parts + other.parts) : Text.new(parts + [[nil, other]])
         end
 
+        # Apply arguments as a formatting string.
+        #
+        # @see String#%
+        #
+        # @example
+        #   format = dim["Waiting for "] + bold["%d"] + dim[" seconds"]
+        #   format % 5 # => "\e[2mWaiting for \e[0m\e[1m5\e[0m\e[2m seconds\e[0m"
+        #
+        # @param args [Object]
+        #
+        # @return [Dry::CLI::Style::Text]
+        #
+        # @api public
+        # @since x.y.z
+        def %(args) = Formatter.call(self, args)
+
         # The length of the text without any styling.
         #
         # @return [Integer]
