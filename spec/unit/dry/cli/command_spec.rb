@@ -45,6 +45,231 @@ RSpec.describe "Command" do
     end
   end
 
+  # Commands are given their streams before `#initialize` runs, so they have no `super` to call
+  # rubocop:disable Lint/MissingSuper
+  describe "construction" do
+    let(:command_class) do
+      Class.new(Dry::CLI::Command) do
+        attr_reader :greeting
+
+        def initialize(greeting: "Hello")
+          @greeting = greeting
+        end
+
+        def call(**) = puts(greeting)
+      end
+    end
+
+    it "gives a subclass its streams without them reaching #initialize" do
+      out = StringIO.new
+
+      command = command_class.new(stdout: out, greeting: "Howdy")
+
+      expect(command.greeting).to eq "Howdy"
+      command.call
+      expect(out.string).to eq "Howdy\n"
+    end
+
+    it "makes the streams available inside #initialize" do
+      out = StringIO.new
+
+      Class.new(Dry::CLI::Command) {
+        def initialize
+          puts "Initialized"
+        end
+      }.new(stdout: out)
+
+      expect(out.string).to eq "Initialized\n"
+    end
+
+    it "passes along everything else the subclass asks for" do
+      command = Class.new(Dry::CLI::Command) do
+        attr_reader :args, :block
+
+        def initialize(*args, **kwargs, &block)
+          @args = [args, kwargs]
+          @block = block
+        end
+      end
+
+      instance = command.new(1, 2, stdout: StringIO.new, dep: "dep") { :called }
+
+      expect(instance.args).to eq [[1, 2], {dep: "dep"}]
+      expect(instance.block.call).to be :called
+    end
+
+    it "rejects keywords the command does not accept" do
+      command = Class.new(Dry::CLI::Command)
+
+      expect { command.new(stdou: StringIO.new) }.to raise_error ArgumentError
+    end
+
+    describe "auto-initialized keywords" do
+      it "names the keywords .new gives to #auto_initialize" do
+        expect(Dry::CLI::Command.auto_initialize_keywords).to eq %i[stderr stdin stdout]
+      end
+
+      it "assigns a subclass's own keyword before #initialize runs" do
+        command_class = Class.new(Dry::CLI::Command) do
+          private def auto_initialize(fs: nil, **kwargs)
+            super(**kwargs)
+            @fs = fs
+          end
+
+          attr_reader :seen
+
+          def initialize
+            @seen = [stdout, @fs]
+          end
+        end
+
+        out = StringIO.new
+        command = command_class.new(stdout: out, fs: "fs")
+
+        expect(command.seen[0].raw).to be out
+        expect(command.seen[1]).to eq "fs"
+      end
+
+      it "keeps an auto-initialized keyword away from #initialize" do
+        command_class = Class.new(Dry::CLI::Command) do
+          private def auto_initialize(fs: nil, **kwargs)
+            super(**kwargs)
+            @fs = fs
+          end
+
+          attr_reader :kwargs
+
+          def initialize(**kwargs)
+            @kwargs = kwargs
+          end
+        end
+
+        command = command_class.new(stdout: StringIO.new, fs: "fs", dep: "dep")
+
+        expect(command.kwargs).to eq({dep: "dep"})
+      end
+
+      it "collects the keywords from every #auto_initialize in the hierarchy" do
+        base = Class.new(Dry::CLI::Command) do
+          private def auto_initialize(fs: nil, **kwargs)
+            super(**kwargs)
+            @fs = fs
+          end
+        end
+
+        command_class = Class.new(base) do
+          attr_reader :seen
+
+          private def auto_initialize(system_call: nil, nested: false, **kwargs)
+            super(**kwargs)
+            @seen = [stdout, @fs, system_call, nested]
+          end
+        end
+
+        out = StringIO.new
+        command = command_class.new(stdout: out, fs: "fs", system_call: "call", nested: true)
+
+        expect(command_class.auto_initialize_keywords)
+          .to eq %i[stderr stdin stdout fs system_call nested]
+        expect(command.seen[0].raw).to be out
+        expect(command.seen[1..]).to eq ["fs", "call", true]
+      end
+
+      it "leaves a class that adds no keywords of its own with those of its superclass" do
+        base = Class.new(Dry::CLI::Command) do
+          private def auto_initialize(fs: nil, **kwargs)
+            super(**kwargs)
+            @fs = fs
+          end
+        end
+
+        expect(Class.new(base).auto_initialize_keywords).to eq %i[stderr stdin stdout fs]
+      end
+
+      it "collects the keywords declared anywhere in the command's ancestry" do
+        prepended = Module.new do
+          def auto_initialize(from_prepend: nil, **kwargs)
+            super(**kwargs)
+            @from_prepend = from_prepend
+          end
+        end
+
+        included = Module.new do
+          def auto_initialize(from_include: nil, **kwargs)
+            super(**kwargs)
+            @from_include = from_include
+          end
+        end
+
+        # Prepending puts the module ahead of the class, including puts it behind, so the class's
+        # own `#auto_initialize` sits between the two
+        command_class = Class.new(Dry::CLI::Command) do
+          prepend prepended
+          include included
+
+          attr_reader :from_prepend, :from_include, :own
+
+          private def auto_initialize(own: nil, **kwargs)
+            super(**kwargs)
+            @own = own
+          end
+        end
+
+        command = command_class.new(
+          stdout: StringIO.new, from_prepend: "prepend", from_include: "include", own: "own"
+        )
+
+        expect(command_class.auto_initialize_keywords)
+          .to eq %i[stderr stdin stdout from_include own from_prepend]
+        expect([command.from_prepend, command.from_include, command.own])
+          .to eq %w[prepend include own]
+      end
+    end
+
+    it "allows a subclass to catch and forward our stream keywords itself" do
+      out = StringIO.new
+      command = Class.new(Dry::CLI::Command) do
+        def initialize(greeting: "Hello", **opts)
+          super(**opts)
+          @greeting = greeting
+        end
+
+        def call(**) = puts(@greeting)
+      end
+
+      command.new(stdout: out, greeting: "Howdy").call
+
+      expect(out.string).to eq "Howdy\n"
+    end
+  end
+
+  describe "#with_streams" do
+    let(:command_class) do
+      Class.new(Dry::CLI::Command) do
+        def initialize(greeting: "Hello")
+          @greeting = greeting
+        end
+
+        def call(**) = puts(@greeting)
+      end
+    end
+
+    it "returns a copy writing to the given streams, leaving the original alone" do
+      original_out = StringIO.new
+      copy_out = StringIO.new
+      command = command_class.new(stdout: original_out, greeting: "Howdy")
+
+      copy = command.with_streams(stderr: StringIO.new, stdin: StringIO.new, stdout: copy_out)
+
+      command.call
+      copy.call
+      copy.call
+      expect(copy_out.string).to eq "Howdy\nHowdy\n"
+      expect(original_out.string).to eq "Howdy\n"
+    end
+  end
+  # rubocop:enable Lint/MissingSuper
+
   describe "writing output" do
     let(:command) do
       Class.new(Dry::CLI::Command) do

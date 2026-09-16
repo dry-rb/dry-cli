@@ -47,14 +47,46 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     ```
 
     `Command#stdout` and `#stderr` are now always instances of `Dry::CLI::Stream`. Use `stdout.raw` to access the underlying IO object directly.
+- `Dry::CLI::Command#auto_initialize`, for taking select keywords that `.new` assigns itself, rather than passing on to `#initialize`. (@timriley in #167)
+
+    It is common for a CLI app to set up "standard" dependencies that can be provided to every command class. Making these auto-initialized keywords keeps each command's `#initialize` focused on its own distinct dependencies, while the standard dependencies are still assigned as expected. Command class authors do not need to supply `**kwargs` as an `#initialize` parameter and then call `super(**kwargs)`, which reduces boilerplate, as well as the chance of bugs from these lines being forgotten.
+
+    A subclass adding its own needs only to declare and assign them. Write it alongside your `#initialize`, since the two share the job of setting the command up:
+
+    ```ruby
+    # In a CLI app's base command class
+
+    # `inflector:` becomes a standard dependency, and can also take a default value.
+    private def auto_initialize(inflector: Dry::Inflector.new, **kwargs)
+      super(**kwargs)
+      @inflector = inflector
+    end
+    ```
+
+    This makes `inflector:` work as an argument to `.new`, and assigns its value to an ivar automatically, before `#initialize` is called.
+
+    Auto-initialized keywords are best used sparingly. Consider these for your CLI app's base command class only. A command cannot use auto-initialized keywords as their own `#initialize` parameters, since it will never receive them.
 
 ### Changed
 
 - Commands and callbacks are now passed only the params their `#call` actually declares, so they no longer need a `**` catch-all to tolerate params contributed by other gems. (@afomera in #165)
 
     Params are passed through in full when `#call` can take them as a whole: when it declares a keyword splat or a positional. Otherwise they're matched against the keywords it declares.
+- `Dry::CLI::Command.new` now takes three keyword arguments: `stdout:`, `stdin:` and `stderr:`. These can be used to inject I/O streams, which is useful for testing. (@aaronmallen in #151, @timriley in #167)
 
-- [POTENTIALLY BREAKING] `Dry::CLI::Command`'s constructor now takes three keyword arguments: `stdout:`, `stdin:`, and `:stderr`. They can be used to inject I/O stream, which is useful for testing.
+    These arguments are taken by `.new` and set on the command instance before `#initialize` runs, so `#initialize` in a subclass only needs to worry about its own arguments, with no call to `super` required:
+
+    ```ruby
+    class Generate < Dry::CLI::Command
+      def initialize(generator: Generator.new)
+        @generator = generator
+      end
+    end
+
+    Generate.new(stdout: io, generator: generator)
+    ```
+
+    A command registered as an instance will have its streams replaced after it is built, so avoid building on top of the streams from inside `#initialize`. Instead, build from a stream lazily, only when you use it. See `Dry::CLI::Command` for details.
 - The `example` DSL now takes the example and its description as separate arguments, called once per example. Previously, examples were passed as a single array of strings with the description embedded after a `#`. (@aaronmallen and @timriley in #152)
 
   ```ruby

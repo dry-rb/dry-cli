@@ -9,6 +9,29 @@ module Dry
   class CLI
     # Base class for commands
     #
+    # ## Streams
+    #
+    # A command should write to the streams it is given, available as {#stdout}, {#stderr} and
+    # {#stdin}. These are set before `#initialize` runs, so you can access them in your
+    # `#initialize` as required.
+    #
+    # A command registered as an instance (instead of a class) is built before the CLI knows where
+    # its output should go, so at that point {#stdout} and {#stderr} fall back to Ruby's standard
+    # `$stdout` and `$stderr`. The CLI's real streams arrive later, when the command is called, so
+    # you should build on top of streams only when you use them:
+    #
+    # ```
+    # # Wrong: built at initialization; captures the fallback stream
+    # def initialize
+    #   @logger = Logger.new(stdout)
+    # end
+    #
+    # # Right: built on first use; captures the stream the CLI is using
+    # def logger
+    #   @logger ||= Logger.new(stdout)
+    # end
+    # ```
+    #
     # @since 0.1.0
     class Command
       include StyleMixin
@@ -439,24 +462,89 @@ module Dry
         superclass_variable_dup(:@options)
       end
 
-      # @since x.y.z
-      # @api public
-      def initialize(stderr: nil, stdin: nil, stdout: nil)
-        @stderr = stderr
-        @stdin  = stdin
-        @stdout = stdout
-        @stderr_stream = nil
-        @stdout_stream = nil
-      end
-
-      # Returns a copy of this command, configured to write to the given streams.
+      # Returns the keywords that `.new` gives to `#auto_initialize`, rather than passing on to
+      # `#initialize` itself.
       #
-      # Called on a command registered as an instance, since it is constructed before the CLI is
-      # invoked, and therefore before it knows where its output should go.
+      # Auto-initialized keywords allow for the command classes in your CLI app to keep their
+      # `#initialize` methods focused on their distinct dependencies only, while "standard"
+      # dependencies (those required for every command) are still assigned as expected.
+      #
+      # This means that command class authors do not need to supply `**kwargs` as an `#initialize`
+      # parameter and then call `super(**kwargs)`. This reduces boilerplate, as well as the chance
+      # of bugs from these lines being forgotten.
+      #
+      # These are collected from every `#auto_initialize` in the command's ancestry, so a class
+      # adding its own needs only to declare and assign them. Define it alongside your
+      # `#initialize`, since the two share the job of setting the command up:
+      #
+      # ```
+      # private def auto_initialize(inflector: Dry::Inflector.new, **kwargs)
+      #   super(**kwargs)
+      #   @inflector = inflector
+      # end
+      # ```
+      #
+      # Auto-initialized keywords are best used sparingly. Consider these for your CLI app's base
+      # command class only.
+      #
+      # A command cannot use auto-initialized keywords as its own `#initialize` parameters, since it
+      # will never receive them.
+      #
+      # @return [Array<Symbol>]
       #
       # @api private
-      def with_streams(stderr:, stdin:, stdout:)
-        dup.set_streams(stderr:, stdin:, stdout:)
+      def self.auto_initialize_keywords
+        keywords = []
+        method = instance_method(:auto_initialize)
+
+        # Each `#auto_initialize` declares the keywords it wants, then should take the rest as
+        # `**kwargs` to hand to `super`, so follow that same path to collect them all.
+        while method
+          own_keywords = method.parameters.filter_map { |type, keyword|
+            keyword if type == :key || type == :keyreq
+          }
+          keywords = own_keywords | keywords
+
+          # A method taking no `**kwargs` presumably never calls super; end the chain here.
+          break unless method.parameters.any? { |type, _| type == :keyrest }
+
+          method = method.super_method
+        end
+
+        keywords
+      end
+
+      # Returns a new command.
+      #
+      # The {.auto_initialize_keywords} are taken here and given to {#auto_initialize} before
+      # `#initialize` runs. This allows a subclass to declare its own `#initialize` concerned with
+      # only its own arguments, and still use {#stdout}, {#stderr} and {#stdin} inside `#initialize`
+      # as needed. All other arguments are passed along untouched.
+      #
+      # @param args [Array] arguments for the command's own `#initialize`
+      # @param kwargs [Hash] the auto-initialized keywords, plus any for the command's own
+      #   `#initialize`
+      #
+      # @return [Dry::CLI::Command]
+      #
+      # @since x.y.z
+      # @api public
+      def self.new(*args, **kwargs, &block)
+        auto_initialize_keywords = self.auto_initialize_keywords
+
+        allocate.tap { |command|
+          command.send(:auto_initialize, **kwargs.slice(*auto_initialize_keywords))
+          command.send(:initialize, *args, **kwargs.except(*auto_initialize_keywords), &block)
+        }
+      end
+
+      # Assigns framework-level attributes before `#initialize` runs.
+      #
+      # @see .auto_initialize_keywords
+      #
+      # @api private
+      private def auto_initialize(stderr: nil, stdin: nil, stdout: nil)
+        set_streams(stderr:, stdin:, stdout:)
       end
 
       extend Forwardable
@@ -474,8 +562,6 @@ module Dry
         arguments_sorted_by_usage_order
         subcommands
       ] => "self.class"
-
-      protected
 
       # The error output used to print error messaging
       #
@@ -540,6 +626,18 @@ module Dry
         @stdout_stream ||= Stream.for(@stdout)
       end
 
+      # Returns a copy of this command, configured to write to the given streams.
+      #
+      # Called on a command registered as an instance, since it is constructed before the CLI is
+      # invoked, and therefore before it knows where its output should go.
+      #
+      # @api private
+      def with_streams(stderr:, stdin:, stdout:)
+        dup.send(:set_streams, stderr:, stdin:, stdout:)
+      end
+
+      private
+
       # @see #with_streams
       #
       # @api private
@@ -552,8 +650,6 @@ module Dry
 
         self
       end
-
-      private
 
       # Writes to the command's own {#stdout}, rather than the default `$stdout`.
       #
