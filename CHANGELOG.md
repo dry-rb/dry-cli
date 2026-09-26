@@ -75,6 +75,42 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     style.bold.red["%s"] % "boom" # => "\e[1;31mboom\e[0m"
     ```
 
+- `Dry::CLI::Spinner`: a simple, animated spinner for long-running tasks. (@alassek in #169)
+
+    Four default styles: Dot, Ellipsis, Line, MiniDot.
+
+    The simplest case is a block to run the task and a static message to display (supports styled text):
+
+    ```ruby
+    Dry::CLI::Spinner::Dot.run("%{spinner} working...") do
+      sleep 3
+    end
+    ```
+
+    If you require more control, you can provide a block argument and register `before_tick` and `after_tick` callbacks:
+
+    ```ruby
+    template =  style.bold.green["%{spinner}"]
+    template += style.italic.dim[" waiting "]
+    template += style.bold.white["%{num}"]
+    template += style.italic.dim[" seconds"]
+
+    Dry::CLI::Spinner::MiniDot.run(template) do |s|
+      trailer = Dry::CLI::Spinner::Ellipsis.frames.cycle
+      start   = Time.now
+
+      s.before_tick do |_stream, data|
+        data[:num] = (Time.now - start).ceil
+      end
+
+      s.after_tick do |stream|
+        stream << style.italic.dim[trailer.next]
+      end
+
+      s.run { sleep 6 }
+    end
+    ```
+
 ### Changed
 
 - Commands and callbacks are now passed only the params their `#call` actually declares, so they no longer need a `**` catch-all to tolerate params contributed by other gems. (@afomera in #165)
