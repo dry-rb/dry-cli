@@ -24,6 +24,8 @@ module Dry
     require "dry/cli/inflector"
     require "dry/cli/dispatch"
 
+    autoload :Spinner, "dry/cli/spinner"
+
     # Check if command
     #
     # @param command [Object] the command to check
