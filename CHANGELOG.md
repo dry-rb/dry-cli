@@ -74,6 +74,11 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     ```ruby
     style.bold.red["%s"] % "boom" # => "\e[1;31mboom\e[0m"
     ```
+- Enforce `required: true` on options. (@capripot and @timriley in #122)
+
+    Before, `required: true` was accepted on options but did nothing. Now, if a required option is not given, the command does not run, and prints an error that names the missing option. Required options are marked as REQUIRED in the help output. A required option with a `default:` always has a value, so it is not enforced and not marked as required.
+
+    If your commands already declare options with `required: true` and no default, they will now fail when the user leaves those options out.
 
 ### Changed
 

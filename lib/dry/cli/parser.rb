@@ -41,7 +41,6 @@ module Dry
           end
         end.parse!(arguments)
 
-        parsed_options = command.default_params.merge(parsed_options)
         parse_required_params(command, arguments, prog_name, parsed_options)
       rescue ::OptionParser::ParseError => exception
         Result.failure("ERROR: \"#{prog_name}\" was called with #{exception.reason} \"#{exception.args.join(" ")}\"")
@@ -55,38 +54,75 @@ module Dry
       # @since 0.1.0
       # @api private
       #
-      # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Layout/LineLength
+      # rubocop:disable Metrics/AbcSize
       def self.parse_required_params(command, arguments, prog_name, parsed_options)
-        parsed_params = match_arguments(command.arguments, arguments, parsed_options)
-        parsed_required_params = match_arguments(command.required_arguments, arguments, parsed_options)
-        all_required_params_satisfied = command.required_arguments.all? { |param| !parsed_required_params[param.name].nil? }
+        parsed_options_with_defaults = command.default_params.merge(parsed_options)
+        parsed_params = match_arguments(command.arguments, arguments, parsed_options_with_defaults)
+        parsed_required_params = match_arguments(command.required_arguments, arguments, parsed_options_with_defaults)
+
+        missing_arguments = command.required_arguments.select { |param| parsed_required_params[param.name].nil? }
+        missing_options = command.required_options.select { |option| parsed_options_with_defaults[option.name].nil? }
 
         unused_arguments = arguments.drop(command.required_arguments.length)
 
-        unless all_required_params_satisfied
-          # Drop nils as well as empty arrays; an array argument that consumed nothing was not
-          # given, so it shouldn't be listed among the arguments that were.
-          parsed_required_params_values = parsed_required_params.values.compact.reject { |v| v.is_a?(Array) && v.empty? }
-
-          usage = "\nUsage: \"#{prog_name} #{command.required_arguments.map(&:description_name).join(" ")}"
-
-          usage += " | #{prog_name} SUBCOMMAND" if command.subcommands.any?
-
-          usage += '"'
-
-          if parsed_required_params_values.empty?
-            return Result.failure("ERROR: \"#{prog_name}\" was called with no arguments#{usage}")
-          else
-            return Result.failure("ERROR: \"#{prog_name}\" was called with arguments #{parsed_required_params_values}#{usage}")
-          end
+        if missing_arguments.any? || missing_options.any?
+          return missing_params_failure(
+            command, prog_name, parsed_required_params, missing_arguments, missing_options
+          )
         end
 
         parsed_params.reject! { |_key, value| value.nil? }
-        parsed_options = parsed_options.merge(parsed_params)
+        parsed_options = parsed_options_with_defaults.merge(parsed_params)
         parsed_options = parsed_options.merge(args: unused_arguments) if unused_arguments.any?
         Result.success(parsed_options)
       end
-      # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity, Layout/LineLength
+      # rubocop:enable Metrics/AbcSize
+
+      # @api private
+      def self.short_usage(command, prog_name)
+        usage = [
+          prog_name,
+          *command.required_arguments.map(&:description_name),
+          *command.required_options.map { |option| Banner.option_usage(option) }
+        ].join(" ")
+        usage += " | #{prog_name} SUBCOMMAND" if command.subcommands.any?
+
+        "Usage: \"#{usage}\""
+      end
+
+      # @api private
+      def self.missing_params_failure(command, prog_name, parsed_required_params, missing_arguments, missing_options)
+        lines = []
+
+        if missing_arguments.any?
+          # Drop nils as well as empty arrays; an array argument that consumed nothing was not
+          # given, so it shouldn't be listed among the arguments that were.
+          parsed_required_params_values =
+            parsed_required_params.values.compact.reject { |v| v.is_a?(Array) && v.empty? }
+
+          lines <<
+            if parsed_required_params_values.empty?
+              "ERROR: \"#{prog_name}\" was called with no arguments"
+            else
+              "ERROR: \"#{prog_name}\" was called with arguments #{parsed_required_params_values}"
+            end
+          lines << "Missing #{missing_options_label(missing_options)}" if missing_options.any?
+        else
+          lines << "ERROR: \"#{prog_name}\" is missing #{missing_options_label(missing_options, separator: " ")}"
+        end
+
+        lines << short_usage(command, prog_name)
+
+        Result.failure(lines.join("\n"))
+      end
+
+      # @api private
+      def self.missing_options_label(options, separator: ": ")
+        label = options.one? ? "required option" : "required options"
+        names = options.map { |option| "--#{Inflector.dasherize(option.name)}" }
+
+        "#{label}#{separator}#{names.join(", ")}"
+      end
 
       # rubocop:disable Metrics/PerceivedComplexity
       def self.match_arguments(command_arguments, arguments, default_values)

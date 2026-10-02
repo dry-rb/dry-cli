@@ -343,4 +343,126 @@ RSpec.describe "CLI" do
       expect(err.string).to eq "Uh oh\n"
     end
   end
+
+  context "with required options" do
+    let(:cli) { Dry.CLI(command_class) }
+    let(:cmd) { File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME)) }
+
+    let(:command_class) do
+      Class.new(Dry::CLI::Command) do
+        argument :name, required: true, desc: "Name"
+        option :host, required: true, aliases: %w[H], desc: "Host"
+        option :port, required: true, desc: "Port"
+        option :env, required: true, default: "development", desc: "Env"
+
+        def call(**params)
+          puts params.map { |key, value| "#{key}=#{value}" }.sort.join(" ")
+        end
+      end
+    end
+
+    it "shows help, marking required options without defaults as required" do
+      output = capture_output { cli.call(arguments: %w[--help]) }
+
+      expect(output).to eq <<~OUTPUT
+        Command:
+          #{cmd}
+
+        Usage:
+          #{cmd} NAME
+
+        Arguments:
+          NAME                    # REQUIRED Name
+
+        Options:
+          --host=VALUE, -H VALUE  # REQUIRED Host
+          --port=VALUE            # REQUIRED Port
+          --env=VALUE             # Env, default: "development"
+          --help, -h              # Print this help
+      OUTPUT
+    end
+
+    it "accepts required options given by name or alias, and fills defaults" do
+      output = capture_output { cli.call(arguments: %w[app -H example.com --port=80]) }
+
+      expect(output).to eq("env=development host=example.com name=app port=80\n")
+    end
+
+    it "names a missing required option" do
+      error = capture_error { cli.call(arguments: %w[app --host=example.com]) }
+
+      expect(error).to eq(
+        "ERROR: \"#{cmd}\" is missing required option --port\n" \
+        "Usage: \"#{cmd} NAME --host=VALUE --port=VALUE\"\n"
+      )
+    end
+
+    it "names several missing required options" do
+      error = capture_error { cli.call(arguments: %w[app]) }
+
+      expect(error).to eq(
+        "ERROR: \"#{cmd}\" is missing required options --host, --port\n" \
+        "Usage: \"#{cmd} NAME --host=VALUE --port=VALUE\"\n"
+      )
+    end
+
+    it "names missing required options after missing arguments" do
+      error = capture_error { cli.call(arguments: []) }
+
+      expect(error).to eq(
+        "ERROR: \"#{cmd}\" was called with no arguments\n" \
+        "Missing required options: --host, --port\n" \
+        "Usage: \"#{cmd} NAME --host=VALUE --port=VALUE\"\n"
+      )
+    end
+
+    it "does not mention given options when only arguments are missing" do
+      error = capture_error { cli.call(arguments: %w[--host=example.com --port=80]) }
+
+      expect(error).to eq(
+        "ERROR: \"#{cmd}\" was called with no arguments\n" \
+        "Usage: \"#{cmd} NAME --host=VALUE --port=VALUE\"\n"
+      )
+    end
+
+    context "with a required boolean option" do
+      let(:command_class) do
+        Class.new(Dry::CLI::Command) do
+          option :force, type: :boolean, required: true
+
+          def call(force:)
+            puts "force=#{force}"
+          end
+        end
+      end
+
+      it "accepts the negated form" do
+        output = capture_output { cli.call(arguments: %w[--no-force]) }
+
+        expect(output).to eq("force=false\n")
+      end
+    end
+
+    it "shows required options in the usage line, before any subcommands" do
+      command_class = Class.new(Dry::CLI::Command) do
+        option :env, required: true, aliases: %w[e]
+
+        def call(**); end
+      end
+      subcommand_class = Class.new(Dry::CLI::Command)
+
+      cli = Dry::CLI.new do |c|
+        c.register "deploy", command_class do |prefix|
+          prefix.register "status", subcommand_class
+        end
+      end
+
+      error = capture_error { cli.call(arguments: %w[deploy]) }
+
+      expect(error).to eq(
+        "ERROR: \"rspec deploy\" is missing required option --env\n" \
+        "Usage: \"rspec deploy --env=VALUE | rspec deploy SUBCOMMAND\"\n"
+      )
+    end
+  end
 end
