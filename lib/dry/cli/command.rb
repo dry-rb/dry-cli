@@ -374,6 +374,34 @@ module Dry
       #   #
       #   # Options:
       #   #   --port=VALUE, -p VALUE
+      #
+      # @example Required
+      #   require "dry/cli"
+      #
+      #   class Deploy < Dry::CLI::Command
+      #     option :env, required: true, desc: "The target environment"
+      #
+      #     def call(env:, **)
+      #       puts "deploying to #{env}"
+      #     end
+      #   end
+      #
+      #   # $ foo deploy --env=production
+      #   # deploying to production
+      #
+      #   # $ foo deploy
+      #   # ERROR: "foo deploy" is missing required option --env
+      #   # Usage: "foo deploy --env=VALUE"
+      #
+      #   # $ foo deploy --help
+      #   # # ...
+      #   #
+      #   # Options:
+      #   #   --env=VALUE  # REQUIRED The target environment
+      #   #   --help, -h   # Print this help
+      #
+      #   # A required option with a default always has a value, so it is not
+      #   # enforced and not shown as REQUIRED.
       def self.option(name, options = {})
         new_op = Option.new(name, options)
 
