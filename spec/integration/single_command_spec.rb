@@ -9,9 +9,9 @@ RSpec.describe "Single command" do
     it "shows usage" do
       _, stderr, = Open3.capture3("baz")
       expect(stderr).to eq(
-        "ERROR: \"#{cmd}\" was called with no arguments\n"\
-        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"\
-        "Missing required options:\n    --mandatory-option=VALUE          # REQUIRED Mandatory option\n"
+        "ERROR: \"#{cmd}\" was called with no arguments\n" \
+        "Missing required option: --mandatory-option\n" \
+        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"
       )
     end
 
@@ -42,22 +42,22 @@ RSpec.describe "Single command" do
       expect(output).to eq(expected_output)
     end
 
-    it "with mandatory arg and non-required option" do
+    it "with mandatory arg but missing required option" do
       _, stderr, = Open3.capture3("baz first_arg --option_one=test2")
 
-      if RUBY_VERSION < "3.4"
-        expect(stderr).to eq(
-          "ERROR: \"#{cmd}\" was called with arguments [\"first_arg\"] and options {:option_one=>\"test2\"}\n" \
-          "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"\
-          "Missing required options:\n    --mandatory-option=VALUE          # REQUIRED Mandatory option\n"
-        )
-      else
-        expect(stderr).to eq(
-          "ERROR: \"#{cmd}\" was called with arguments [\"first_arg\"] and options {option_one: \"test2\"}\n" \
-          "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"\
-          "Missing required options:\n    --mandatory-option=VALUE          # REQUIRED Mandatory option\n"
-        )
-      end
+      expect(stderr).to eq(
+        "ERROR: \"#{cmd}\" is missing required option --mandatory-option\n" \
+        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"
+      )
+    end
+
+    it "with required option but missing mandatory arg" do
+      _, stderr, = Open3.capture3("baz --mandatory-option=required")
+
+      expect(stderr).to eq(
+        "ERROR: \"#{cmd}\" was called with no arguments\n" \
+        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"
+      )
     end
 
     it "with option_one" do
