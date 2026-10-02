@@ -9,9 +9,7 @@ RSpec.describe "Single command" do
     it "shows usage" do
       _, stderr, = Open3.capture3("baz")
       expect(stderr).to eq(
-        "ERROR: \"#{cmd}\" was called with no arguments\n" \
-        "Missing required option: --mandatory-option\n" \
-        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE\"\n"
+        "ERROR: \"#{cmd}\" was called with no arguments\nUsage: \"#{cmd} MANDATORY_ARG\"\n"
       )
     end
 
@@ -35,67 +33,39 @@ RSpec.describe "Single command" do
           --option-one=VALUE, -1 VALUE           # Option one
           --[no-]boolean-option, -b              # Option boolean
           --option-with-default=VALUE, -d VALUE  # Option default, default: "test"
-          --mandatory-option=VALUE               # REQUIRED Mandatory option
-          --mandatory-option-with-default=VALUE  # Mandatory option, default: "mandatory default"
           --help, -h                             # Print this help
       OUTPUT
       expect(output).to eq(expected_output)
     end
 
-    it "with mandatory arg but missing required option" do
-      _, stderr, = Open3.capture3("baz first_arg --option_one=test2")
-
-      expect(stderr).to eq(
-        "ERROR: \"#{cmd}\" is missing required option --mandatory-option\n" \
-        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE\"\n"
-      )
-    end
-
-    it "with required option but missing mandatory arg" do
-      _, stderr, = Open3.capture3("baz --mandatory-option=required")
-
-      expect(stderr).to eq(
-        "ERROR: \"#{cmd}\" was called with no arguments\n" \
-        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE\"\n"
-      )
-    end
-
     it "with option_one" do
-      output = `baz first_arg --option-one=test2 --mandatory-option=required`
+      output = `baz first_arg --option-one=test2`
 
       if RUBY_VERSION < "3.4"
         expect(output).to eq(
           "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-          "mandatory_option: required. " \
-          "Options: {:option_with_default=>\"test\", :mandatory_option_with_default=>\"mandatory default\", " \
-          ":option_one=>\"test2\", :mandatory_option=>\"required\"}\n"
+          "Options: {:option_with_default=>\"test\", :option_one=>\"test2\"}\n"
         )
       else
         expect(output).to eq(
           "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-          "mandatory_option: required. " \
-          "Options: {option_with_default: \"test\", mandatory_option_with_default: \"mandatory default\", " \
-          "option_one: \"test2\", mandatory_option: \"required\"}\n"
+          "Options: {option_with_default: \"test\", option_one: \"test2\"}\n"
         )
       end
     end
 
     it "with combination of aliases" do
-      output = `baz first_arg -bd test3 --mandatory-option=required`
+      output = `baz first_arg -bd test3`
 
       if RUBY_VERSION < "3.4"
         expect(output).to eq(
           "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-          "mandatory_option: required. " \
-          "Options: {:option_with_default=>\"test3\", :mandatory_option_with_default=>\"mandatory default\", " \
-          ":boolean_option=>true, :mandatory_option=>\"required\"}\n"
+          "Options: {:option_with_default=>\"test3\", :boolean_option=>true}\n"
         )
       else
         expect(output).to eq(
           "mandatory_arg: first_arg. optional_arg: optional_arg. " \
-          "mandatory_option: required. " \
-          "Options: {option_with_default: \"test3\", mandatory_option_with_default: \"mandatory default\", " \
-          "boolean_option: true, mandatory_option: \"required\"}\n"
+          "Options: {option_with_default: \"test3\", boolean_option: true}\n"
         )
       end
     end
