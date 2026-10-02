@@ -11,7 +11,7 @@ RSpec.describe "Single command" do
       expect(stderr).to eq(
         "ERROR: \"#{cmd}\" was called with no arguments\n" \
         "Missing required option: --mandatory-option\n" \
-        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"
+        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE\"\n"
       )
     end
 
@@ -36,7 +36,7 @@ RSpec.describe "Single command" do
           --[no-]boolean-option, -b              # Option boolean
           --option-with-default=VALUE, -d VALUE  # Option default, default: "test"
           --mandatory-option=VALUE               # REQUIRED Mandatory option
-          --mandatory-option-with-default=VALUE  # REQUIRED Mandatory option, default: "mandatory default"
+          --mandatory-option-with-default=VALUE  # Mandatory option, default: "mandatory default"
           --help, -h                             # Print this help
       OUTPUT
       expect(output).to eq(expected_output)
@@ -47,7 +47,7 @@ RSpec.describe "Single command" do
 
       expect(stderr).to eq(
         "ERROR: \"#{cmd}\" is missing required option --mandatory-option\n" \
-        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"
+        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE\"\n"
       )
     end
 
@@ -56,7 +56,7 @@ RSpec.describe "Single command" do
 
       expect(stderr).to eq(
         "ERROR: \"#{cmd}\" was called with no arguments\n" \
-        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE --mandatory-option-with-default=VALUE\"\n"
+        "Usage: \"#{cmd} MANDATORY_ARG --mandatory-option=VALUE\"\n"
       )
     end
 

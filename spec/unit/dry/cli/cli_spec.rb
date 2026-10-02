@@ -73,7 +73,7 @@ RSpec.describe "CLI" do
           --[no-]boolean-option, -b              # Option boolean
           --option-with-default=VALUE, -d VALUE  # Option default, default: "test"
           --mandatory-option=VALUE               # REQUIRED Mandatory option
-          --mandatory-option-with-default=VALUE  # REQUIRED Mandatory option, default: "mandatory default"
+          --mandatory-option-with-default=VALUE  # Mandatory option, default: "mandatory default"
           --help, -h                             # Print this help
       OUTPUT
       expect(output).to eq(expected_output)

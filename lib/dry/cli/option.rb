@@ -31,8 +31,9 @@ module Dry
         values ? "#{desc}: (#{values_description})" : desc
       end
 
+      # An option with a default always has a value, so the user never needs to give it.
       def required?
-        options[:required]
+        options[:required] && default.nil?
       end
 
       def type
@@ -79,7 +80,9 @@ module Dry
       # compares meaningfully. `:desc`, `:label` and `:aliases` are excluded because they don't
       # change how a value is parsed; the first declaration wins.
       def compatibility_options
-        {type: type, required: !!required?, values: values, default: default}
+        # Compare the declared :required rather than `#required?`, which is false whenever there's
+        # a default
+        {type: type, required: !!options[:required], values: values, default: default}
       end
 
       # The names of the `#compatibility_options` that stop this and `other` being interchangeable,
@@ -168,6 +171,13 @@ module Dry
     class Argument < Option
       def argument?
         true
+      end
+
+      # Unlike options, treat an argument with a default as required.
+      #
+      # @api private
+      def required?
+        options[:required]
       end
     end
   end
