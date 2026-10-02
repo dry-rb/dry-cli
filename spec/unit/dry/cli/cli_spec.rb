@@ -379,4 +379,28 @@ RSpec.describe "CLI" do
       expect(err.string).to eq "Uh oh\n"
     end
   end
+
+  context "with required options" do
+    it "shows required options in the usage line, before any subcommands" do
+      command_class = Class.new(Dry::CLI::Command) do
+        option :env, required: true, aliases: %w[e]
+
+        def call(**); end
+      end
+      subcommand_class = Class.new(Dry::CLI::Command)
+
+      cli = Dry::CLI.new do |c|
+        c.register "deploy", command_class do |prefix|
+          prefix.register "status", subcommand_class
+        end
+      end
+
+      error = capture_error { cli.call(arguments: %w[deploy]) }
+
+      expect(error).to eq(
+        "ERROR: \"rspec deploy\" is missing required option --env\n" \
+        "Usage: \"rspec deploy --env=VALUE | rspec deploy SUBCOMMAND\"\n"
+      )
+    end
+  end
 end

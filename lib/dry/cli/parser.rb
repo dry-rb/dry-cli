@@ -80,15 +80,14 @@ module Dry
 
       # @api private
       def self.short_usage(command, prog_name)
-        usage = "Usage: \"#{prog_name} #{command.required_arguments.map(&:description_name).join(" ")}"
+        usage = [
+          prog_name,
+          *command.required_arguments.map(&:description_name),
+          *command.required_options.map { |option| Banner.option_usage(option) }
+        ].join(" ")
         usage += " | #{prog_name} SUBCOMMAND" if command.subcommands.any?
-        if command.required_options.any?
-          usage += " #{command.required_options.map { |opt|
-            Banner.option_label(opt)
-          }.join(" ")}"
-        end
-        usage += '"'
-        usage
+
+        "Usage: \"#{usage}\""
       end
 
       # @api private
