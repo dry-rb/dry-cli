@@ -171,6 +171,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - Improved error messages to be more precise and helpful (@katafrakt in #158)
 - Accepted values are now listed the same way in help output as in error messages, separated by commas rather than slashes. (@timriley in #163)
+- Declaring a required argument after an optional one, or any argument after an array argument, now raises `Dry::CLI::CommandDefinitionError`. Arguments are matched by position, so such a command could never be called correctly: a required argument could not be given without also giving the optional one before it, and an array argument takes all the remaining values, leaving none for the arguments after it. (@timriley in #177)
 
 ### Deprecated
 
@@ -208,6 +209,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
   cmd 1 2  # was ["1", "2"], now [1, 2]
   ```
 - An `argument` with `type: :array` is now always given to the command as an array. When the command declared more arguments than were given, it previously received no value at all. (@timriley in #162)
+- Redeclaring an argument, such as in a subclass to change its `desc`, now keeps the argument in its original position. Previously it was moved to the end, so values given on the command line were matched to the wrong arguments. (@timriley in #177)
 
 ### Security
 

@@ -89,6 +89,14 @@ module Dry
       end
     end
 
+    # Raised when a command is defined incorrectly, such as a required argument declared after an
+    # optional one, or an argument declared after an array argument.
+    #
+    # @api public
+    # @since 2.0.0
+    class CommandDefinitionError < Error
+    end
+
     # @since 0.2.0
     class InvalidCallbackError < Error
       # @since 0.2.0

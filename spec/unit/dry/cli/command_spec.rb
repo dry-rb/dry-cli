@@ -43,6 +43,143 @@ RSpec.describe "Command" do
       expect(op.name).to eq(:version)
       expect(op.desc).to eq("2")
     end
+
+    it "rejects a required argument after an optional one" do
+      expect {
+        Class.new(Dry::CLI::Command) do
+          argument :env
+          argument :name, required: true
+        end
+      }.to raise_error(
+        Dry::CLI::CommandDefinitionError,
+        "required argument `name' can't be declared after optional argument `env'"
+      )
+    end
+
+    it "rejects a required argument after an optional one from a superclass" do
+      superclass = Class.new(Dry::CLI::Command) do
+        argument :env
+      end
+
+      expect {
+        Class.new(superclass) do
+          argument :name, required: true
+        end
+      }.to raise_error(Dry::CLI::CommandDefinitionError)
+    end
+
+    it "rejects an argument after an array argument" do
+      expect {
+        Class.new(Dry::CLI::Command) do
+          argument :files, type: :array, required: true
+          argument :dest, required: true
+        end
+      }.to raise_error(
+        Dry::CLI::CommandDefinitionError,
+        "argument `dest' can't be declared after array argument `files'"
+      )
+    end
+
+    it "allows an array argument last" do
+      command = Class.new(Dry::CLI::Command) do
+        argument :dest, required: true
+        argument :files, type: :array
+      end
+
+      expect(command.arguments.map(&:name)).to eq(%i[dest files])
+    end
+
+    it "allows a required argument after one declared required with a default" do
+      command = Class.new(Dry::CLI::Command) do
+        argument :env, required: true, default: "development"
+        argument :name, required: true
+      end
+
+      expect(command.required_arguments.map(&:name)).to eq(%i[env name])
+    end
+
+    context "when redeclaring an argument" do
+      let(:superclass) do
+        Class.new(Dry::CLI::Command) do
+          argument :app, required: true
+          argument :env
+          argument :region
+        end
+      end
+
+      it "keeps the argument in its position" do
+        command = Class.new(superclass) do
+          argument :app, required: true, desc: "New desc"
+        end
+
+        expect(command.arguments.map(&:name)).to eq(%i[app env region])
+        expect(command.arguments.first.desc).to eq("New desc")
+      end
+
+      it "allows making it required when no optional argument comes before it" do
+        command = Class.new(superclass) do
+          argument :env, required: true
+        end
+
+        expect(command.required_arguments.map(&:name)).to eq(%i[app env])
+      end
+
+      it "rejects making it required when an optional argument comes before it" do
+        expect {
+          Class.new(superclass) do
+            argument :region, required: true
+          end
+        }.to raise_error(
+          Dry::CLI::CommandDefinitionError,
+          "required argument `region' can't be declared after optional argument `env'"
+        )
+      end
+
+      it "rejects making it optional when a required argument comes after it" do
+        command = Class.new(Dry::CLI::Command) do
+          argument :source, required: true
+          argument :target, required: true
+        end
+
+        expect {
+          Class.new(command) do
+            argument :source
+          end
+        }.to raise_error(
+          Dry::CLI::CommandDefinitionError,
+          "optional argument `source' can't be declared before required argument `target'"
+        )
+      end
+
+      it "rejects making it an array when an argument comes after it" do
+        expect {
+          Class.new(superclass) do
+            argument :app, required: true, type: :array
+          end
+        }.to raise_error(
+          Dry::CLI::CommandDefinitionError,
+          "array argument `app' can't be declared before argument `env'"
+        )
+      end
+
+      it "matches values to the arguments in their declared positions" do
+        command = Class.new(Dry::CLI::Command) do
+          argument :source, required: true
+          argument :target, required: true
+        end
+        subclass = Class.new(command) do
+          argument :source, required: true, desc: "New desc"
+
+          def call(source:, target:, **)
+            puts "source=#{source} target=#{target}"
+          end
+        end
+
+        output = capture_output { Dry.CLI(subclass).call(arguments: %w[a b]) }
+
+        expect(output).to eq("source=a target=b\n")
+      end
+    end
   end
 
   # Commands are given their streams before `#initialize` runs, so they have no `super` to call

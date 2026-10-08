@@ -167,8 +167,14 @@ module Dry
 
       # Specify an argument
       #
+      # Arguments are matched by position, so required arguments must be declared before optional
+      # ones. An array argument takes all the remaining values, so it must be declared last.
+      #
       # @param name [Symbol] the argument name
       # @param options [Hash] a set of options
+      #
+      # @raise [Dry::CLI::CommandDefinitionError] if a required argument is declared after an
+      #   optional one, or if any argument is declared after an array argument
       #
       # @since 0.1.0
       #
@@ -258,11 +264,48 @@ module Dry
       def self.argument(name, options = {})
         new_arg = Argument.new(name, options)
 
-        duplicate_index = @arguments.find_index { _1.name == new_arg.name }
-        @arguments.delete_at(duplicate_index) unless duplicate_index.nil?
+        arguments = @arguments.dup
 
-        @arguments << new_arg
+        # Replace a redeclared argument where it is, since arguments are matched by position
+        index = arguments.find_index { _1.name == new_arg.name } || arguments.length
+        arguments[index] = new_arg
+
+        if (error = argument_position_error(arguments, index))
+          raise CommandDefinitionError, error
+        end
+
+        @arguments.replace(arguments)
       end
+
+      # Returns an error message if the argument at `index` can never be given a value in its
+      # position, or nil if its position is valid.
+      #
+      # Every other argument was checked when it was declared, so only the argument at `index` is
+      # checked here.
+      #
+      # @api private
+      # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
+      def self.argument_position_error(arguments, index)
+        argument = arguments[index]
+        before = arguments.take(index)
+        after = arguments.drop(index + 1)
+
+        # An array argument takes all the remaining values, so no argument can come after it
+        if (array_arg = before.find(&:array?))
+          "argument `#{argument.name}' can't be declared after array argument `#{array_arg.name}'"
+        elsif argument.array? && after.any?
+          "array argument `#{argument.name}' can't be declared before argument `#{after.first.name}'"
+        # A required argument after an optional one could never be given without also giving the
+        # optional one
+        elsif argument.required? && (optional_arg = before.find { !_1.required? })
+          "required argument `#{argument.name}' can't be declared after optional argument " \
+            "`#{optional_arg.name}'"
+        elsif !argument.required? && (required_arg = after.find(&:required?))
+          "optional argument `#{argument.name}' can't be declared before required argument " \
+            "`#{required_arg.name}'"
+        end
+      end
+      # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity
 
       # Command line option (aka optional argument)
       #
