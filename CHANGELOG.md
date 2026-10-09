@@ -211,6 +211,16 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
   ```
 - An `argument` with `type: :array` is now always given to the command as an array. When the command declared more arguments than were given, it previously received no value at all. (@timriley in #162)
 - Redeclaring an argument, such as in a subclass to change its `desc`, now keeps the argument in its original position. Previously it was moved to the end, so values given on the command line were matched to the wrong arguments. (@timriley in #177)
+- A required `argument` with `type: :array` no longer has its values repeated in `args`. It takes all the remaining values, but all except the first were also given in `args`. (@parndt in #178)
+
+  ```ruby
+  argument :task, required: true
+  argument :dirs, type: :array, required: true
+  ```
+
+  ```
+  cmd test lib spec  # was dirs: ["lib", "spec"], args: ["spec"], now dirs: ["lib", "spec"]
+  ```
 
 ### Security
 

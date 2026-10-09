@@ -63,7 +63,7 @@ module Dry
         missing_arguments = command.required_arguments.select { |param| parsed_required_params[param.name].nil? }
         missing_options = command.required_options.select { |option| parsed_options_with_defaults[option.name].nil? }
 
-        unused_arguments = arguments.drop(command.required_arguments.length)
+        args = unused_arguments(command, arguments)
 
         if missing_arguments.any? || missing_options.any?
           return missing_params_failure(
@@ -73,7 +73,7 @@ module Dry
 
         parsed_params.reject! { |_key, value| value.nil? }
         parsed_options = parsed_options_with_defaults.merge(parsed_params)
-        parsed_options = parsed_options.merge(args: unused_arguments) if unused_arguments.any?
+        parsed_options = parsed_options.merge(args:) if args.any?
         Result.success(parsed_options)
       end
       # rubocop:enable Metrics/AbcSize
@@ -122,6 +122,18 @@ module Dry
         names = options.map { |option| "--#{Inflector.dasherize(option.name)}" }
 
         "#{label}#{separator}#{names.join(", ")}"
+      end
+
+      # Returns the values given after the required arguments, which are passed to the command as
+      # `args`.
+      #
+      # A required array argument takes all the remaining values, so it leaves none.
+      #
+      # @api private
+      def self.unused_arguments(command, arguments)
+        return [] if command.required_arguments.any?(&:array?)
+
+        arguments.drop(command.required_arguments.length)
       end
 
       # rubocop:disable Metrics/PerceivedComplexity
