@@ -89,13 +89,15 @@ RSpec.describe "Command" do
       expect(command.arguments.map(&:name)).to eq(%i[dest files])
     end
 
-    it "allows a required argument after one declared required with a default" do
-      command = Class.new(Dry::CLI::Command) do
-        argument :env, required: true, default: "development"
-        argument :name, required: true
-      end
-
-      expect(command.required_arguments.map(&:name)).to eq(%i[env name])
+    it "rejects a required argument with a default" do
+      expect {
+        Class.new(Dry::CLI::Command) do
+          argument :env, required: true, default: "development"
+        end
+      }.to raise_error(
+        Dry::CLI::CommandDefinitionError,
+        "argument `env' can't be both required and have a default"
+      )
     end
 
     context "when redeclaring an argument" do

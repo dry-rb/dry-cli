@@ -169,15 +169,18 @@ module Dry
     #
     # @api private
     class Argument < Option
-      def argument?
-        true
+      def initialize(name, options = {})
+        super
+
+        # A default would make a required argument optional when it comes last, and would never be
+        # used anywhere else, since giving the arguments after it means giving this one too
+        if options[:required] && !default.nil?
+          raise CommandDefinitionError, "argument `#{name}' can't be both required and have a default"
+        end
       end
 
-      # Unlike options, treat an argument with a default as required.
-      #
-      # @api private
-      def required?
-        options[:required]
+      def argument?
+        true
       end
     end
   end

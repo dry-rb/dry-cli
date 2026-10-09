@@ -172,6 +172,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 - Improved error messages to be more precise and helpful (@katafrakt in #158)
 - Accepted values are now listed the same way in help output as in error messages, separated by commas rather than slashes. (@timriley in #163)
 - Declaring a required argument after an optional one, or any argument after an array argument, now raises `Dry::CLI::CommandDefinitionError`. Arguments are matched by position, so such a command could never be called correctly: a required argument could not be given without also giving the optional one before it, and an array argument takes all the remaining values, leaving none for the arguments after it. (@timriley in #177)
+- [BREAKING] Declaring an argument with both `required: true` and a `default:` now raises `Dry::CLI::CommandDefinitionError`. Remove either `required: true` or the default. (@timriley in #177)
 
 ### Deprecated
 

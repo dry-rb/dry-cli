@@ -90,7 +90,8 @@ module Dry
     end
 
     # Raised when a command is defined incorrectly, such as a required argument declared after an
-    # optional one, or an argument declared after an array argument.
+    # optional one, an argument declared after an array argument, or an argument declared with
+    # both `required: true` and a `default:`.
     #
     # @api public
     # @since 2.0.0

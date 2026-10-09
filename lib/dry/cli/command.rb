@@ -174,7 +174,8 @@ module Dry
       # @param options [Hash] a set of options
       #
       # @raise [Dry::CLI::CommandDefinitionError] if a required argument is declared after an
-      #   optional one, or if any argument is declared after an array argument
+      #   optional one, if any argument is declared after an array argument, or if the argument is
+      #   both required and has a default
       #
       # @since 0.1.0
       #
