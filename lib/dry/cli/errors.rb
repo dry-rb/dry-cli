@@ -73,25 +73,13 @@ module Dry
       end
     end
 
-    # Raised when an option is added to a command that already declares one with the same name,
-    # but with an incompatible declaration.
+    # Raised when a command is defined incorrectly, such as:
     #
-    # Adding the very same option twice is allowed, so that independent third-party gems can each
-    # contribute the option they need without having to coordinate.
-    #
-    # @api public
-    # @since NEXT
-    class IncompatibleOptionError < Error
-      # @api private
-      def initialize(command_name, name, incompatible_option_names)
-        super("`#{name}' is already declared for command `#{command_name}' " \
-              "with a different #{incompatible_option_names.join(", ")}")
-      end
-    end
-
-    # Raised when a command is defined incorrectly, such as a required argument declared after an
-    # optional one, an argument declared after an array argument, or an argument declared with
-    # both `required: true` and a `default:`.
+    # - a required argument declared after an optional one
+    # - an argument declared after an array argument
+    # - an argument declared with both `required: true` and a `default:`
+    # - an option added to a command that already declares one with the same name, but with
+    #   different settings
     #
     # @api public
     # @since 2.0.0
