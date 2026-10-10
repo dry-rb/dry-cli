@@ -245,7 +245,7 @@ RSpec.describe "Command" do
 
     describe "auto-initialized keywords" do
       it "names the keywords .new gives to #auto_initialize" do
-        expect(Dry::CLI::Command.auto_initialize_keywords).to eq %i[stderr stdin stdout]
+        expect(Dry::CLI::Command.auto_initialize_keywords).to eq %i[stderr stdin stdout kernel]
       end
 
       it "assigns a subclass's own keyword before #initialize runs" do
@@ -309,7 +309,7 @@ RSpec.describe "Command" do
         command = command_class.new(stdout: out, fs: "fs", system_call: "call", nested: true)
 
         expect(command_class.auto_initialize_keywords)
-          .to eq %i[stderr stdin stdout fs system_call nested]
+          .to eq %i[stderr stdin stdout kernel fs system_call nested]
         expect(command.seen[0].raw).to be out
         expect(command.seen[1..]).to eq ["fs", "call", true]
       end
@@ -322,7 +322,7 @@ RSpec.describe "Command" do
           end
         end
 
-        expect(Class.new(base).auto_initialize_keywords).to eq %i[stderr stdin stdout fs]
+        expect(Class.new(base).auto_initialize_keywords).to eq %i[stderr stdin stdout kernel fs]
       end
 
       it "collects the keywords declared anywhere in the command's ancestry" do
@@ -359,7 +359,7 @@ RSpec.describe "Command" do
         )
 
         expect(command_class.auto_initialize_keywords)
-          .to eq %i[stderr stdin stdout from_include own from_prepend]
+          .to eq %i[stderr stdin stdout kernel from_include own from_prepend]
         expect([command.from_prepend, command.from_include, command.own])
           .to eq %w[prepend include own]
       end

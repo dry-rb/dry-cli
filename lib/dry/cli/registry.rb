@@ -2,6 +2,7 @@
 
 require "dry/cli/command_registry"
 require "dry/cli/option"
+require "dry/cli/tree"
 
 module Dry
   class CLI
@@ -370,6 +371,24 @@ module Dry
 
           nil
         end
+      end
+
+      # Returns a read-only view of the registered commands.
+      #
+      # The view is live: a command registered after this is called is still in it.
+      #
+      # @return [Dry::CLI::Tree::Node] the root, whose children are the top-level commands
+      #
+      # @since x.y.z
+      #
+      # @example
+      #   Foo::Commands.tree.walk(hidden: false) do |node|
+      #     puts node.path.join(" ")
+      #   end
+      #
+      # @see Dry::CLI::Tree
+      def tree
+        Tree::Node.new(@commands.root)
       end
 
       # @since 0.1.0

@@ -47,6 +47,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     ```
 
     `Command#stdout` and `#stderr` are now always instances of `Dry::CLI::Stream`. Use `stdout.raw` to access the underlying IO object directly.
+
 - `Dry::CLI::Command#auto_initialize`, for taking select keywords that `.new` assigns itself, rather than passing on to `#initialize`. (@timriley in #167)
 
     It is common for a CLI app to set up "standard" dependencies that can be provided to every command class. Making these auto-initialized keywords keeps each command's `#initialize` focused on its own distinct dependencies, while the standard dependencies are still assigned as expected. Command class authors do not need to supply `**kwargs` as an `#initialize` parameter and then call `super(**kwargs)`, which reduces boilerplate, as well as the chance of bugs from these lines being forgotten.
@@ -74,6 +75,29 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     ```ruby
     style.bold.red["%s"] % "boom" # => "\e[1;31mboom\e[0m"
     ```
+
+- `kernel:` for `Dry::CLI#call` and `Dry::CLI::Command.new`, and `Dry::CLI::Launcher`, for running a CLI in the same process as its tests. (@kigster)
+
+    The CLI and its commands now exit through the kernel they are given, which defaults to `Kernel`. A test can pass an object that records the exit status instead of ending the process. Inside a command, `exit` goes to `#kernel`, so a command's own `exit(1)` is recorded too.
+
+    `Dry::CLI::Launcher` takes the arguments, streams and kernel in the order Aruba's in-process launcher passes them:
+
+    ```ruby
+    # lib/my_app/launcher.rb
+    MyApp::Launcher = Dry::CLI::Launcher[MyApp::Commands]
+
+    # exe/my_app
+    MyApp::Launcher.new(ARGV).execute!
+
+    # spec/spec_helper.rb
+    Aruba.configure do |config|
+      config.command_launcher = :in_process
+      config.main_class       = MyApp::Launcher
+    end
+    ```
+
+- Documentation and specs for injecting dependencies into commands with dry-auto_inject and dry-system, and for memoizing objects built from a command's streams. (@kigster)
+
 - Enforce `required: true` on options. (@capripot and @timriley in #122)
 
     Before, `required: true` was accepted on options but did nothing. Now, if a required option is not given, the command does not run, and prints an error that names the missing option. Required options are marked as REQUIRED in the help output. A required option with a `default:` always has a value, so it is not enforced and not marked as required.
@@ -115,6 +139,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
       s.run { sleep 6 }
     end
     ```
+
 
 ### Changed
 

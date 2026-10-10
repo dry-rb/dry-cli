@@ -32,6 +32,48 @@ module Dry
     # end
     # ```
     #
+    # A command registered as an instance is also used for every call to the CLI, each time with
+    # the streams of that call. That is the case in a test suite that runs the CLI in-process (see
+    # {Dry::CLI::Launcher}), where each test gives it a StringIO of its own. Memoize an object built
+    # from a stream against that stream, so it is built again when the stream changes:
+    #
+    # ```
+    # def logger
+    #   @logger = nil unless @logger_stream.equal?(stdout)
+    #   @logger_stream = stdout
+    #   @logger ||= Logger.new(stdout)
+    # end
+    # ```
+    #
+    # ## Dependencies
+    #
+    # Commands work with [dry-auto_inject](https://dry-rb.org/gems/dry-auto_inject/), and so with
+    # the containers of [dry-system](https://dry-rb.org/gems/dry-system/). Include the dependencies
+    # every command shares in your CLI's base command:
+    #
+    # ```
+    # Deps = Dry::AutoInject(MyApp::Container)
+    #
+    # class BaseCommand < Dry::CLI::Command
+    #   include Deps["logger", "config"]
+    # end
+    # ```
+    #
+    # As with any class using dry-auto_inject, a subclass defining its own `#initialize` must call
+    # `super(**)`, since the injected dependencies are assigned there:
+    #
+    # ```
+    # class Deploy < BaseCommand
+    #   def initialize(target: "production", **)
+    #     super(**)
+    #     @target = target
+    #   end
+    # end
+    # ```
+    #
+    # Dependencies that need the command's streams can't come from a container, which has no way
+    # to know them. Build those in the command instead, as above.
+    #
     # @since 0.1.0
     class Command
       include StyleMixin
@@ -620,8 +662,8 @@ module Dry
       # @see .auto_initialize_keywords
       #
       # @api private
-      private def auto_initialize(stderr: nil, stdin: nil, stdout: nil)
-        set_streams(stderr:, stdin:, stdout:)
+      private def auto_initialize(stderr: nil, stdin: nil, stdout: nil, kernel: nil)
+        set_streams(stderr:, stdin:, stdout:, kernel:)
       end
 
       extend Forwardable
@@ -704,14 +746,35 @@ module Dry
         @stdout_stream ||= Stream.for(@stdout)
       end
 
-      # Returns a copy of this command, configured to write to the given streams.
+      # What this command exits through
+      #
+      # The CLI gives every command the kernel it was called with. Unless it was given a different
+      # one, this is Ruby's own `Kernel`, so {#exit} behaves as `Kernel#exit` does.
+      #
+      # @return [#exit] the kernel given to this command, or `Kernel`
+      #
+      # @example
+      #   class MyCommand
+      #     def call
+      #       kernel.exit(2) unless File.exist?("Gemfile")
+      #     end
+      #   end
+      #
+      # @api public
+      # @since x.y.z
+      def kernel
+        @kernel || Kernel
+      end
+
+      # Returns a copy of this command, configured to write to the given streams, and to exit
+      # through the given kernel.
       #
       # Called on a command registered as an instance, since it is constructed before the CLI is
       # invoked, and therefore before it knows where its output should go.
       #
       # @api private
-      def with_streams(stderr:, stdin:, stdout:)
-        dup.send(:set_streams, stderr:, stdin:, stdout:)
+      def with_streams(stderr:, stdin:, stdout:, kernel: nil)
+        dup.send(:set_streams, stderr:, stdin:, stdout:, kernel:)
       end
 
       private
@@ -719,10 +782,11 @@ module Dry
       # @see #with_streams
       #
       # @api private
-      def set_streams(stderr:, stdin:, stdout:)
+      def set_streams(stderr:, stdin:, stdout:, kernel: nil)
         @stderr = stderr
         @stdin = stdin
         @stdout = stdout
+        @kernel = kernel
         @stderr_stream = nil
         @stdout_stream = nil
 
@@ -754,6 +818,28 @@ module Dry
       # @since x.y.z
       def print(*args)
         stdout.print(*args)
+      end
+
+      # Exits through the command's own {#kernel}, rather than `Kernel` itself.
+      #
+      # With the default kernel this is `Kernel#exit`. A kernel given for testing may record the
+      # status and return instead of ending the process, so return after calling this when the
+      # rest of `#call` must not run.
+      #
+      # @param status [Boolean, Integer] the exit status, as for `Kernel#exit`
+      #
+      # @example
+      #   class MyCommand
+      #     def call
+      #       return exit(1) unless File.exist?("Gemfile")
+      #
+      #       puts "Found a Gemfile"
+      #     end
+      #   end
+      #
+      # @since x.y.z
+      def exit(status = true)
+        kernel.exit(status)
       end
     end
   end
