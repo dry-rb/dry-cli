@@ -74,6 +74,39 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     ```ruby
     style.bold.red["%s"] % "boom" # => "\e[1;31mboom\e[0m"
     ```
+- `kernel:` for `Dry::CLI#call` and `Dry::CLI::Command.new`, and `Dry::CLI::Launcher`, for running a CLI in the same process as its tests. (@kigster)
+
+    The CLI and its commands now exit through the kernel they are given, which defaults to `Kernel`. A test can pass an object that records the exit status instead of ending the process. Inside a command, `exit` goes to `#kernel`, so a command's own `exit(1)` is recorded too.
+
+    `Dry::CLI::Launcher` takes the arguments, streams and kernel in the order Aruba's in-process launcher passes them:
+
+    ```ruby
+    # lib/my_app/launcher.rb
+    MyApp::Launcher = Dry::CLI::Launcher[MyApp::Commands]
+
+    # exe/my_app
+    MyApp::Launcher.new(ARGV).execute!
+
+    # spec/spec_helper.rb
+    Aruba.configure do |config|
+      config.command_launcher = :in_process
+      config.main_class       = MyApp::Launcher
+    end
+    ```
+- `Registry#tree`, `Dry::CLI#tree` and `Dry::CLI::Tree`, a read-only view of a CLI's commands, for gems that describe a CLI rather than run it: help screens, shell completion and documentation generators. (@kigster)
+
+    The view is live, so a command registered after the tree was taken is still in it. `#resolve` finds the command a command line would run, by the same rules the CLI uses.
+
+    ```ruby
+    tree = MyApp::Commands.tree
+
+    tree.walk(hidden: false) { |node| puts node.path.join(" ") }
+    tree.dig("db", "migrate").options.map(&:switches) # => [["-f", "--force"]]
+
+    node, rest = tree.resolve(%w[db migrate --force])
+    ```
+
+    Each option and argument is a `Dry::CLI::Tree::Param`, which also carries every key it was declared with, so an extension can read keys of its own, such as `file: true`.
 - Enforce `required: true` on options. (@capripot and @timriley in #122)
 
     Before, `required: true` was accepted on options but did nothing. Now, if a required option is not given, the command does not run, and prints an error that names the missing option. Required options are marked as REQUIRED in the help output. A required option with a `default:` always has a value, so it is not enforced and not marked as required.

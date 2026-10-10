@@ -12,3 +12,6 @@ gem "dry-types", require: false
 unless ENV["CI"]
   gem "yard", require: false
 end
+
+# Runs a CLI in-process through Dry::CLI::Launcher in spec/integration/launcher_spec.rb
+gem "aruba", require: false

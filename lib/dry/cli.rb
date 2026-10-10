@@ -23,6 +23,26 @@ module Dry
     require "dry/cli/banner"
     require "dry/cli/inflector"
     require "dry/cli/dispatch"
+    require "dry/cli/launcher"
+
+    # Stops the CLI with an exit status.
+    #
+    # Raised where the CLI has printed help or an error, and rescued by {#call}, which hands the
+    # status to the kernel. Stopping by raising means that a kernel whose `exit` returns, such as
+    # the one Aruba uses to run a CLI in-process, still stops the CLI at that point.
+    #
+    # @api private
+    class Halt < StandardError
+      # @return [Integer] the exit status
+      attr_reader :status
+
+      # @param status [Integer] the exit status
+      def initialize(status)
+        super("exit #{status}")
+        @status = status
+      end
+    end
+    private_constant :Halt
 
     autoload :Spinner, "dry/cli/spinner"
 
@@ -93,15 +113,33 @@ module Dry
     # @param stderr [IO] the error output (defaults to `$stderr`)
     # @param stdin [IO] the standard input (defaults to `$stdin`)
     # @param stdout [IO] the standard output (defaults to `$stdout`)
+    # @param kernel [#exit] what the CLI and its commands exit through (defaults to `Kernel`).
+    #   Only an exit is ever sent to it, so a test can pass an object that records the status
+    #   instead of ending the process. See {Dry::CLI::Launcher}.
     #
     # @since 0.1.0
-    def call(arguments: ARGV, stderr: $stderr, stdin: $stdin, stdout: $stdout)
+    def call(arguments: ARGV, stderr: $stderr, stdin: $stdin, stdout: $stdout, kernel: Kernel)
       @stderr, @stdin, @stdout = Stream.for(stderr), stdin, Stream.for(stdout)
+      @kernel = kernel
       kommand ? perform_command(arguments) : perform_registry(arguments)
+    rescue Halt => exception
+      kernel.exit(exception.status)
     rescue SignalException => exception
       signal_exception(exception)
     rescue Errno::EPIPE
       # no op
+    end
+
+    # Returns a read-only view of the commands this CLI runs.
+    #
+    # @return [Dry::CLI::Tree::Node] the root: the command itself for a single-command CLI, and
+    #   otherwise a node whose children are the top-level commands
+    #
+    # @since x.y.z
+    #
+    # @see Dry::CLI::Tree
+    def tree
+      kommand ? Tree.for(kommand) : registry.tree
     end
 
     private
@@ -122,6 +160,9 @@ module Dry
 
     # @api private
     attr_reader :stdout
+
+    # @api private
+    attr_reader :kernel
 
     # Invoke the CLI if singular command passed
     #
@@ -184,10 +225,10 @@ module Dry
       unless command.is_a?(Class)
         return command unless command.is_a?(Command)
 
-        return command.with_streams(stderr:, stdin:, stdout:)
+        return command.with_streams(stderr:, stdin:, stdout:, kernel:)
       end
 
-      return command.new(stderr:, stdin:, stdout:) if CLI.command?(command)
+      return command.new(stderr:, stdin:, stdout:, kernel:) if CLI.command?(command)
 
       command.new
     end
@@ -196,14 +237,14 @@ module Dry
     # @api private
     def help(command, prog_name, long: false)
       stdout.puts Banner.call(command, prog_name, long: long)
-      exit(0) # Successful exit
+      halt(0)
     end
 
     # @since 0.6.0
     # @api private
     def error(result)
       stderr.puts(result.error)
-      exit(1)
+      halt(1)
     end
 
     # @since 1.1.1
@@ -211,7 +252,18 @@ module Dry
       spell_checker = SpellChecker.call(result, arguments)
       stderr.puts "#{spell_checker}\n\n" if spell_checker
       stderr.puts Usage.call(result)
-      exit(1)
+      halt(1)
+    end
+
+    # Stops the CLI, which {#call} turns into an exit through the kernel.
+    #
+    # @param status [Integer] the exit status
+    #
+    # @raise [Halt] always
+    #
+    # @api private
+    def halt(status)
+      raise Halt, status
     end
 
     # Handles Exit codes for signals
@@ -220,7 +272,7 @@ module Dry
     # @since 0.7.0
     # @api private
     def signal_exception(exception)
-      exit(128 + exception.signo)
+      kernel.exit(128 + exception.signo)
     end
 
     # Check if command
