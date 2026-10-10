@@ -16,6 +16,11 @@ module Dry
         @root = Node.new
       end
 
+      # @return [Node] the node every registered name starts from
+      #
+      # @api private
+      attr_reader :root
+
       # @since 0.1.0
       # @api private
       def set(name, command, aliases, hidden)
@@ -38,42 +43,54 @@ module Dry
 
       # @since 0.1.0
       # @api private
-      # rubocop:disable Metrics/AbcSize
       def get(arguments)
         @_mutex.synchronize do
-          node   = @root
-          args   = []
-          names  = []
-          valid_leaf = nil
-          result = LookupResult.new(node, args, names, node.leaf?)
-
-          arguments.each_with_index do |token, i|
-            tmp = node.lookup(token)
-
-            if tmp.nil? && valid_leaf
-              result = valid_leaf
-              break
-            elsif tmp.nil?
-              result = LookupResult.new(node, args, names, false)
-              break
-            elsif tmp.leaf?
-              args   = arguments[i + 1..]
-              names  = arguments[0..i]
-              node   = tmp
-              result = LookupResult.new(node, args, names, true)
-              valid_leaf = result
-              break unless tmp.children?
-            else
-              names  = arguments[0..i]
-              node   = tmp
-              result = LookupResult.new(node, args, names, node.leaf?)
-            end
-          end
-
-          result
+          self.class.lookup(@root, arguments)
         end
       end
-      # rubocop:enable Metrics/AbcSize
+
+      # Finds the deepest node the leading arguments lead to, starting from the given node.
+      #
+      # This is how the CLI decides which command to run, shared with {Dry::CLI::Tree::Node#resolve}
+      # so the two can't disagree.
+      #
+      # @param node [Node] the node to start from
+      # @param arguments [Array<String>] the command line arguments
+      #
+      # @return [LookupResult]
+      #
+      # @api private
+      def self.lookup(node, arguments)
+        args   = []
+        names  = []
+        valid_leaf = nil
+        result = LookupResult.new(node, args, names, node.leaf?)
+
+        arguments.each_with_index do |token, i|
+          tmp = node.lookup(token)
+
+          if tmp.nil? && valid_leaf
+            result = valid_leaf
+            break
+          elsif tmp.nil?
+            result = LookupResult.new(node, args, names, false)
+            break
+          elsif tmp.leaf?
+            args   = arguments[i + 1..]
+            names  = arguments[0..i]
+            node   = tmp
+            result = LookupResult.new(node, args, names, true)
+            valid_leaf = result
+            break unless tmp.children?
+          else
+            names  = arguments[0..i]
+            node   = tmp
+            result = LookupResult.new(node, args, names, node.leaf?)
+          end
+        end
+
+        result
+      end
 
       # Node of the registry
       #

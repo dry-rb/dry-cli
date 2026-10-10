@@ -21,8 +21,30 @@ module Dry
     require "dry/cli/usage"
     require "dry/cli/spell_checker"
     require "dry/cli/banner"
+    require "dry/cli/screen"
+    require "dry/cli/config"
     require "dry/cli/inflector"
     require "dry/cli/dispatch"
+    require "dry/cli/launcher"
+
+    # Stops the CLI with an exit status.
+    #
+    # Raised where the CLI has printed help or an error, and rescued by {#call}, which hands the
+    # status to the kernel. Stopping by raising means that a kernel whose `exit` returns, such as
+    # the one Aruba uses to run a CLI in-process, still stops the CLI at that point.
+    #
+    # @api private
+    class Halt < StandardError
+      # @return [Integer] the exit status
+      attr_reader :status
+
+      # @param status [Integer] the exit status
+      def initialize(status)
+        super("exit #{status}")
+        @status = status
+      end
+    end
+    private_constant :Halt
 
     autoload :Spinner, "dry/cli/spinner"
 
@@ -72,12 +94,15 @@ module Dry
     #
     # @param command_or_registry [Dry::CLI::Registry, Dry::CLI::Command]
     #   a registry or singular command
+    # @param config [Dry::CLI::Config, nil] settings for this CLI, in place of the process-wide
+    #   {.config}
     # @param &block [Block] a configuration block for registry
     #
     # @return [Dry::CLI] the new instance
     # @since 0.1.0
-    def initialize(command_or_registry = nil, &block)
+    def initialize(command_or_registry = nil, config: nil, &block)
       @kommand = command_or_registry if command?(command_or_registry)
+      @config = config
 
       @registry =
         if block_given?
@@ -93,15 +118,34 @@ module Dry
     # @param stderr [IO] the error output (defaults to `$stderr`)
     # @param stdin [IO] the standard input (defaults to `$stdin`)
     # @param stdout [IO] the standard output (defaults to `$stdout`)
+    # @param kernel [#exit] what the CLI and its commands exit through (defaults to `Kernel`).
+    #   Only an exit is ever sent to it, so a test can pass an object that records the status
+    #   instead of ending the process. See {Dry::CLI::Launcher}.
     #
     # @since 0.1.0
-    def call(arguments: ARGV, stderr: $stderr, stdin: $stdin, stdout: $stdout)
+    def call(arguments: ARGV, stderr: $stderr, stdin: $stdin, stdout: $stdout, kernel: Kernel)
       @stderr, @stdin, @stdout = Stream.for(stderr), stdin, Stream.for(stdout)
+      @kernel = kernel
+      @arguments = arguments
       kommand ? perform_command(arguments) : perform_registry(arguments)
+    rescue Halt => exception
+      kernel.exit(exception.status)
     rescue SignalException => exception
       signal_exception(exception)
     rescue Errno::EPIPE
       # no op
+    end
+
+    # Returns a read-only view of the commands this CLI runs.
+    #
+    # @return [Dry::CLI::Tree::Node] the root: the command itself for a single-command CLI, and
+    #   otherwise a node whose children are the top-level commands
+    #
+    # @since x.y.z
+    #
+    # @see Dry::CLI::Tree
+    def tree
+      kommand ? Tree.for(kommand) : registry.tree
     end
 
     private
@@ -122,6 +166,21 @@ module Dry
 
     # @api private
     attr_reader :stdout
+
+    # @api private
+    attr_reader :kernel
+
+    # @api private
+    attr_reader :arguments
+
+    # The settings this CLI reads: its own, or the process-wide ones.
+    #
+    # @return [Dry::CLI::Config]
+    #
+    # @api private
+    def config
+      @config || CLI.config
+    end
 
     # Invoke the CLI if singular command passed
     #
@@ -147,7 +206,12 @@ module Dry
       return spell_checker(result, arguments) unless result.found?
 
       command, args = parse(result.command, result.arguments, result.names)
-      return stderr.puts(Usage.call(result)) unless command.respond_to?(:call)
+      unless command.respond_to?(:call)
+        return show(
+          kind: :listing, reason: :no_command, node: tree.dig(*result.names),
+          prog_name: ProgramName.call(result.names), status: nil
+        )
+      end
 
       result.before_callbacks.run(command, **args)
       command.call(**Dispatch.command_args_for(command, args))
@@ -171,7 +235,7 @@ module Dry
 
       result = Parser.call(command, arguments, prog_name)
 
-      return help(command, prog_name, long: result.long_help?) if result.help?
+      return help(names, prog_name, long: result.long_help?) if result.help?
 
       return error(result) if result.error?
 
@@ -184,34 +248,82 @@ module Dry
       unless command.is_a?(Class)
         return command unless command.is_a?(Command)
 
-        return command.with_streams(stderr:, stdin:, stdout:)
+        return command.with_streams(stderr:, stdin:, stdout:, kernel:)
       end
 
-      return command.new(stderr:, stdin:, stdout:) if CLI.command?(command)
+      return command.new(stderr:, stdin:, stdout:, kernel:) if CLI.command?(command)
 
       command.new
     end
 
     # @since 0.6.0
     # @api private
-    def help(command, prog_name, long: false)
-      stdout.puts Banner.call(command, prog_name, long: long)
-      exit(0) # Successful exit
+    def help(names, prog_name, long: false)
+      show(kind: :command, reason: :help, node: tree.dig(*names), prog_name:, long:, status: 0)
     end
 
     # @since 0.6.0
     # @api private
     def error(result)
       stderr.puts(result.error)
-      exit(1)
+      halt(1)
     end
 
     # @since 1.1.1
     def spell_checker(result, arguments)
-      spell_checker = SpellChecker.call(result, arguments)
-      stderr.puts "#{spell_checker}\n\n" if spell_checker
-      stderr.puts Usage.call(result)
-      exit(1)
+      unmatched = arguments.drop(result.names.length)
+
+      show(
+        kind: :listing, reason: listing_reason(unmatched), node: tree.dig(*result.names),
+        prog_name: ProgramName.call(result.names), long: unmatched.first == "--help",
+        suggestion: SpellChecker.call(result, arguments), status: 1
+      )
+    end
+
+    # Help flags, which name no command when given where a command is expected.
+    #
+    # @api private
+    HELP_FLAGS = %w[-h --help].freeze
+    private_constant :HELP_FLAGS
+
+    # Why a listing is shown, given the arguments after the last one that named a command.
+    #
+    # @param unmatched [Array<String>]
+    #
+    # @return [Symbol] `:no_command`, `:help` or `:unknown`
+    #
+    # @api private
+    def listing_reason(unmatched)
+      if unmatched.empty? then :no_command
+      elsif HELP_FLAGS.include?(unmatched.first) then :help
+      else :unknown
+      end
+    end
+
+    # Renders a help screen through the configured renderer and filters, prints it, and stops the
+    # CLI with its status, unless that is nil.
+    #
+    # @param fields [Hash] the fields of the {Screen}, other than those every screen shares
+    #
+    # @api private
+    def show(long: false, suggestion: nil, **fields)
+      screen = config.help.call(
+        Screen.new(long:, suggestion:, arguments:, text: nil, stdout:, stderr:, **fields)
+      )
+
+      screen.io.puts(screen.text)
+      halt(screen.status) unless screen.status.nil?
+    end
+
+    # Stops the CLI, which {#call} turns into an exit through the kernel.
+    #
+    # @param status [Integer] the exit status
+    #
+    # @raise [Halt] always
+    #
+    # @api private
+    def halt(status)
+      raise Halt, status
     end
 
     # Handles Exit codes for signals
@@ -220,7 +332,7 @@ module Dry
     # @since 0.7.0
     # @api private
     def signal_exception(exception)
-      exit(128 + exception.signo)
+      kernel.exit(128 + exception.signo)
     end
 
     # Check if command
@@ -260,11 +372,13 @@ module Dry
   #
   # @param registry_or_command [Dry::CLI::Registry, Dry::CLI::Command]
   #   a registry or singular command
+  # @param config [Dry::CLI::Config, nil] settings for this CLI, in place of the process-wide
+  #   {Dry::CLI.config}
   # @param &block [Block] a configuration block for registry
   #
   # @return [Dry::CLI] the new instance
   # @since 0.4.0
-  def self.CLI(registry_or_command = nil, &block)
-    CLI.new(registry_or_command, &block)
+  def self.CLI(registry_or_command = nil, config: nil, &block)
+    CLI.new(registry_or_command, config:, &block)
   end
 end
