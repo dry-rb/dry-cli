@@ -128,7 +128,7 @@ RSpec.describe Dry::CLI::Registry do
           )
 
           expect { registry.option("alpha", :level, differing) }.to raise_error(
-            Dry::CLI::IncompatibleOptionError,
+            Dry::CLI::CommandDefinitionError,
             "`level' is already declared for command `alpha' with a different #{setting}"
           )
         end
@@ -138,7 +138,7 @@ RSpec.describe Dry::CLI::Registry do
         registry.option("alpha", :level, type: :string, default: "a")
 
         expect { registry.option("alpha", :level, type: :flag, default: "z") }.to raise_error(
-          Dry::CLI::IncompatibleOptionError,
+          Dry::CLI::CommandDefinitionError,
           "`level' is already declared for command `alpha' with a different type, default"
         )
       end

@@ -31,7 +31,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
     `Registry#command_class` returns the registered command's class, as an escape hatch for anything else its class-level DSL offers.
 
-    Adding the same option twice is allowed, so independent gems can each contribute the option they need without coordinating, as long as they agree on `:type`, `:required`, `:values` and `:default`. Otherwise `Dry::CLI::IncompatibleOptionError` is raised. `:cast` is not compared, since procs aren't meaningfully comparable.
+    Adding the same option twice is allowed, so independent gems can each contribute the option they need without coordinating, as long as they agree on `:type`, `:required`, `:values` and `:default`. Otherwise `Dry::CLI::CommandDefinitionError` is raised. `:cast` is not compared, since procs aren't meaningfully comparable.
 - Support for styled text. (@aaronmallen and @timriley in #166)
 
     Use `style` in your commands (or `Dry::CLI::Style`) directly to build styles, then send text to those styles. Once you pass that text to an output stream, it will be styled (and its colors gracefully degraded if required) based on the terminal's capabilities. Styled text sent to a non-terminal stream (such as when a CLI command has output redirected to a file) will not be styled.
@@ -171,6 +171,8 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - Improved error messages to be more precise and helpful (@katafrakt in #158)
 - Accepted values are now listed the same way in help output as in error messages, separated by commas rather than slashes. (@timriley in #163)
+- Declaring a required argument after an optional one, or any argument after an array argument, now raises `Dry::CLI::CommandDefinitionError`. Arguments are matched by position, so such a command could never be called correctly: a required argument could not be given without also giving the optional one before it, and an array argument takes all the remaining values, leaving none for the arguments after it. (@timriley in #177)
+- [BREAKING] Declaring an argument with both `required: true` and a `default:` now raises `Dry::CLI::CommandDefinitionError`. Remove either `required: true` or the default. (@timriley in #177)
 
 ### Deprecated
 
@@ -208,6 +210,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
   cmd 1 2  # was ["1", "2"], now [1, 2]
   ```
 - An `argument` with `type: :array` is now always given to the command as an array. When the command declared more arguments than were given, it previously received no value at all. (@timriley in #162)
+- Redeclaring an argument, such as in a subclass to change its `desc`, now keeps the argument in its original position. Previously it was moved to the end, so values given on the command line were matched to the wrong arguments. (@timriley in #177)
 
 ### Security
 

@@ -323,7 +323,7 @@ module Dry
       # @param options [Hash] a set of options, as per `Dry::CLI::Command.option`
       #
       # @raise [Dry::CLI::UnknownCommandError] if the command isn't registered
-      # @raise [Dry::CLI::IncompatibleOptionError] if the command already declares an option with
+      # @raise [Dry::CLI::CommandDefinitionError] if the command already declares an option with
       #   the same name, but with incompatible settings
       #
       # @since NEXT
@@ -360,7 +360,9 @@ module Dry
           if existing
             incompatible = new_option.incompatible_options(existing)
             unless incompatible.empty?
-              raise IncompatibleOptionError.new(command_name, new_option.name, incompatible)
+              raise CommandDefinitionError,
+                "`#{new_option.name}' is already declared for command `#{command_name}' " \
+                "with a different #{incompatible.join(", ")}"
             end
           else
             klass.option(new_option.name, new_option.options)
