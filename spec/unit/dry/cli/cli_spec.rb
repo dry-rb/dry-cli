@@ -465,4 +465,25 @@ RSpec.describe "CLI" do
       )
     end
   end
+
+  context "with a required array argument" do
+    let(:cli) { Dry.CLI(command_class) }
+
+    let(:command_class) do
+      Class.new(Dry::CLI::Command) do
+        argument :task, required: true
+        argument :dirs, type: :array, required: true
+
+        def call(**params)
+          puts params.map { |key, value| "#{key}=#{value.inspect}" }.sort.join(" ")
+        end
+      end
+    end
+
+    it "gives every remaining value to the array argument, leaving none in args" do
+      output = capture_output { cli.call(arguments: %w[test lib spec]) }
+
+      expect(output).to eq "dirs=[\"lib\", \"spec\"] task=\"test\"\n"
+    end
+  end
 end
