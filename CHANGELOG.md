@@ -135,7 +135,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     raise Dry::CLI::ExitError, "config.yml not found"
     raise Dry::CLI::ExitError.new("deploy failed", exit_code: 2)
     ```
-- `Dry::CLI#call` accepts an `exit:` argument, which the CLI calls with the exit code instead of `Kernel#exit`. With this, tests can check exit codes without stubbing `Kernel#exit` or rescuing `SystemExit`. (@timriley)
+- `Dry::CLI#call` accepts an `exit:` argument, which the CLI calls with the exit code instead of `Kernel#exit`. With this, tests can check exit codes without stubbing `Kernel#exit` or rescuing `SystemExit`. (@timriley in #180)
 
     ```ruby
     exit_code = nil
