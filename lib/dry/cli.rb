@@ -89,15 +89,59 @@ module Dry
 
     # Invoke the CLI
     #
+    # A command (or a before/after callback) can stop the CLI with an exit code by throwing `:exit`:
+    #
+    # ```
+    # def call(**)
+    #   stderr.puts "Something went wrong"
+    #   throw :exit, 1
+    # end
+    # ```
+    #
+    # The CLI catches the throw and calls `exit` with the given code. A bare `throw :exit` exits
+    # with 0. The CLI also exits this way after printing help (0) and after an error such as an
+    # unknown option or command (1).
+    #
+    # A command can also raise {ExitError} (or a subclass). The CLI prints the error's message to
+    # stderr, with no backtrace, then calls `exit` with the error's `exit_code`.
+    #
+    # When nothing throws `:exit` or raises {ExitError}, the CLI returns normally and does not call
+    # `exit`.
+    #
     # @param arguments [Array<string>] the command line arguments (defaults to `ARGV`)
     # @param stderr [IO] the error output (defaults to `$stderr`)
     # @param stdin [IO] the standard input (defaults to `$stdin`)
     # @param stdout [IO] the standard output (defaults to `$stdout`)
+    # @param exit [#call] called with the exit code when the CLI exits (defaults to `Kernel#exit`)
+    #
+    # @example Checking the exit code in a test
+    #   exit_code = nil
+    #   cli.call(arguments: ["foo", "--unknown"], exit: ->(code) { exit_code = code })
+    #   exit_code # => 1
     #
     # @since 0.1.0
-    def call(arguments: ARGV, stderr: $stderr, stdin: $stdin, stdout: $stdout)
-      @stderr, @stdin, @stdout = Stream.for(stderr), stdin, Stream.for(stdout)
-      kommand ? perform_command(arguments) : perform_registry(arguments)
+    def call(
+      arguments: ARGV,
+      stderr: $stderr,
+      stdin: $stdin,
+      stdout: $stdout,
+      exit: Kernel.method(:exit)
+    )
+      @stderr, @stdin, @stdout, @exit = Stream.for(stderr), stdin, Stream.for(stdout), exit
+
+      code = catch(:exit) do
+        return kommand ? perform_command(arguments) : perform_registry(arguments)
+      rescue ExitError => exception
+        begin
+          @stderr.puts(exception.message)
+        rescue Errno::EPIPE
+          # Exit with the error's code even when stderr is closed
+        end
+        exception.exit_code
+      end
+
+      # Ensure a bare `throw :exit` (whih gives a nil code) becomes a success.
+      @exit.call(code.nil? ? 0 : code)
     rescue SignalException => exception
       signal_exception(exception)
     rescue Errno::EPIPE
@@ -156,10 +200,13 @@ module Dry
 
     # Parse arguments for a command.
     #
-    # It may exit in case of error, or in case of help.
+    # When the arguments include `--help` or `-h`, it prints the command's help to stdout and exits
+    # with 0. When the arguments are invalid (such as an unknown option or a missing required
+    # argument), it prints the error to stderr and exits with 1.
     #
-    # @param result [Dry::CLI::CommandRegistry::LookupResult]
-    # @param out [IO] sta output
+    # @param command [Dry::CLI::Command, Class] the command to parse arguments for
+    # @param arguments [Array<String>] the command line arguments for the command
+    # @param names [Array<String>] the names used to find the command, for the program name
     #
     # @return [Array<Dry:CLI::Command, Array>] returns an array where the
     #   first element is a command and the second one is the list of arguments
@@ -196,14 +243,14 @@ module Dry
     # @api private
     def help(command, prog_name, long: false)
       stdout.puts Banner.call(command, prog_name, long: long)
-      exit(0) # Successful exit
+      throw :exit, 0
     end
 
     # @since 0.6.0
     # @api private
     def error(result)
       stderr.puts(result.error)
-      exit(1)
+      throw :exit, 1
     end
 
     # @since 1.1.1
@@ -211,7 +258,7 @@ module Dry
       spell_checker = SpellChecker.call(result, arguments)
       stderr.puts "#{spell_checker}\n\n" if spell_checker
       stderr.puts Usage.call(result)
-      exit(1)
+      throw :exit, 1
     end
 
     # Handles Exit codes for signals
@@ -220,7 +267,7 @@ module Dry
     # @since 0.7.0
     # @api private
     def signal_exception(exception)
-      exit(128 + exception.signo)
+      @exit.call(128 + exception.signo)
     end
 
     # Check if command

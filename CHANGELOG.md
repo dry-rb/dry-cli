@@ -115,6 +115,33 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
       s.run { sleep 6 }
     end
     ```
+- Commands and callbacks can stop the CLI with an exit code by throwing `:exit`. The CLI catches the throw and exits with the code. A bare `throw :exit` exits with 0. (@timriley in #180)
+
+    ```ruby
+    class Deploy < Dry::CLI::Command
+      def call(**)
+        unless File.exist?("config.yml")
+          stderr.puts "config.yml not found"
+          throw :exit, 1
+        end
+
+        # ...
+      end
+    end
+    ```
+- `Dry::CLI::ExitError`, for errors the user is meant to see. Raise it (or your own subclass) from anywhere in a command or callback. The CLI prints its message to stderr, with no backtrace, then exits with its `exit_code` (1 by default). Other errors are not rescued, so they keep their backtrace. (@timriley in #180)
+
+    ```ruby
+    raise Dry::CLI::ExitError, "config.yml not found"
+    raise Dry::CLI::ExitError.new("deploy failed", exit_code: 2)
+    ```
+- `Dry::CLI#call` accepts an `exit:` argument, which the CLI calls with the exit code instead of `Kernel#exit`. With this, tests can check exit codes without stubbing `Kernel#exit` or rescuing `SystemExit`. (@timriley)
+
+    ```ruby
+    exit_code = nil
+    cli.call(arguments: ["deploy"], exit: ->(code) { exit_code = code })
+    exit_code # => 1
+    ```
 
 ### Changed
 
@@ -173,6 +200,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 - Accepted values are now listed the same way in help output as in error messages, separated by commas rather than slashes. (@timriley in #163)
 - Declaring a required argument after an optional one, or any argument after an array argument, now raises `Dry::CLI::CommandDefinitionError`. Arguments are matched by position, so such a command could never be called correctly: a required argument could not be given without also giving the optional one before it, and an array argument takes all the remaining values, leaving none for the arguments after it. (@timriley in #177)
 - [BREAKING] Declaring an argument with both `required: true` and a `default:` now raises `Dry::CLI::CommandDefinitionError`. Remove either `required: true` or the default. (@timriley in #177)
+- Exits for help (status 0), invalid options and arguments (1), and unknown commands (1) now go through the `exit:` given to `Dry::CLI#call`. (@timriley in #180)
 
 ### Deprecated
 

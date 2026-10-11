@@ -215,7 +215,7 @@ RSpec.describe "CLI" do
       cli = Dry::CLI.new(registry)
 
       io = StringIO.new
-      expect { cli.call(arguments: ["foo", "--help"], stdout: io) }.to raise_error(SystemExit)
+      cli.call(arguments: ["foo", "--help"], stdout: io, exit: ->(_) {})
       expect(io.string).to include("A foo command")
     end
 
@@ -227,7 +227,7 @@ RSpec.describe "CLI" do
       cli = Dry::CLI.new(registry)
 
       io = StringIO.new
-      expect { cli.call(arguments: ["foo", "--unknown"], stderr: io) }.to raise_error(SystemExit)
+      cli.call(arguments: ["foo", "--unknown"], stderr: io, exit: ->(_) {})
       expect(io.string).to eq("ERROR: \"rspec foo\" was called with invalid option \"--unknown\"\n")
     end
 
@@ -243,6 +243,193 @@ RSpec.describe "CLI" do
       output = StringIO.new
       cli.call(arguments: [], stdin: input, stdout: output)
       expect(output.string).to eq("hello\n")
+    end
+  end
+
+  context "exiting" do
+    let(:exit_codes) { [] }
+    let(:exit) { ->(code) { exit_codes << code } }
+    let(:stdout) { StringIO.new }
+    let(:stderr) { StringIO.new }
+
+    def call_cli(cli, arguments)
+      cli.call(arguments:, stdout:, stderr:, exit:)
+    end
+
+    it "exits with the code a command throws" do
+      command = Class.new(Dry::CLI::Command) do
+        def call(**)
+          stdout.puts "before"
+          throw :exit, 3
+          stdout.puts "after" # rubocop:disable Lint/UnreachableCode
+        end
+      end
+
+      call_cli(Dry.CLI(command), [])
+
+      expect(exit_codes).to eq [3]
+      expect(stdout.string).to eq "before\n"
+    end
+
+    it "exits with 0 when a command throws without a code" do
+      command = Class.new(Dry::CLI::Command) { def call(**) = throw(:exit) }
+
+      call_cli(Dry.CLI(command), [])
+
+      expect(exit_codes).to eq [0]
+    end
+
+    it "does not exit when a command finishes normally" do
+      command = Class.new(Dry::CLI::Command) { def call(**) = stdout.puts("done") }
+
+      call_cli(Dry.CLI(command), [])
+
+      expect(exit_codes).to eq []
+      expect(stdout.string).to eq "done\n"
+    end
+
+    it "exits from a before callback without running the command or after callbacks" do
+      command = Class.new(Dry::CLI::Command) { def call(**) = stdout.puts("command") }
+      cli = Dry.CLI do |c|
+        c.register "run", command
+        c.before("run") { throw :exit, 2 }
+        c.after("run") { stdout.puts "after" }
+      end
+
+      call_cli(cli, %w[run])
+
+      expect(exit_codes).to eq [2]
+      expect(stdout.string).to eq ""
+    end
+
+    it "exits with the code an after callback throws" do
+      command = Class.new(Dry::CLI::Command) { def call(**) = stdout.puts("command") }
+      cli = Dry.CLI do |c|
+        c.register "run", command
+        c.after("run") { throw :exit, 4 }
+      end
+
+      call_cli(cli, %w[run])
+
+      expect(exit_codes).to eq [4]
+      expect(stdout.string).to eq "command\n"
+    end
+
+    it "exits with 0 after printing help" do
+      command = Class.new(Dry::CLI::Command) { desc "A command"; def call(**) = stdout.puts("ran") }
+
+      call_cli(Dry.CLI(command), %w[--help])
+
+      expect(exit_codes).to eq [0]
+      expect(stdout.string).to include "A command"
+      expect(stdout.string).not_to include "ran"
+    end
+
+    it "exits with 1 for an invalid option" do
+      command = Class.new(Dry::CLI::Command) { def call(**) = stdout.puts("command") }
+
+      call_cli(Dry.CLI(command), %w[--unknown])
+
+      expect(exit_codes).to eq [1]
+      expect(stderr.string).to include "invalid option"
+      expect(stdout.string).to eq ""
+    end
+
+    it "exits with 1 for an unknown command" do
+      cli = Dry.CLI { |c| c.register "run", Class.new(Dry::CLI::Command) { def call(**) = nil } }
+
+      call_cli(cli, %w[rnu])
+
+      expect(exit_codes).to eq [1]
+      expect(stderr.string).to include "run"
+    end
+
+    it "exits with 128 plus the signal number when interrupted" do
+      command = Class.new(Dry::CLI::Command) { def call(**) = raise(Interrupt) }
+
+      call_cli(Dry.CLI(command), [])
+
+      expect(exit_codes).to eq [130]
+    end
+
+    it "prints an ExitError's message and exits with 1" do
+      command = Class.new(Dry::CLI::Command) do
+        def call(**) = raise(Dry::CLI::ExitError, "config.yml not found")
+      end
+
+      call_cli(Dry.CLI(command), [])
+
+      expect(exit_codes).to eq [1]
+      expect(stderr.string).to eq "config.yml not found\n"
+    end
+
+    it "exits with an ExitError's own exit code" do
+      command = Class.new(Dry::CLI::Command) do
+        def call(**) = raise(Dry::CLI::ExitError.new("deploy failed", exit_code: 2))
+      end
+
+      call_cli(Dry.CLI(command), [])
+
+      expect(exit_codes).to eq [2]
+      expect(stderr.string).to eq "deploy failed\n"
+    end
+
+    it "handles subclasses of ExitError raised from a callback" do
+      error_class = Class.new(Dry::CLI::ExitError)
+      command = Class.new(Dry::CLI::Command) { def call(**) = stdout.puts("command") }
+      cli = Dry.CLI do |c|
+        c.register "run", command
+        c.before("run") { raise error_class, "not allowed" }
+      end
+
+      call_cli(cli, %w[run])
+
+      expect(exit_codes).to eq [1]
+      expect(stderr.string).to eq "not allowed\n"
+      expect(stdout.string).to eq ""
+    end
+
+    it "does not rescue other errors" do
+      command = Class.new(Dry::CLI::Command) do
+        def call(**) = raise(Dry::CLI::Error, "a bug")
+      end
+
+      expect { call_cli(Dry.CLI(command), []) }.to raise_error(Dry::CLI::Error, "a bug")
+      expect(exit_codes).to eq []
+    end
+
+    it "returns the command's result when it finishes normally" do
+      command = Class.new(Dry::CLI::Command) { def call(**) = :result }
+
+      expect(call_cli(Dry.CLI(command), [])).to eq :result
+    end
+
+    it "passes false and true through to exit" do
+      failing = Class.new(Dry::CLI::Command) { def call(**) = throw(:exit, false) }
+      passing = Class.new(Dry::CLI::Command) { def call(**) = throw(:exit, true) }
+
+      call_cli(Dry.CLI(failing), [])
+      call_cli(Dry.CLI(passing), [])
+
+      expect(exit_codes).to eq [false, true]
+    end
+
+    it "exits with an ExitError's code even when stderr is closed" do
+      closed_stderr = Object.new.tap { |io| def io.puts(*) = raise(Errno::EPIPE) }
+      command = Class.new(Dry::CLI::Command) do
+        def call(**) = raise(Dry::CLI::ExitError.new("deploy failed", exit_code: 2))
+      end
+
+      Dry.CLI(command).call(arguments: [], stdout:, stderr: closed_stderr, exit:)
+
+      expect(exit_codes).to eq [2]
+    end
+
+    it "exits through Kernel#exit by default" do
+      command = Class.new(Dry::CLI::Command) { def call(**) = throw(:exit, 5) }
+
+      expect { Dry.CLI(command).call(arguments: [], stdout:, stderr:) }
+        .to raise_error(SystemExit) { |error| expect(error.status).to eq 5 }
     end
   end
 
