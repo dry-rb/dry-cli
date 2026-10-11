@@ -685,9 +685,9 @@ module Dry
       # @example
       #   class MyCommand
       #     def call
-      #       stdout.puts "Hello World!"
-      #     rescue StandardError => e
-      #       stderr.puts "Uh oh: #{e.message}"
+      #       stdout.puts File.read("config.yml")
+      #     rescue Errno::ENOENT
+      #       stderr.puts "config.yml not found"
       #       throw :exit, 1
       #     end
       #   end

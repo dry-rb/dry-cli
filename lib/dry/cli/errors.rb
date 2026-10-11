@@ -18,6 +18,10 @@ module Dry
     # missing file or a failed subprocess. Do not use it for bugs. Other errors are not rescued, so
     # they keep their backtrace.
     #
+    # This is a `StandardError`, so a broad `rescue` (such as `rescue => e`) between the raise and
+    # the CLI will catch it, and the CLI will not see it. To stop in a way that no `rescue` can catch,
+    # use `throw :exit` instead.
+    #
     # @example
     #   raise Dry::CLI::ExitError, "config.yml not found"
     #   raise Dry::CLI::ExitError.new("deploy failed", exit_code: 2)
