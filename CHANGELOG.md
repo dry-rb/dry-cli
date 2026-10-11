@@ -143,6 +143,8 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     exit_code # => 1
     ```
 
+    Existing commands that call `Kernel#exit` itself still exit the process directly, and do not use `exit:`. To use `exit:`, change these calls to `throw :exit, code`, or raise `Dry::CLI::ExitError`.
+
 ### Changed
 
 - Commands and callbacks are now passed only the params their `#call` actually declares, so they no longer need a `**` catch-all to tolerate params contributed by other gems. (@afomera in #165)
