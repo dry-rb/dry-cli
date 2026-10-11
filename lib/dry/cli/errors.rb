@@ -25,12 +25,6 @@ module Dry
     # @api public
     # @since 2.0.0
     class ExitError < Error
-      # @return [Integer] the code the CLI exits with
-      #
-      # @api public
-      # @since 2.0.0
-      attr_reader :exit_code
-
       # @param message [String] the message to print to stderr
       # @param exit_code [Integer] the code to exit with (defaults to 1)
       #
@@ -40,6 +34,17 @@ module Dry
         super(message)
         @exit_code = exit_code
       end
+
+      # Returns the code the CLI exits with.
+      #
+      # This is 1 when no code is set, such as when a subclass gives `exit_code: nil` or does not
+      # call `super` in its `#initialize`. This way, a missing code never makes an error exit with 0.
+      #
+      # @return [Integer]
+      #
+      # @api public
+      # @since 2.0.0
+      def exit_code = @exit_code || 1
     end
 
     # @api public

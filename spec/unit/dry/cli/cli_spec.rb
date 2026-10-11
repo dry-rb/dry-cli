@@ -389,6 +389,26 @@ RSpec.describe "CLI" do
       expect(stdout.string).to eq ""
     end
 
+    it "exits with 1 when an ExitError has no exit code" do
+      nil_code_error = Class.new(Dry::CLI::ExitError) do
+        def initialize(message) = super(message, exit_code: nil)
+      end
+      no_super_error = Class.new(Dry::CLI::ExitError) do
+        def initialize = nil # rubocop:disable Lint/MissingSuper
+        def message = "no super"
+      end
+      nil_code_command = Class.new(Dry::CLI::Command)
+      nil_code_command.define_method(:call) { |**| raise nil_code_error, "nil code" }
+      no_super_command = Class.new(Dry::CLI::Command)
+      no_super_command.define_method(:call) { |**| raise no_super_error }
+
+      call_cli(Dry.CLI(nil_code_command), [])
+      call_cli(Dry.CLI(no_super_command), [])
+
+      expect(exit_codes).to eq [1, 1]
+      expect(stderr.string).to eq "nil code\nno super\n"
+    end
+
     it "does not rescue other errors" do
       command = Class.new(Dry::CLI::Command) do
         def call(**) = raise(Dry::CLI::Error, "a bug")
