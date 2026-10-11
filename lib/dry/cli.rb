@@ -140,7 +140,7 @@ module Dry
         exception.exit_code
       end
 
-      # Ensure a bare `throw :exit` (whih gives a nil code) becomes a success.
+      # Ensure a bare `throw :exit` (which gives a nil code) becomes a success.
       @exit.call(code.nil? ? 0 : code)
     rescue SignalException => exception
       signal_exception(exception)
