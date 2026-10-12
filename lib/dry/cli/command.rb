@@ -32,6 +32,43 @@ module Dry
     # end
     # ```
     #
+    # ## Exiting
+    #
+    # To stop the CLI with an exit code, throw `:exit` with the code:
+    #
+    # ```
+    # def call(**)
+    #   unless File.exist?("config.yml")
+    #     stderr.puts "config.yml not found"
+    #     throw :exit, 1
+    #   end
+    # end
+    # ```
+    #
+    # The CLI catches this and exits with the code. Throw `:exit` instead of calling `Kernel#exit`,
+    # so that tests can give the CLI their own `exit:` and check the code (see {Dry::CLI#call}).
+    #
+    # To stop with a message for the user, raise {Dry::CLI::ExitError} (or your own subclass of it).
+    # The CLI prints the message to stderr, with no backtrace, and exits with the error's exit code
+    # (1 by default). This works from anywhere the command calls in the same thread, such as a
+    # helper object:
+    #
+    # ```
+    # raise Dry::CLI::ExitError, "config.yml not found"
+    # raise Dry::CLI::ExitError.new("deploy failed", exit_code: 2)
+    # ```
+    #
+    # When you call a command directly (with no CLI around it), nothing catches these for you. Wrap
+    # the call in `catch(:exit)` to get a thrown code. A {Dry::CLI::ExitError} is raised as normal,
+    # so rescue it (or, in a test, expect it to be raised):
+    #
+    # ```
+    # code = catch(:exit) { command.call }
+    #
+    # expect { command.call }.to raise_error(Dry::CLI::ExitError, "config.yml not found")
+    # ```
+    #
+    # @api public
     # @since 0.1.0
     class Command
       include StyleMixin
@@ -648,11 +685,10 @@ module Dry
       # @example
       #   class MyCommand
       #     def call
-      #       stdout.puts "Hello World!"
-      #       exit(0)
-      #     rescue StandardError => e
-      #       stderr.puts "Uh oh: #{e.message}"
-      #       exit(1)
+      #       stdout.puts File.read("config.yml")
+      #     rescue Errno::ENOENT
+      #       stderr.puts "config.yml not found"
+      #       throw :exit, 1
       #     end
       #   end
       #

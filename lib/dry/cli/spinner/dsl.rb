@@ -53,6 +53,9 @@ module Dry
       # Executed before each tick of the spinner. The line has been erased, so the current state
       # of the stream will be a blank slate.
       #
+      # This runs in a separate thread, so do not `throw :exit` or raise {Dry::CLI::ExitError} from
+      # it. Do that from the {#run} block instead.
+      #
       # @yieldparam stream [Dry::CLI::Stream] The stream to write to
       # @yieldparam data [Hash] The data that will be interpolated into the spinner format string
       # @return [void]
@@ -63,6 +66,9 @@ module Dry
 
       # Executed after each tick of the spinner. The format string has been written to the stream,
       # so anything you write will be appended after it.
+      #
+      # This runs in a separate thread, so do not `throw :exit` or raise {Dry::CLI::ExitError} from
+      # it. Do that from the {#run} block instead.
       #
       # @yieldparam stream [Dry::CLI::Stream] The stream to write to
       # @return [void]

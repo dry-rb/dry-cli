@@ -9,6 +9,48 @@ module Dry
     class Error < StandardError
     end
 
+    # Raise from a command or callback to stop the CLI with a message for the user.
+    #
+    # The CLI prints the message (with no backtrace) to its stderr, then exits with {#exit_code}.
+    # Subclass this for your own user-facing errors.
+    #
+    # Use this for problems the user should know about and might be able to address, such as a
+    # missing file or a failed subprocess. Do not use it for bugs. Other errors are not rescued, so
+    # they keep their backtrace.
+    #
+    # This is a `StandardError`, so a broad `rescue` (such as `rescue => e`) between the raise and
+    # the CLI will catch it, and the CLI will not see it. To stop in a way that no `rescue` can catch,
+    # use `throw :exit` instead.
+    #
+    # @example
+    #   raise Dry::CLI::ExitError, "config.yml not found"
+    #   raise Dry::CLI::ExitError.new("deploy failed", exit_code: 2)
+    #
+    # @api public
+    # @since 2.0.0
+    class ExitError < Error
+      # @param message [String] the message to print to stderr
+      # @param exit_code [Integer] the code to exit with (defaults to 1)
+      #
+      # @api public
+      # @since 2.0.0
+      def initialize(message, exit_code: 1)
+        super(message)
+        @exit_code = exit_code
+      end
+
+      # Returns the code the CLI exits with.
+      #
+      # This is 1 when no code is set, such as when a subclass gives `exit_code: nil` or does not
+      # call `super` in its `#initialize`. This way, a missing code never makes an error exit with 0.
+      #
+      # @return [Integer]
+      #
+      # @api public
+      # @since 2.0.0
+      def exit_code = @exit_code || 1
+    end
+
     # @api public
     # @since x.y.z
     class InvalidColorError < Error
