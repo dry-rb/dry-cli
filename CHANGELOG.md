@@ -144,12 +144,13 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     ```
 
     Existing commands that call `Kernel#exit` itself still exit the process directly, and do not use `exit:`. To use `exit:`, change these calls to `throw :exit, code`, or raise `Dry::CLI::ExitError`.
+- `Dry::CLI.accepted_kwargs`, which returns only the keyword args that a method or proc accepts, based on its params. Use it when you wrap a command's `#call`, to pass on only the keyword args that the next `#call` accepts. (@timriley)
 
 ### Changed
 
-- Commands and callbacks are now passed only the params their `#call` actually declares, so they no longer need a `**` catch-all to tolerate params contributed by other gems. (@afomera in #165)
+- Commands and callbacks are now passed only the keyword args that match the params their `#call` declares, so they no longer need a `**` catch-all param to tolerate options contributed by other gems. (@afomera in #165)
 
-    Params are passed through in full when `#call` can take them as a whole: when it declares a keyword splat or a positional. Otherwise they're matched against the keywords it declares.
+    Every keyword arg is passed when `#call` can take them as a whole: when it declares a keyword splat param or a positional param. Otherwise they're matched against the keyword params it declares.
 - `Dry::CLI::Command.new` now takes three keyword arguments: `stdout:`, `stdin:` and `stderr:`. These can be used to inject I/O streams, which is useful for testing. (@aaronmallen in #151, @timriley in #167)
 
     These arguments are taken by `.new` and set on the command instance before `#initialize` runs, so `#initialize` in a subclass only needs to worry about its own arguments, with no call to `super` required:

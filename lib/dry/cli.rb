@@ -68,6 +68,40 @@ module Dry
       end
     end
 
+    # Returns the keyword args from `kwargs` that `callable` can accept, based on the params it
+    # declares.
+    #
+    # A callable declaring a keyword splat param (`**`) or a positional param gets every keyword
+    # arg. Any other callable gets only the keyword args that match its keyword params.
+    #
+    # Dry CLI uses this to call each command's `#call` and callbacks with only the keyword args that
+    # they accept. Use this yourself if you wrap a command's `#call`, to ensure that you only pass
+    # on the keyword args that the next `#call` accepts.
+    #
+    # @example
+    #   class Deploy < Dry::CLI::Command
+    #     def call(target:, force: false) = ...
+    #   end
+    #
+    #   kwargs = {target: "production", env: "test"}
+    #
+    #   Dry::CLI.accepted_kwargs(Deploy.new.method(:call), kwargs)
+    #   # => {target: "production"}
+    #
+    #   Dry::CLI.accepted_kwargs(proc { |**opts| opts }, kwargs)
+    #   # => {target: "production", env: "test"}
+    #
+    # @param callable [Method, Proc] the method or proc to be called
+    # @param kwargs [Hash] the keyword args to choose from
+    #
+    # @return [Hash] the keyword args that `callable` can accept
+    #
+    # @since 2.0.0
+    # @api public
+    def self.accepted_kwargs(callable, kwargs)
+      Dispatch.accepted_kwargs(callable, kwargs)
+    end
+
     # Create a new instance
     #
     # @param command_or_registry [Dry::CLI::Registry, Dry::CLI::Command]
@@ -176,7 +210,7 @@ module Dry
     # @api private
     def perform_command(arguments)
       command, args = parse(kommand, arguments, [])
-      command.call(**Dispatch.command_args_for(command, args))
+      command.call(**Dispatch.command_accepted_kwargs(command, args))
     end
 
     # Invoke the CLI if registry passed
@@ -194,7 +228,7 @@ module Dry
       return stderr.puts(Usage.call(result)) unless command.respond_to?(:call)
 
       result.before_callbacks.run(command, **args)
-      command.call(**Dispatch.command_args_for(command, args))
+      command.call(**Dispatch.command_accepted_kwargs(command, args))
       result.after_callbacks.run(command, **args)
     end
 

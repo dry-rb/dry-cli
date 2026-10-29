@@ -2,50 +2,53 @@
 
 module Dry
   class CLI
-    # Matches parsed params against what a command or callback can actually accept.
+    # Matches the parsed keyword args against the params that a command or callback declares.
     #
-    # Commands and callbacks only declare the params they care about, but the parsed params also
-    # carry whatever other gems have contributed to the same command (see {Registry#option}). This
-    # keeps each of them free of a catch-all `**` just to tolerate params they know nothing about.
+    # Commands and callbacks only declare params for the keyword args they care about, but the
+    # parsed keyword args also carry whatever other gems have contributed to the same command (see
+    # {Registry#option}). This keeps each of them free of a catch-all `**` param just to tolerate
+    # keyword args they know nothing about.
+    #
+    # For public use, see {Dry::CLI.accepted_kwargs}.
     #
     # @api private
     module Dispatch
-      # Parameter kinds that mean the callable can be given every param. See {.args_for}.
+      # Param kinds that mean the callable can be given every keyword arg. See {.accepted_kwargs}.
       WHOLE_HASH = %i[keyrest req opt rest].freeze
 
-      # The params from `args` that `callable` can accept.
+      # The keyword args from `kwargs` that `callable` can accept.
       #
-      # Two kinds of callable are given every param: one declaring a keyword splat, which absorbs
-      # whatever it doesn't name; and one declaring a positional, because `**` collapses to a
-      # single Hash when the callable declares no keywords.
+      # Two kinds of callable are given every keyword arg: one declaring a keyword splat param,
+      # which absorbs whatever it doesn't name; and one declaring a positional param, because `**`
+      # collapses to a single Hash when the callable declares no keyword params.
       #
-      # Every other callable is given only the keywords it declares. This also means that a callable
-      # declaring no params (e.g. `def call`) will receive none.
+      # Every other callable is given only the keyword args that match its keyword params. This also
+      # means that a callable declaring no params (e.g. `def call`) will receive no args.
       #
       # @param callable [Method, Proc] the command's `#call` method, or a callback
-      # @param args [Hash] the parsed params
+      # @param kwargs [Hash] the parsed keyword args
       #
       # @return [Hash]
-      def self.args_for(callable, args)
-        parameters = callable.parameters
-        return args if parameters.any? { |type, _| WHOLE_HASH.include?(type) }
+      def self.accepted_kwargs(callable, kwargs)
+        params = callable.parameters
+        return kwargs if params.any? { |type, _| WHOLE_HASH.include?(type) }
 
-        args.slice(*parameters.filter_map { |type, name| name if type == :key || type == :keyreq })
+        kwargs.slice(*params.filter_map { |type, name| name if type == :key || type == :keyreq })
       end
 
-      # The params that `command` can accept, for commands implementing `#call`.
+      # The keyword args that `command` can accept, for commands implementing `#call`.
       #
-      # Falls back to all of them for commands that answer `#call` via `method_missing`, and so
-      # have no signature to inspect.
+      # Falls back to all of them for commands that answer `#call` via `method_missing`, and so have
+      # no params to inspect.
       #
       # @param command [Dry::CLI::Command] the command instance
-      # @param args [Hash] the parsed params
+      # @param kwargs [Hash] the parsed keyword args
       #
       # @return [Hash]
-      def self.command_args_for(command, args)
-        args_for(command.method(:call), args)
+      def self.command_accepted_kwargs(command, kwargs)
+        accepted_kwargs(command.method(:call), kwargs)
       rescue NameError
-        args
+        kwargs
       end
     end
   end
