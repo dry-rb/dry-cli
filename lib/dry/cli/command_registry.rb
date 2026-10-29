@@ -257,7 +257,7 @@ module Dry
         # @api private
         def run(context, **args)
           chain.each do |callback|
-            context.instance_exec(**Dispatch.args_for(callback, args), &callback)
+            context.instance_exec(**Dispatch.accepted_kwargs(callback, args), &callback)
           end
         end
       end
