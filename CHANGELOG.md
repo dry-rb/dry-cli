@@ -67,14 +67,14 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
     Auto-initialized keywords are best used sparingly. Consider these for your CLI app's base command class only. A command cannot use auto-initialized keywords as their own `#initialize` parameters, since it will never receive them.
 
-- `Dry::CLI::Command#invoke`, for running one command from within another. (@parndt)
+- `Dry::CLI::Command#invoke`, for running one command from within another. (@parndt in #183)
 
     The other command is built with the auto-initialized keywords of the command invoking it, so it writes to the same streams and shares the same standard dependencies. Its option defaults apply, and it is given only the keywords its `#call` accepts, so a command can pass along all of its own options:
 
     ```ruby
     class Migrate < MyApp::Command
-      def call(**options)
-        invoke(Create, **options)
+      def call(...)
+        invoke(Create, ...)
         # ...
       end
     end

@@ -804,8 +804,8 @@ module Dry
       #
       # @example
       #   class Migrate < MyApp::Command
-      #     def call(**options)
-      #       invoke(Create, **options)
+      #     def call(...)
+      #       invoke(Create, ...)
       #       # ...
       #     end
       #   end
