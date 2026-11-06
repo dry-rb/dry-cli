@@ -68,7 +68,9 @@ module Dry
           frames = self.frames.cycle
 
           ticker = Ticker.start(interval: 1.0 / fps) do
-            stream.raw.print ANSI.clear_line
+            # Draw over the previous frame, then erase what is left of it. Erasing the whole line
+            # first would show a blank line in terminals that redraw between writes.
+            stream.raw.print ANSI.carriage_return
 
             data = {spinner: frames.next}
             before_tick.call(stream, data)
@@ -76,6 +78,8 @@ module Dry
             stream.print format % data
 
             after_tick.call(stream)
+
+            stream.raw.print ANSI.erase_to_end_of_line
           end
         end
 
