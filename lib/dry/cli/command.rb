@@ -791,6 +791,57 @@ module Dry
       def print(*args)
         stdout.print(*args)
       end
+
+      # Runs another command from within this one, as if it had been run from the command line.
+      #
+      # The other command is built with this command's auto-initialized keywords, so it writes to
+      # the same streams and shares any standard dependencies your base command class adds. Each
+      # value is read back through the reader of the same name, so every auto-initialized keyword
+      # needs a reader.
+      #
+      # The other command's option defaults apply, and it is given only the keywords its `#call`
+      # accepts, so you can pass along all of this command's own options.
+      #
+      # @example
+      #   class Migrate < MyApp::Command
+      #     def call(...)
+      #       invoke(Create, ...)
+      #       # ...
+      #     end
+      #   end
+      #
+      # @param command_class [Class] the command to run
+      # @param kwargs [Hash] the options and arguments for the command's `#call`
+      #
+      # @return [Object] the result of the command's `#call`
+      #
+      # @see .auto_initialize_keywords
+      #
+      # @since x.y.z
+      # @api public
+      private def invoke(command_class, **kwargs)
+        command = command_class.new(**invoke_dependencies(command_class))
+        command.call(**Dispatch.command_accepted_kwargs(command, command_class.default_params.merge(kwargs)))
+      end
+
+      # Returns the keywords {#invoke} gives to the other command's `.new`.
+      #
+      # Override this to give the other command anything else it needs, such as an `#initialize`
+      # keyword marking it as invoked from another command:
+      #
+      # @example
+      #   private def invoke_dependencies(command_class) = super.merge(nested: true)
+      #
+      # @param command_class [Class] the command about to be run
+      #
+      # @return [Hash]
+      #
+      # @since x.y.z
+      # @api public
+      private def invoke_dependencies(command_class)
+        (self.class.auto_initialize_keywords & command_class.auto_initialize_keywords)
+          .to_h { |keyword| [keyword, send(keyword)] }
+      end
     end
   end
 end

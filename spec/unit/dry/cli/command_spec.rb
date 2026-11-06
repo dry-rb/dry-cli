@@ -409,6 +409,92 @@ RSpec.describe "Command" do
   end
   # rubocop:enable Lint/MissingSuper
 
+  describe "#invoke" do
+    let(:base) do
+      Class.new(Dry::CLI::Command) do
+        attr_reader :fs
+
+        private def auto_initialize(fs: nil, **kwargs)
+          super(**kwargs)
+          @fs = fs || []
+        end
+      end
+    end
+
+    let(:create) do
+      Class.new(base) do
+        option :gateway, default: "default"
+
+        def call(app: false, gateway: nil)
+          fs << "created"
+          puts "Creating #{app ? "app" : "slice"} on #{gateway}"
+          :created
+        end
+      end
+    end
+
+    it "runs the other command with this command's streams and standard dependencies" do
+      out = StringIO.new
+      err = StringIO.new
+      fs = []
+      other = create
+      command = Class.new(base) {
+        define_method(:call) { |**options| invoke(other, **options) }
+      }.new(stdout: out, stderr: err, fs:)
+
+      expect(command.call(app: true)).to eq :created
+      expect(out.string).to eq "Creating app on default\n"
+      expect(fs).to eq ["created"]
+    end
+
+    it "gives the other command only the keywords its #call accepts" do
+      out = StringIO.new
+      other = create
+      command = Class.new(base) {
+        define_method(:call) { |**options| invoke(other, **options) }
+      }.new(stdout: out)
+
+      command.call(app: true, gateway: "replica", dump: true)
+
+      expect(out.string).to eq "Creating app on replica\n"
+    end
+
+    it "passes only the dependencies both commands share" do
+      out = StringIO.new
+      other = Class.new(Dry::CLI::Command) do
+        def call(**) = puts("Plain")
+      end
+      command = Class.new(base) {
+        define_method(:call) { |**| invoke(other) }
+      }.new(stdout: out)
+
+      command.call
+
+      expect(out.string).to eq "Plain\n"
+    end
+
+    it "allows the dependencies to be extended" do
+      other = Class.new(base) do
+        def initialize(nested: false)
+          super()
+          @nested = nested
+        end
+
+        def call(**) = puts("nested: #{@nested}")
+      end
+      out = StringIO.new
+      command = Class.new(base) {
+        define_method(:call) { |**| invoke(other) }
+
+        private def invoke_dependencies(command_class) = super.merge(nested: true)
+      }.new(stdout: out)
+
+      command.call
+
+      expect(out.string).to eq "nested: true\n"
+    end
+  end
+
   describe "writing output" do
     let(:command) do
       Class.new(Dry::CLI::Command) do

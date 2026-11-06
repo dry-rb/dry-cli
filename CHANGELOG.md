@@ -67,6 +67,21 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
     Auto-initialized keywords are best used sparingly. Consider these for your CLI app's base command class only. A command cannot use auto-initialized keywords as their own `#initialize` parameters, since it will never receive them.
 
+- `Dry::CLI::Command#invoke`, for running one command from within another. (@parndt in #183)
+
+    The other command is built with the auto-initialized keywords of the command invoking it, so it writes to the same streams and shares the same standard dependencies. Its option defaults apply, and it is given only the keywords its `#call` accepts, so a command can pass along all of its own options:
+
+    ```ruby
+    class Migrate < MyApp::Command
+      def call(...)
+        invoke(Create, ...)
+        # ...
+      end
+    end
+    ```
+
+    Each auto-initialized keyword is read back through the reader of the same name, so every auto-initialized keyword needs a reader. Override `#invoke_dependencies` to give the other command anything else it needs.
+
 - Formatting support for styled text. (@alassek in #168)
 
     `Dry::CLI::Style::Text` objects have a `#%` method that behaves like `String#%` but respects the style information.
