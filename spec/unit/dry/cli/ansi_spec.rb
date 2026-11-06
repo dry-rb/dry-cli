@@ -37,6 +37,12 @@ RSpec.describe Dry::CLI::ANSI do
     end
   end
 
+  describe ".erase_to_end_of_line" do
+    it "returns the ANSI escape sequence to erase from the cursor to the end of the line" do
+      expect(described_class.erase_to_end_of_line).to eq("\e[K")
+    end
+  end
+
   describe ".enter_alt_screen" do
     it "returns the ANSI escape sequence to switch to the alternate screen buffer" do
       expect(described_class.enter_alt_screen).to eq("\e[?1049h")
@@ -143,6 +149,7 @@ RSpec.describe Dry::CLI::ANSI do
       expect(described_class::CNORM).to eq("\e[?25h")
       expect(described_class::CR).to eq("\r")
       expect(described_class::EL2).to eq("\e[2K")
+      expect(described_class::EL0).to eq("\e[K")
       expect(described_class::SGR0).to eq("\e[0m")
       expect(described_class::SMCUP).to eq("\e[?1049h")
       expect(described_class::RMCUP).to eq("\e[?1049l")

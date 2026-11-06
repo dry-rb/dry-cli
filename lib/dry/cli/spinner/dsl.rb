@@ -50,8 +50,9 @@ module Dry
       # @since x.y.z
       def run(&block) = @events[:run] = block
 
-      # Executed before each tick of the spinner. The line has been erased, so the current state
-      # of the stream will be a blank slate.
+      # Executed before each tick of the spinner. The cursor is at the start of the line. The line
+      # still shows the previous frame, but anything you write draws over it, and any old text left
+      # to the right is erased after {#after_tick} runs.
       #
       # This runs in a separate thread, so do not `throw :exit` or raise {Dry::CLI::ExitError} from
       # it. Do that from the {#run} block instead.

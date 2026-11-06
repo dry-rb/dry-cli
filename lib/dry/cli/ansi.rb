@@ -31,6 +31,12 @@ module Dry
       EL2 = "\e[2K"
       def self.erase_line = EL2
 
+      # Erase from the cursor to the end of the line
+      # @api public
+      # @since x.y.z
+      EL0 = "\e[K"
+      def self.erase_to_end_of_line = EL0
+
       # Reset all styles
       # @api public
       # @since x.y.z

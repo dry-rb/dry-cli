@@ -151,7 +151,7 @@ RSpec.describe Dry::CLI::Spinner do
       end
       render_ticks
 
-      expect(terminal.string).to include "#{Dry::CLI::ANSI.clear_line}<frame>"
+      expect(terminal.string).to include "\r<frame>\e[K"
     end
 
     it "does not need the DSL to register a worker" do
@@ -175,8 +175,29 @@ RSpec.describe Dry::CLI::Spinner do
     it "cycles through the frames on each tick" do
       spinner.run(stream: terminal) { render_ticks(2) }
 
-      expect(terminal.string).to include "#{Dry::CLI::ANSI.clear_line}|"
-      expect(terminal.string).to include "#{Dry::CLI::ANSI.clear_line}/"
+      expect(terminal.string).to include "\r|\e[K"
+      expect(terminal.string).to include "\r/\e[K"
+    end
+
+    it "draws over the previous frame and then erases to the end of the line" do
+      spinner.run("%{spinner} Loading", stream: terminal) { render_ticks(2) }
+
+      expect(terminal.string).to eq(
+        Dry::CLI::ANSI.hide_cursor +
+          "\r| Loading\e[K" \
+          "\r/ Loading\e[K" +
+          Dry::CLI::ANSI.clear_line +
+          Dry::CLI::ANSI.show_cursor
+      )
+    end
+
+    it "does not erase the whole line before drawing a frame" do
+      spinner.run(stream: terminal) { render_ticks(2) }
+
+      ticks = terminal.string.delete_prefix(Dry::CLI::ANSI.hide_cursor)
+        .delete_suffix(Dry::CLI::ANSI.clear_line + Dry::CLI::ANSI.show_cursor)
+
+      expect(ticks).to_not include Dry::CLI::ANSI.erase_line
     end
   end
 
