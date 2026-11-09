@@ -817,7 +817,7 @@ module Dry
       #
       # @see .auto_initialize_keywords
       #
-      # @since x.y.z
+      # @since 2.0.0
       # @api public
       private def invoke(command_class, **kwargs)
         command = command_class.new(**invoke_dependencies(command_class))
@@ -836,7 +836,7 @@ module Dry
       #
       # @return [Hash]
       #
-      # @since x.y.z
+      # @since 2.0.0
       # @api public
       private def invoke_dependencies(command_class)
         (self.class.auto_initialize_keywords & command_class.auto_initialize_keywords)
