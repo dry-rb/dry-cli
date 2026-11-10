@@ -821,7 +821,7 @@ module Dry
       # @api public
       private def invoke(command_class, **kwargs)
         command = command_class.new(**invoke_dependencies(command_class))
-        command.call(**Dispatch.command_accepted_kwargs(command, command_class.default_params.merge(kwargs)))
+        command.call(**Dispatch.command_accepted_kwargs(command, command_class.default_params.merge(kwargs.compact)))
       end
 
       # Returns the keywords {#invoke} gives to the other command's `.new`.

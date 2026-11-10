@@ -459,6 +459,18 @@ RSpec.describe "Command" do
       expect(out.string).to eq "Creating app on replica\n"
     end
 
+    it "applies the other command's defaults for options given as nil" do
+      out = StringIO.new
+      other = create
+      command = Class.new(base) {
+        define_method(:call) { |gateway: nil, **| invoke(other, gateway:) }
+      }.new(stdout: out)
+
+      command.call
+
+      expect(out.string).to eq "Creating slice on default\n"
+    end
+
     it "passes only the dependencies both commands share" do
       out = StringIO.new
       other = Class.new(Dry::CLI::Command) do
