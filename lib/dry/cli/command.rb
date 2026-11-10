@@ -792,15 +792,21 @@ module Dry
         stdout.print(*args)
       end
 
-      # Runs another command from within this one, as if it had been run from the command line.
+      # Runs another command from within this one.
       #
       # The other command is built with this command's auto-initialized keywords, so it writes to
       # the same streams and shares any standard dependencies your base command class adds. Each
       # value is read back through the reader of the same name, so every auto-initialized keyword
       # needs a reader.
       #
-      # The other command's option defaults apply, and it is given only the keywords its `#call`
-      # accepts, so you can pass along all of this command's own options.
+      # The other command's option defaults apply to any options not given (or given as nil), and
+      # it is given only the keywords its `#call` accepts, so you can pass along all of this
+      # command's own options. When you do, this command's values win over the other command's
+      # defaults, including this command's own defaults for options both commands share.
+      #
+      # Unlike running the other command from the command line, the given values are not cast to
+      # their option types or checked against `required:` or `values:`, and no `before` or `after`
+      # callbacks registered for the other command are run.
       #
       # @example
       #   class Migrate < MyApp::Command

@@ -69,7 +69,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - `Dry::CLI::Command#invoke`, for running one command from within another. (@parndt in #183)
 
-    The other command is built with the auto-initialized keywords of the command invoking it, so it writes to the same streams and shares the same standard dependencies. Its option defaults apply, and it is given only the keywords its `#call` accepts, so a command can pass along all of its own options:
+    The other command is built with the auto-initialized keywords of the command invoking it, so it writes to the same streams and shares the same standard dependencies. Its option defaults apply to any options not given (or given as nil), and it is given only the keywords its `#call` accepts, so a command can pass along all of its own options:
 
     ```ruby
     class Migrate < MyApp::Command
@@ -79,6 +79,10 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
       end
     end
     ```
+
+    When a command passes along its options like this, its option defaults are passed along too, and replace the other command's defaults for any options they share.
+
+    Unlike running the other command from the command line, the given values are not cast to their option types or checked against `required:` or `values:`, and no `before` or `after` callbacks registered for the other command are run.
 
     Each auto-initialized keyword is read back through the reader of the same name, so every auto-initialized keyword needs a reader. Override `#invoke_dependencies` to give the other command anything else it needs.
 
