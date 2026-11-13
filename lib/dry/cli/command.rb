@@ -801,8 +801,8 @@ module Dry
       #
       # The other command's option defaults apply to any options not given (or given as nil), and
       # it is given only the keywords its `#call` accepts, so you can pass along all of this
-      # command's own options. When you do, this command's values win over the other command's
-      # defaults, including this command's own defaults for options both commands share.
+      # command's own options. When you do, this command's option defaults are passed along too,
+      # and replace the other command's defaults for any options they share.
       #
       # Unlike running the other command from the command line, the given values are not cast to
       # their option types or checked against `required:` or `values:`, and no `before` or `after`
