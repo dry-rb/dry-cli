@@ -484,27 +484,6 @@ RSpec.describe "Command" do
 
       expect(out.string).to eq "Plain\n"
     end
-
-    it "allows the dependencies to be extended" do
-      other = Class.new(base) do
-        def initialize(nested: false)
-          super()
-          @nested = nested
-        end
-
-        def call(**) = puts("nested: #{@nested}")
-      end
-      out = StringIO.new
-      command = Class.new(base) {
-        define_method(:call) { |**| invoke(other) }
-
-        private def invoke_dependencies(command_class) = super.merge(nested: true)
-      }.new(stdout: out)
-
-      command.call
-
-      expect(out.string).to eq "nested: true\n"
-    end
   end
 
   describe "writing output" do

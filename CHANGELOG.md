@@ -84,7 +84,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
     Unlike running the other command from the command line, the given values are not cast to their option types or checked against `required:` or `values:`, and no `before` or `after` callbacks registered for the other command are run.
 
-    Each auto-initialized keyword is read back through the reader of the same name, so every auto-initialized keyword needs a reader. Override `#invoke_dependencies` to give the other command anything else it needs.
+    Each auto-initialized keyword is read back through the reader of the same name, so every auto-initialized keyword needs a reader.
 
 - Formatting support for styled text. (@alassek in #168)
 

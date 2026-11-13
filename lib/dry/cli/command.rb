@@ -826,27 +826,11 @@ module Dry
       # @since 2.0.0
       # @api public
       private def invoke(command_class, **kwargs)
-        command = command_class.new(**invoke_dependencies(command_class))
-        command.call(**Dispatch.command_accepted_kwargs(command, command_class.default_params.merge(kwargs.compact)))
-      end
-
-      # Returns the keywords {#invoke} gives to the other command's `.new`.
-      #
-      # Override this to give the other command anything else it needs, such as an `#initialize`
-      # keyword marking it as invoked from another command:
-      #
-      # @example
-      #   private def invoke_dependencies(command_class) = super.merge(nested: true)
-      #
-      # @param command_class [Class] the command about to be run
-      #
-      # @return [Hash]
-      #
-      # @since 2.0.0
-      # @api public
-      private def invoke_dependencies(command_class)
-        (self.class.auto_initialize_keywords & command_class.auto_initialize_keywords)
+        dependencies = (self.class.auto_initialize_keywords & command_class.auto_initialize_keywords)
           .to_h { |keyword| [keyword, send(keyword)] }
+
+        command = command_class.new(**dependencies)
+        command.call(**Dispatch.command_accepted_kwargs(command, command_class.default_params.merge(kwargs.compact)))
       end
     end
   end
