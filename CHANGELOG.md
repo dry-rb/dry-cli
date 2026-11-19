@@ -2,15 +2,81 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Break Versioning](https://www.taoensso.com/break-versioning).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Break Versioning](https://www.taoensso.com/break-versioning).
 
 ## [Unreleased]
 
 ### Added
 
-- Support for command namespaces (@gustavothecoder in #135)
-- New `:cast` option for options and arguments, allowing to leverage Dry Types or simple procs/lambdas to cast values from string to some other type of value (@katafrakt in #157)
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+[Unreleased]: https://github.com/dry-rb/dry-cli/compare/v1.4.1...main
+
+## [2.0.0.rc1] - 2026-11-19
+
+### Added
+
+- Support for command namespaces. (@gustavothecoder in #135)
+
+    Subclass `Dry::CLI::Namespace` to group commands under a name that is not a command itself:
+
+    ```ruby
+    class DB < Dry::CLI::Namespace
+      desc "Manage the database"
+    end
+
+    register "db", DB
+    register "db migrate", DB::Migrate
+    register "db rollback", DB::Rollback
+    ```
+
+    Running `my-cli db` lists the commands in the namespace, and `my-cli db --help` shows its help.
+- A `long_desc` method for a long command descriptions. This will show when `--help` is given, whereas `-h` will show the short description. When no long description is provided, both `--help` and `-h` show the short description. (@aaronmallen in #160)
+
+    ```ruby
+    class Echo < Dry::CLI::Command
+      desc "Prints given input"
+      long_desc <<~DESC
+        Prints the given input back to standard output.
+
+        When no input is given, it prints an empty line.
+      DESC
+    end
+    ```
+
+    `Dry::CLI::Namespace` also has `long_desc`.
+- A `:cast` option for options and arguments, allowing to leverage Dry Types or simple procs/lambdas to cast values from string to some other type of value. (@katafrakt in #157, @timriley in #162)
+
+    Give `cast:` anything that responds to `#call`:
+
+    ```ruby
+    Types = Dry.Types()
+
+    class Info < Dry::CLI::Command
+      argument :lines, cast: Types::Coercible::Integer, default: 10
+      option :sudo, cast: Types::Params::Bool, default: false
+      option :uid, cast: ->(v) { Integer(v) }
+    end
+    ```
+
+    ```
+    my-cli info 15 --sudo true --uid 16  # lines: 15, sudo: true, uid: 16
+    ```
+
+    With `type: :array`, each value is cast on its own. If casting raises an error, the command does not run, and the error is printed:
+
+    ```
+    my-cli info --sudo maybe
+    ERROR when casting sudo: maybe cannot be coerced to false.
+    ```
 - Array options can be supplied by repeated flags. (@Drowze in #159)
 
     The following are now equivalent:
@@ -18,35 +84,6 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     my-cli --array-flag foo,bar
     my-cli --array-flag foo --array-flag bar
     ```
-- `long_desc` method for a long command description. This will show when `--help` is given, whereas `-h` will show the short description. When no long description is provided, both `--help` and `-h` show the short description. (@aaronmallen in #160)
-- `Registry#command_class` and `Registry#option`, for extending a command that another gem owns. (@afomera in #165)
-
-    A third-party gem can now contribute the option its own hooks need, instead of that option having to be declared upfront by the gem that owns the command:
-
-    ```ruby
-    Hanami::CLI.after  "generate action", Commands::Generate::Action
-    Hanami::CLI.option "generate action", :skip_tests,
-                       type: :flag, default: false, desc: "Skip test generation"
-    ```
-
-    `Registry#command_class` returns the registered command's class, as an escape hatch for anything else its class-level DSL offers.
-
-    Adding the same option twice is allowed, so independent gems can each contribute the option they need without coordinating, as long as they agree on `:type`, `:required`, `:values` and `:default`. Otherwise `Dry::CLI::CommandDefinitionError` is raised. `:cast` is not compared, since procs aren't meaningfully comparable.
-- Support for styled text. (@aaronmallen and @timriley in #166)
-
-    Use `style` in your commands (or `Dry::CLI::Style`) directly to build styles, then send text to those styles. Once you pass that text to an output stream, it will be styled (and its colors gracefully degraded if required) based on the terminal's capabilities. Styled text sent to a non-terminal stream (such as when a CLI command has output redirected to a file) will not be styled.
-
-    ```ruby
-    # Dry::CLI::Command gets `style` at both the class and instance level; use Dry::CLI::StyleMixin to add this to your own classes.
-    ERROR = style.bold.red
-
-    def call
-      text = ERROR["boom"]
-      stderr.puts text # renders as "\e[1;31mboom\e[0m"
-    end
-    ```
-
-    `Command#stdout` and `#stderr` are now always instances of `Dry::CLI::Stream`. Use `stdout.raw` to access the underlying IO object directly.
 - `Dry::CLI::Command#auto_initialize`, for taking select keywords that `.new` assigns itself, rather than passing on to `#initialize`. (@timriley in #167)
 
     It is common for a CLI app to set up "standard" dependencies that can be provided to every command class. Making these auto-initialized keywords keeps each command's `#initialize` focused on its own distinct dependencies, while the standard dependencies are still assigned as expected. Command class authors do not need to supply `**kwargs` as an `#initialize` parameter and then call `super(**kwargs)`, which reduces boilerplate, as well as the chance of bugs from these lines being forgotten.
@@ -66,7 +103,6 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     This makes `inflector:` work as an argument to `.new`, and assigns its value to an ivar automatically, before `#initialize` is called.
 
     Auto-initialized keywords are best used sparingly. Consider these for your CLI app's base command class only. A command cannot use auto-initialized keywords as their own `#initialize` parameters, since it will never receive them.
-
 - `Dry::CLI::Command#invoke`, for running one command from within another. (@parndt in #183)
 
     The other command is built with the auto-initialized keywords of the command invoking it, so it writes to the same streams and shares the same standard dependencies. Its option defaults apply to any options not given (or given as nil), and it is given only the keywords its `#call` accepts, so a command can pass along all of its own options:
@@ -85,7 +121,75 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     Unlike running the other command from the command line, the given values are not cast to their option types or checked against `required:` or `values:`, and no `before` or `after` callbacks registered for the other command are run.
 
     Each auto-initialized keyword is read back through the reader of the same name, so every auto-initialized keyword needs a reader.
+- `Registry#command_class` and `Registry#option`, for extending a command that another gem owns. (@afomera in #165)
 
+    A third-party gem can now contribute the option its own hooks need, instead of that option having to be declared upfront by the gem that owns the command:
+
+    ```ruby
+    Hanami::CLI.after  "generate action", Commands::Generate::Action
+    Hanami::CLI.option "generate action", :skip_tests,
+                       type: :flag, default: false, desc: "Skip test generation"
+    ```
+
+    `Registry#command_class` returns the registered command's class, as an escape hatch for anything else its class-level DSL offers.
+
+    Adding the same option twice is allowed, so independent gems can each contribute the option they need without coordinating, as long as they agree on `:type`, `:required`, `:values` and `:default`. Otherwise `Dry::CLI::CommandDefinitionError` is raised. `:cast` is not compared, since procs aren't meaningfully comparable.
+- `Dry::CLI.accepted_kwargs`, which returns only the keyword args that a method or proc accepts, based on its params. Use it when you wrap a command's `#call`, to pass on only the keyword args that the next `#call` accepts. (@timriley in #181)
+
+    ```ruby
+    class Deploy < Dry::CLI::Command
+      def call(target:, force: false) = ...
+    end
+
+    kwargs = {target: "production", env: "test"}
+
+    Dry::CLI.accepted_kwargs(Deploy.new.method(:call), kwargs)
+    # => {target: "production"}
+    ```
+- Commands and callbacks can stop the CLI with an exit code by throwing `:exit`. The CLI catches the throw and exits with the code. A bare `throw :exit` exits with 0. (@timriley in #180)
+
+    ```ruby
+    class Deploy < Dry::CLI::Command
+      def call(**)
+        unless File.exist?("config.yml")
+          stderr.puts "config.yml not found"
+          throw :exit, 1
+        end
+
+        # ...
+      end
+    end
+    ```
+- `Dry::CLI::ExitError`, for errors the user is meant to see. Raise it (or your own subclass) from anywhere in a command or callback. The CLI prints its message to stderr, with no backtrace, then exits with its `exit_code` (1 by default). Other errors are not rescued, so they keep their backtrace. (@timriley in #180)
+
+    ```ruby
+    raise Dry::CLI::ExitError, "config.yml not found"
+    raise Dry::CLI::ExitError.new("deploy failed", exit_code: 2)
+    ```
+- `Dry::CLI#call` accepts an `exit:` argument, which the CLI calls with the exit code instead of `Kernel#exit`. With this, tests can check exit codes without stubbing `Kernel#exit` or rescuing `SystemExit`. (@timriley in #180)
+
+    ```ruby
+    exit_code = nil
+    cli.call(arguments: ["deploy"], exit: ->(code) { exit_code = code })
+    exit_code # => 1
+    ```
+
+    Existing commands that call `Kernel#exit` itself still exit the process directly, and do not use `exit:`. To use `exit:`, change these calls to `throw :exit, code`, or raise `Dry::CLI::ExitError`.
+- Support for styled text. (@aaronmallen and @timriley in #166)
+
+    Use `style` in your commands (or `Dry::CLI::Style`) directly to build styles, then send text to those styles. Once you pass that text to an output stream, it will be styled (and its colors gracefully degraded if required) based on the terminal's capabilities. Styled text sent to a non-terminal stream (such as when a CLI command has output redirected to a file) will not be styled.
+
+    ```ruby
+    # Dry::CLI::Command gets `style` at both the class and instance level; use Dry::CLI::StyleMixin to add this to your own classes.
+    ERROR = style.bold.red
+
+    def call
+      text = ERROR["boom"]
+      stderr.puts text # renders as "\e[1;31mboom\e[0m"
+    end
+    ```
+
+    `Command#stdout` and `#stderr` are now always instances of `Dry::CLI::Stream`. Use `stdout.raw` to access the underlying IO object directly.
 - Formatting support for styled text. (@alassek in #168)
 
     `Dry::CLI::Style::Text` objects have a `#%` method that behaves like `String#%` but respects the style information.
@@ -93,12 +197,6 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     ```ruby
     style.bold.red["%s"] % "boom" # => "\e[1;31mboom\e[0m"
     ```
-- Enforce `required: true` on options. (@capripot and @timriley in #122)
-
-    Before, `required: true` was accepted on options but did nothing. Now, if a required option is not given, the command does not run, and prints an error that names the missing option. Required options are marked as REQUIRED in the help output. A required option with a `default:` always has a value, so it is not enforced and not marked as required.
-
-    If your commands already declare options with `required: true` and no default, they will now fail when the user leaves those options out.
-
 - `Dry::CLI::Spinner`: a simple, animated spinner for long-running tasks. (@alassek in #169)
 
     Four default styles: Dot, Ellipsis, Line, MiniDot.
@@ -134,42 +232,64 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
       s.run { sleep 6 }
     end
     ```
-- Commands and callbacks can stop the CLI with an exit code by throwing `:exit`. The CLI catches the throw and exits with the code. A bare `throw :exit` exits with 0. (@timriley in #180)
-
-    ```ruby
-    class Deploy < Dry::CLI::Command
-      def call(**)
-        unless File.exist?("config.yml")
-          stderr.puts "config.yml not found"
-          throw :exit, 1
-        end
-
-        # ...
-      end
-    end
-    ```
-- `Dry::CLI::ExitError`, for errors the user is meant to see. Raise it (or your own subclass) from anywhere in a command or callback. The CLI prints its message to stderr, with no backtrace, then exits with its `exit_code` (1 by default). Other errors are not rescued, so they keep their backtrace. (@timriley in #180)
-
-    ```ruby
-    raise Dry::CLI::ExitError, "config.yml not found"
-    raise Dry::CLI::ExitError.new("deploy failed", exit_code: 2)
-    ```
-- `Dry::CLI#call` accepts an `exit:` argument, which the CLI calls with the exit code instead of `Kernel#exit`. With this, tests can check exit codes without stubbing `Kernel#exit` or rescuing `SystemExit`. (@timriley in #180)
-
-    ```ruby
-    exit_code = nil
-    cli.call(arguments: ["deploy"], exit: ->(code) { exit_code = code })
-    exit_code # => 1
-    ```
-
-    Existing commands that call `Kernel#exit` itself still exit the process directly, and do not use `exit:`. To use `exit:`, change these calls to `throw :exit, code`, or raise `Dry::CLI::ExitError`.
-- `Dry::CLI.accepted_kwargs`, which returns only the keyword args that a method or proc accepts, based on its params. Use it when you wrap a command's `#call`, to pass on only the keyword args that the next `#call` accepts. (@timriley)
 
 ### Changed
 
-- Commands and callbacks are now passed only the keyword args that match the params their `#call` declares, so they no longer need a `**` catch-all param to tolerate options contributed by other gems. (@afomera in #165)
+- [BREAKING] `required: true` on options is enforced. (@capripot and @timriley in #122)
 
-    Every keyword arg is passed when `#call` can take them as a whole: when it declares a keyword splat param or a positional param. Otherwise they're matched against the keyword params it declares.
+    Before, `required: true` was accepted on options but did nothing. Now, if a required option is not given, the command does not run, and prints an error that names the missing option. Required options are marked as REQUIRED in the help output. A required option with a `default:` always has a value, so it is not enforced and not marked as required.
+
+    If your commands already declare options with `required: true` and no default, they will now fail when the user leaves those options out.
+
+    ```ruby
+    class Server < Dry::CLI::Command
+      option :host, required: true, desc: "Host"
+      option :port, required: true, desc: "Port"
+    end
+    ```
+
+    ```
+    $ my-cli server --host=localhost
+    ERROR: "my-cli server" is missing required option --port
+    Usage: "my-cli server --host=VALUE --port=VALUE"
+
+    $ my-cli server --help
+    ...
+    Options:
+      --host=VALUE  # REQUIRED Host
+      --port=VALUE  # REQUIRED Port
+      --help, -h    # Print this help
+    ```
+- [BREAKING] Declaring an argument with both `required: true` and a `default:` raises `Dry::CLI::CommandDefinitionError`. Remove either `required: true` or the default. (@timriley in #177)
+- Declaring a required argument after an optional one, or any argument after an array argument, raises `Dry::CLI::CommandDefinitionError`. Since arguments are matched by position, such a command could never be called correctly: a required argument could not be given without also giving the optional one before it, and an array argument takes all the remaining values, leaving none for the arguments after it. (@timriley in #177)
+
+    ```ruby
+    argument :env
+    argument :name, required: true
+    # => required argument `name' can't be declared after optional argument `env'
+
+    argument :files, type: :array
+    argument :dest
+    # => argument `dest' can't be declared after array argument `files'
+    ```
+- The `example` DSL now takes the example and its description as separate arguments, called once per example. Previously, examples were passed as a single array of strings with the description embedded after a `#`. (@aaronmallen and @timriley in #152)
+
+  ```ruby
+  class Server < Dry::CLI::Command
+    # Now:
+    example "--server=webrick",    "Force `webrick` server engine"
+    example "--host=0.0.0.0",      "Bind to a host"
+    example "--port=2306",         "Bind to a port"
+    example "--no-code-reloading", "Disable code reloading"
+
+    # Before:
+    example [
+      "--server=webrick    # Force `webrick` server engine",
+      "--host=0.0.0.0      # Bind to a host",
+      # ...
+    ]
+  end
+  ```
 - `Dry::CLI::Command.new` now takes three keyword arguments: `stdout:`, `stdin:` and `stderr:`. These can be used to inject I/O streams, which is useful for testing. (@aaronmallen in #151, @timriley in #167)
 
     These arguments are taken by `.new` and set on the command instance before `#initialize` runs, so `#initialize` in a subclass only needs to worry about its own arguments, with no call to `super` required:
@@ -185,52 +305,86 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
     ```
 
     A command registered as an instance will have its streams replaced after it is built, so avoid building on top of the streams from inside `#initialize`. Instead, build from a stream lazily, only when you use it. See `Dry::CLI::Command` for details.
-- The `example` DSL now takes the example and its description as separate arguments, called once per example. Previously, examples were passed as a single array of strings with the description embedded after a `#`. (@aaronmallen and @timriley in #152)
+- Commands and callbacks are now passed only the keyword args that match the params their `#call` declares, so they no longer need a `**` catch-all param to tolerate options contributed by other gems. (@afomera in #165)
 
-  ```ruby
-  class Server < Dry::CLI::Command
-    # Now:
-    example "--server=webrick",    "Force `webrick` server engine"
-    example "--host=0.0.0.0",      "Bind to a host"
-    example "--port=2306",         "Bind to a port"
-    example "--no-code-reloading", "Disable code reloading"
-    
-    # Before:
-    example [
-      "--server=webrick    # Force `webrick` server engine",
-      "--host=0.0.0.0      # Bind to a host",
-      # ...
-    ]
-  end
-  
-- As with options, optional arguments can now be omitted even if list of acceptable values is defined. (@svoop in #155)
+    Every keyword arg is passed when `#call` can take them as a whole: when it declares a keyword splat param or a positional param. Otherwise they're matched against the keyword params it declares.
 
-  ```ruby
-  argument :required_arg, required: true, values: %w(one two)
-  argument :optional_arg, required: false, values: %w(one two)
-  ```
+    For example, if another gem adds a `--skip-tests` option to this command, the command still works:
 
-  ```
-  cmd             # ERROR
-  cmd one         # OKAY
-  cmd three       # ERROR 
-  cmd one two     # OKAY
-  cmd one three   # ERROR
-  ```
+    ```ruby
+    class Generate < Dry::CLI::Command
+      argument :name, required: true
 
-- Improved error messages to be more precise and helpful (@katafrakt in #158)
-- Accepted values are now listed the same way in help output as in error messages, separated by commas rather than slashes. (@timriley in #163)
-- Declaring a required argument after an optional one, or any argument after an array argument, now raises `Dry::CLI::CommandDefinitionError`. Arguments are matched by position, so such a command could never be called correctly: a required argument could not be given without also giving the optional one before it, and an array argument takes all the remaining values, leaving none for the arguments after it. (@timriley in #177)
-- [BREAKING] Declaring an argument with both `required: true` and a `default:` now raises `Dry::CLI::CommandDefinitionError`. Remove either `required: true` or the default. (@timriley in #177)
+      # Before, this raised ArgumentError (unknown keyword: :skip_tests)
+      # unless it was `def call(name:, **)`
+      def call(name:)
+        # ...
+      end
+    end
+    ```
 - Exits for help (status 0), invalid options and arguments (1), and unknown commands (1) now go through the `exit:` given to `Dry::CLI#call`. (@timriley in #180)
+- Error messages for invalid input now name the option or argument that is wrong, instead of repeating everything that was given. (@katafrakt in #158)
 
-### Deprecated
+    ```
+    $ my-cli server --unknown 1234
+    # Before
+    ERROR: "my-cli server" was called with arguments "--unknown 1234"
+    # Now
+    ERROR: "my-cli server" was called with invalid option "--unknown"
 
-### Removed
+    $ my-cli db rollback 4
+    # Before
+    ERROR: "my-cli db rollback" was called with arguments "4"
+    # Now
+    ERROR: invalid argument "4" for "steps"; accepted values: 1, 2, 3
+    ```
+
+    If you match on error text (in tests, for example), you will need to update it.
+- Accepted values are now listed the same way in help output as in error messages, separated by commas rather than slashes. (@timriley in #163)
+
+    ```
+    # Before
+    --engine=VALUE  # Engine: (irb/pry)
+    # Now
+    --engine=VALUE  # Engine: (irb, pry)
+    ```
 
 ### Fixed
 
-- Optional arguments were incorrectly displayed at the end of usage message (@gustavothecoder in #145)
+- An `argument` with `type: :array` is now always given to the command as an array. When the command declared more arguments than were given, it previously received no value at all. (@timriley in #162)
+
+    ```ruby
+    argument :task
+    argument :files, type: :array
+    ```
+
+    ```
+    cmd  # was {}, now {files: []}
+    ```
+- A required `argument` with `type: :array` no longer has its values repeated in `args`. It takes all the remaining values, but all except the first were also given in `args`. (@parndt in #178)
+
+  ```ruby
+  argument :task, required: true
+  argument :dirs, type: :array, required: true
+  ```
+
+  ```
+  cmd test lib spec  # was dirs: ["lib", "spec"], args: ["spec"], now dirs: ["lib", "spec"]
+  ```
+- Redeclaring an argument, such as in a subclass to change its `desc`, now keeps the argument in its original position. Previously it was moved to the end, so values given on the command line were matched to the wrong arguments. (@timriley in #177)
+- Show array arguments last in the usage line of help output. (@gustavothecoder in #145)
+- An optional argument with `values:` can now be left out. Before, leaving it out gave an error, as if it were required. Options already worked this way. (@svoop in #155)
+
+  ```ruby
+  argument :mode, required: true, values: %w[fast slow]
+  argument :level, values: %w[low high]
+  ```
+
+  ```
+  cmd fast       # was an error, now {mode: "fast"}
+  cmd fast high  # {mode: "fast", level: "high"}
+  cmd fast max   # error: "max" is not an accepted value
+  ```
 - Options combining `type: :array` with `values:` no longer return a single string instead of an array, and now accept comma-separated values. (@timriley in #161)
 
   ```ruby
@@ -250,31 +404,8 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
   ```
   cmd --level=1  # was an error, now "1"
   ```
-- Arguments combining `type: :array` with `cast:` are now cast. Previously the cast was silently ignored for array arguments, and applied to array options only. (@timriley in #162)
 
-  ```ruby
-  argument :lines, type: :array, cast: ->(v) { Integer(v) }
-  ```
-
-  ```
-  cmd 1 2  # was ["1", "2"], now [1, 2]
-  ```
-- An `argument` with `type: :array` is now always given to the command as an array. When the command declared more arguments than were given, it previously received no value at all. (@timriley in #162)
-- Redeclaring an argument, such as in a subclass to change its `desc`, now keeps the argument in its original position. Previously it was moved to the end, so values given on the command line were matched to the wrong arguments. (@timriley in #177)
-- A required `argument` with `type: :array` no longer has its values repeated in `args`. It takes all the remaining values, but all except the first were also given in `args`. (@parndt in #178)
-
-  ```ruby
-  argument :task, required: true
-  argument :dirs, type: :array, required: true
-  ```
-
-  ```
-  cmd test lib spec  # was dirs: ["lib", "spec"], args: ["spec"], now dirs: ["lib", "spec"]
-  ```
-
-### Security
-
-[Unreleased]: https://github.com/dry-rb/dry-cli/compare/v1.4.1...main
+[2.0.0.rc1]: https://github.com/dry-rb/dry-cli/compare/v1.4.1...v2.0.0.rc1
 
 ## [1.4.1] - 2026-01-21
 
