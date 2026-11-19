@@ -204,7 +204,6 @@ module Dry
     # Invoke the CLI if singular command passed
     #
     # @param arguments [Array<string>] the command line arguments
-    # @param out [IO] the standard output (defaults to `$stdout`)
     #
     # @since 0.6.0
     # @api private
@@ -216,7 +215,6 @@ module Dry
     # Invoke the CLI if registry passed
     #
     # @param arguments [Array<string>] the command line arguments
-    # @param out [IO] the standard output (defaults to `$stdout`)
     #
     # @since 0.6.0
     # @api private
