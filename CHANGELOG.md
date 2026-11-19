@@ -235,6 +235,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- [BREAKING] `Dry::CLI::Command#out` and `#err` are renamed to `#stdout` and `#stderr`, and `Dry::CLI#call` takes `stdout:` and `stderr:` instead of `out:` and `err:`. (@aaronmallen in #151)
+
+    ```ruby
+    # Before
+    def call
+      out.puts "Deployed"
+      err.puts "Warning: no changes"
+    end
+
+    cli.call(arguments: ["deploy"], out: my_out, err: my_err)
+
+    # Now
+    def call
+      stdout.puts "Deployed"
+      stderr.puts "Warning: no changes"
+    end
+
+    cli.call(arguments: ["deploy"], stdout: my_out, stderr: my_err)
+    ```
 - [BREAKING] `required: true` on options is enforced. (@capripot and @timriley in #122)
 
     Before, `required: true` was accepted on options but did nothing. Now, if a required option is not given, the command does not run, and prints an error that names the missing option. Required options are marked as REQUIRED in the help output. A required option with a `default:` always has a value, so it is not enforced and not marked as required.
@@ -261,7 +280,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
       --help, -h    # Print this help
     ```
 - [BREAKING] Declaring an argument with both `required: true` and a `default:` raises `Dry::CLI::CommandDefinitionError`. Remove either `required: true` or the default. (@timriley in #177)
-- Declaring a required argument after an optional one, or any argument after an array argument, raises `Dry::CLI::CommandDefinitionError`. Since arguments are matched by position, such a command could never be called correctly: a required argument could not be given without also giving the optional one before it, and an array argument takes all the remaining values, leaving none for the arguments after it. (@timriley in #177)
+- [BREAKING] Declaring a required argument after an optional one, or any argument after an array argument, raises `Dry::CLI::CommandDefinitionError`. Since arguments are matched by position, such a command could never be called correctly: a required argument could not be given without also giving the optional one before it, and an array argument takes all the remaining values, leaving none for the arguments after it. (@timriley in #177)
 
     ```ruby
     argument :env
