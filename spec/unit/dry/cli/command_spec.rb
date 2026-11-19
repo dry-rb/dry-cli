@@ -30,6 +30,90 @@ RSpec.describe "Command" do
     end
   end
 
+  describe "example definition" do
+    it "stores each example with its description" do
+      command = Class.new(Dry::CLI::Command) do
+        example "--port=4000", "Listen on port 4000"
+        example "--host=0.0.0.0"
+      end
+
+      expect(command.examples).to eq [["--port=4000", "Listen on port 4000"], ["--host=0.0.0.0", ""]]
+    end
+
+    describe "with an array of examples, as taken before 2.0" do
+      it "splits each one into the example and its description" do
+        command = nil
+
+        expect {
+          command = Class.new(Dry::CLI::Command) do
+            example [
+              "               # Basic usage",
+              "--port=4000    # Listen on port 4000",
+              "--host=0.0.0.0 # Bind to a host",
+              "--no-reload"
+            ]
+          end
+        }.to output.to_stderr
+
+        expect(command.examples).to eq [
+          ["", "Basic usage"],
+          ["--port=4000", "Listen on port 4000"],
+          ["--host=0.0.0.0", "Bind to a host"],
+          ["--no-reload", ""]
+        ]
+      end
+
+      it "splits only at the first # with whitespace around it" do
+        command = nil
+
+        expect {
+          command = Class.new(Dry::CLI::Command) do
+            example ["--color=#fff # Use white # not black"]
+          end
+        }.to output.to_stderr
+
+        expect(command.examples).to eq [["--color=#fff", "Use white # not black"]]
+      end
+
+      it "warns that this is deprecated, pointing to the caller" do
+        expect {
+          Class.new(Dry::CLI::Command) do
+            example ["--port=4000 # Listen on port 4000"]
+          end
+        }.to output(
+          /#{Regexp.escape(__FILE__)}:\d+: warning: Passing an array to `example' is deprecated/
+        ).to_stderr
+      end
+
+      it "warns only once for each command class" do
+        expect {
+          Class.new(Dry::CLI::Command) do
+            example ["--port=4000 # Listen on port 4000"]
+            example ["--host=0.0.0.0 # Bind to a host"]
+          end
+        }.to output(/\A[^\n]*deprecated[^\n]*\n\z/).to_stderr
+      end
+
+      it "takes more examples after the array, as before 2.0" do
+        command = nil
+
+        expect {
+          command = Class.new(Dry::CLI::Command) do
+            example ["--port=4000 # Listen on port 4000"], ["--host=0.0.0.0 # Bind to a host"]
+            example ["--no-reload # Disable reloading"], "--verbose # Print every step"
+          end
+        }.to output.to_stderr
+
+        expect(command.examples).to eq [
+          ["--port=4000", "Listen on port 4000"],
+          ["--host=0.0.0.0", "Bind to a host"],
+          ["--no-reload", "Disable reloading"],
+          ["--verbose", "Print every step"]
+        ]
+      end
+    end
+  end
+
   describe "argument definition" do
     class CommandWithDuplicateArgs < Dry::CLI::Command
       argument :version, desc: "1"

@@ -272,7 +272,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     argument :dest
     # => argument `dest' can't be declared after array argument `files'
     ```
-- The `example` DSL now takes the example and its description as separate arguments, called once per example. Previously, examples were passed as a single array of strings with the description embedded after a `#`. (@aaronmallen and @timriley in #152)
+- The `example` DSL now takes the example and its description as separate arguments, called once per example. Previously, examples were passed as a single array of strings with the description embedded after a `#`. Passing an array still works, but prints a deprecation warning. This will be removed in 3.0. (@aaronmallen and @timriley in #152, #184)
 
   ```ruby
   class Server < Dry::CLI::Command

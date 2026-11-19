@@ -168,9 +168,15 @@ module Dry
         @long_description = long_description
       end
 
-      # Describe the usage of the command
+      # Describe the usage of the command with an example, shown in its help
       #
-      # @param examples [Array<String>] one or more examples
+      # Call this once for each example.
+      #
+      # @param example [String] the arguments and options to show after the command name
+      # @param description [String] what the example does
+      #
+      # Before 2.0, this took an array of examples, each with its description after a `#`. This
+      # still works, but is deprecated, and will be removed in a future release.
       #
       # @since 0.1.0
       #
@@ -178,10 +184,10 @@ module Dry
       #   require "dry/cli"
       #
       #   class Server < Dry::CLI::Command
-      #     example "", "Basic usage (it uses the bundled server engine)",
-      #     example "--server=webrick, "Force `webrick` server engine",
-      #     example "--host=0.0.0.0, "Bind to a host",
-      #     example "--port=2306", "Bind to a port",
+      #     example "", "Basic usage (it uses the bundled server engine)"
+      #     example "--server=webrick", "Force `webrick` server engine"
+      #     example "--host=0.0.0.0", "Bind to a host"
+      #     example "--port=2306", "Bind to a port"
       #     example "--no-code-reloading", "Disable code reloading"
       #
       #     def call(*)
@@ -199,8 +205,37 @@ module Dry
       #   #     foo server --port=2306         # Bind to a port
       #   #     foo server --no-code-reloading # Disable code reloading
       def self.example(example, description = "")
+        if example.is_a?(Array)
+          unless @warned_legacy_examples
+            warn(
+              "Passing an array to `example' is deprecated, and will be removed in dry-cli 3.0. " \
+              "Call `example \"--port=4000\", \"Listen on port 4000\"' once for each example instead.",
+              uplevel: 1
+            )
+            @warned_legacy_examples = true
+          end
+
+          # Before 2.0, any number of examples could be given, so anything after the array is more
+          # examples, not a description.
+          legacy_examples = description == "" ? example : [example, description].flatten
+
+          @examples.concat(legacy_examples.map { legacy_example(_1) })
+          return
+        end
+
         @examples.push([example, description])
       end
+
+      # Splits an example given in the format taken before 2.0, such as
+      # `"--port=4000    # Listen on port 4000"`, into the example and its description.
+      #
+      # @api private
+      def self.legacy_example(legacy)
+        example, description = legacy.split(/(?:\A|\s+)#\s+/, 2)
+
+        [example.strip, description.to_s.strip]
+      end
+      private_class_method :legacy_example
 
       # Specify an argument
       #
