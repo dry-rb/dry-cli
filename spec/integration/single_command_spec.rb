@@ -9,7 +9,9 @@ RSpec.describe "Single command" do
     it "shows usage" do
       _, stderr, = Open3.capture3("baz")
       expect(stderr).to eq(
-        "ERROR: \"#{cmd}\" was called with no arguments\nUsage: \"#{cmd} MANDATORY_ARG\"\n"
+        "Error: missing required argument MANDATORY_ARG\n\n" \
+        "Usage: #{cmd} MANDATORY_ARG\n" \
+        "Run \"#{cmd} --help\" for more information.\n"
       )
     end
 

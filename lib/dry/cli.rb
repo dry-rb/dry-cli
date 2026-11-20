@@ -223,7 +223,7 @@ module Dry
       return spell_checker(result, arguments) unless result.found?
 
       command, args = parse(result.command, result.arguments, result.names)
-      return stderr.puts(Usage.call(result)) unless command.respond_to?(:call)
+      return stdout.puts(Usage.call(result)) unless command.respond_to?(:call)
 
       result.before_callbacks.run(command, **args)
       command.call(**Dispatch.command_accepted_kwargs(command, args))
@@ -248,11 +248,11 @@ module Dry
     def parse(command, arguments, names)
       prog_name = ProgramName.call(names)
 
-      result = Parser.call(command, arguments, prog_name)
+      result = Parser.call(command, arguments)
 
       return help(command, prog_name, long: result.long_help?) if result.help?
 
-      return error(result) if result.error?
+      return error(result, command, prog_name) if result.error?
 
       [build_command(command), result.arguments]
     end
@@ -278,19 +278,56 @@ module Dry
       throw :exit, 0
     end
 
+    # Prints an input error to stderr and exits with 1.
+    #
+    # Prints each of the result's errors after an `Error:` label, then a blank line, then the
+    # command's usage line and where to get help. The label is bold red when stderr can show color:
+    #
+    #   Error: missing required argument DEST
+    #
+    #   Usage: foo copy SRC DEST --token=VALUE
+    #   Run "foo copy --help" for more information.
+    #
     # @since 0.6.0
     # @api private
-    def error(result)
-      stderr.puts(result.error)
+    def error(result, command, prog_name)
+      result.errors.each { |message| stderr.puts(error_message(message)) }
+      stderr.puts
+      stderr.puts(Parser.short_usage(command, prog_name))
+      stderr.puts(%(Run "#{prog_name} --help" for more information.))
       throw :exit, 1
     end
 
-    # @since 1.1.1
+    # Lists the commands under the given result.
+    #
+    # When no more arguments were given (such as `foo db` for a prefix with no command), this lists
+    # the commands on stdout, as for a namespace. Otherwise, the arguments name an unknown command,
+    # so this prints an error and the commands to stderr, and exits with 1.
+    #
+    # @api private
     def spell_checker(result, arguments)
-      spell_checker = SpellChecker.call(result, arguments)
-      stderr.puts "#{spell_checker}\n\n" if spell_checker
+      return stdout.puts(Usage.call(result)) if arguments.length == result.names.length
+
+      message = SpellChecker.call(result, arguments)
+      stderr.puts(error_message(message), "") if message
       stderr.puts Usage.call(result)
       throw :exit, 1
+    end
+
+    # The label printed before each input error.
+    #
+    # @api private
+    ERROR_LABEL = Style.bold.red["Error:"]
+    private_constant :ERROR_LABEL
+
+    # Returns the given message after an `Error:` label, as styled text.
+    #
+    # The label comes first, so the text stays styled until it's written. The stream it's written
+    # to then shows the label in color, or as plain text if it can't show color.
+    #
+    # @api private
+    def error_message(message)
+      ERROR_LABEL + " " + message
     end
 
     # Handles Exit codes for signals

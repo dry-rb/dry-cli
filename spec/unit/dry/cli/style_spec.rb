@@ -152,7 +152,8 @@ RSpec.describe Dry::CLI::Style do
     end
 
     it "rejects components outside 0-255" do
-      expect { described_class.rgb(256, 0, 0) }.to raise_error(Dry::CLI::InvalidColorError)
+      expect { described_class.rgb(256, 0, 0) }
+        .to raise_error(Dry::CLI::InvalidColorError, "invalid color 256; expected an integer between 0 and 255")
       expect { described_class.rgb(-1, 0, 0) }.to raise_error(Dry::CLI::InvalidColorError)
     end
 

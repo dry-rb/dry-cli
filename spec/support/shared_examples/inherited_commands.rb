@@ -6,8 +6,8 @@ RSpec.shared_examples "Inherited commands" do |cli|
   let(:cmd) { File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME)) }
 
   context "with help flag" do
-    it "shows subcommands " do
-      error = capture_error { cli.call(arguments: %w[i]) }
+    it "shows subcommands" do
+      output = capture_output { cli.call(arguments: %w[i]) }
       expected = <<~DESC
         Commands:
           rspec i addons APP                 # Lists your add-ons and attachments
@@ -15,16 +15,16 @@ RSpec.shared_examples "Inherited commands" do |cli|
           rspec i run APP CMD                # Run a one-off process inside your app
           rspec i subrun APP CMD
       DESC
-      expect(error).to eq(expected)
+      expect(output).to eq(expected)
     end
 
     it "shows subcommands when calling a namespace" do
-      error = capture_error { cli.call(arguments: %w[namespace]) }
+      output = capture_output { cli.call(arguments: %w[namespace]) }
       expected = <<~DESC
         Commands:
           #{cmd} namespace sub-command               # I'm a concrete command
       DESC
-      expect(error).to eq(expected)
+      expect(output).to eq(expected)
     end
 
     it "shows namespace help when using --help" do

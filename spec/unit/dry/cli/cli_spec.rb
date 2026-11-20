@@ -228,7 +228,12 @@ RSpec.describe "CLI" do
 
       io = StringIO.new
       cli.call(arguments: ["foo", "--unknown"], stderr: io, exit: ->(_) {})
-      expect(io.string).to eq("ERROR: \"rspec foo\" was called with invalid option \"--unknown\"\n")
+      expect(io.string).to eq(<<~ERROR)
+        Error: unknown option --unknown
+
+        Usage: rspec foo
+        Run "rspec foo --help" for more information.
+      ERROR
     end
 
     it "passes stdin to command and writes to custom stdout" do
@@ -331,7 +336,7 @@ RSpec.describe "CLI" do
       call_cli(Dry.CLI(command), %w[--unknown])
 
       expect(exit_codes).to eq [1]
-      expect(stderr.string).to include "invalid option"
+      expect(stderr.string).to include "unknown option"
       expect(stdout.string).to eq ""
     end
 
@@ -599,8 +604,9 @@ RSpec.describe "CLI" do
       error = capture_error { cli.call(arguments: %w[app --host=example.com]) }
 
       expect(error).to eq(
-        "ERROR: \"#{cmd}\" is missing required option --port\n" \
-        "Usage: \"#{cmd} NAME --host=VALUE --port=VALUE\"\n"
+        "Error: missing required option --port\n\n" \
+        "Usage: #{cmd} NAME --host=VALUE --port=VALUE\n" \
+        "Run \"#{cmd} --help\" for more information.\n"
       )
     end
 
@@ -608,8 +614,9 @@ RSpec.describe "CLI" do
       error = capture_error { cli.call(arguments: %w[app]) }
 
       expect(error).to eq(
-        "ERROR: \"#{cmd}\" is missing required options --host, --port\n" \
-        "Usage: \"#{cmd} NAME --host=VALUE --port=VALUE\"\n"
+        "Error: missing required options --host, --port\n\n" \
+        "Usage: #{cmd} NAME --host=VALUE --port=VALUE\n" \
+        "Run \"#{cmd} --help\" for more information.\n"
       )
     end
 
@@ -617,9 +624,10 @@ RSpec.describe "CLI" do
       error = capture_error { cli.call(arguments: []) }
 
       expect(error).to eq(
-        "ERROR: \"#{cmd}\" was called with no arguments\n" \
-        "Missing required options: --host, --port\n" \
-        "Usage: \"#{cmd} NAME --host=VALUE --port=VALUE\"\n"
+        "Error: missing required argument NAME\n" \
+        "Error: missing required options --host, --port\n\n" \
+        "Usage: #{cmd} NAME --host=VALUE --port=VALUE\n" \
+        "Run \"#{cmd} --help\" for more information.\n"
       )
     end
 
@@ -627,8 +635,9 @@ RSpec.describe "CLI" do
       error = capture_error { cli.call(arguments: %w[--host=example.com --port=80]) }
 
       expect(error).to eq(
-        "ERROR: \"#{cmd}\" was called with no arguments\n" \
-        "Usage: \"#{cmd} NAME --host=VALUE --port=VALUE\"\n"
+        "Error: missing required argument NAME\n\n" \
+        "Usage: #{cmd} NAME --host=VALUE --port=VALUE\n" \
+        "Run \"#{cmd} --help\" for more information.\n"
       )
     end
 
@@ -667,8 +676,9 @@ RSpec.describe "CLI" do
       error = capture_error { cli.call(arguments: %w[deploy]) }
 
       expect(error).to eq(
-        "ERROR: \"rspec deploy\" is missing required option --env\n" \
-        "Usage: \"rspec deploy --env=VALUE | rspec deploy SUBCOMMAND\"\n"
+        "Error: missing required option --env\n\n" \
+        "Usage: rspec deploy --env=VALUE | rspec deploy SUBCOMMAND\n" \
+        "Run \"rspec deploy --help\" for more information.\n"
       )
     end
   end

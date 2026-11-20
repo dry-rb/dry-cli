@@ -111,7 +111,12 @@ RSpec.shared_examples "Commands" do |cli|
 
     it "a param with unknown param" do
       error = capture_error { cli.call(arguments: %w[server --unknown 1234]) }
-      expect(error).to eq("ERROR: \"rspec server\" was called with invalid option \"--unknown\"\n")
+      expect(error).to eq(<<~ERROR)
+        Error: unknown option --unknown
+
+        Usage: rspec server
+        Run "rspec server --help" for more information.
+      ERROR
     end
 
     it "with boolean param" do
@@ -183,7 +188,12 @@ RSpec.shared_examples "Commands" do |cli|
       context "and with an unknown value passed" do
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[console --engine=unknown]) }
-          expect(error).to eq("ERROR: \"rspec console\" was called with invalid argument \"--engine=unknown\"\n")
+          expect(error).to eq(<<~ERROR)
+            Error: invalid value "unknown" for --engine; accepted values: irb, pry, ripl
+
+            Usage: rspec console
+            Run "rspec console --help" for more information.
+          ERROR
         end
       end
 
@@ -200,23 +210,36 @@ RSpec.shared_examples "Commands" do |cli|
 
         it "prints error when one of the values is unsupported" do
           error = capture_error { cli.call(arguments: %w[console --require=foo,unknown]) }
-          expect(error).to eq(
-            "ERROR: invalid argument \"[\"foo\", \"unknown\"]\" for \"require\"; accepted values: foo, bar, baz\n"
-          )
+          expect(error).to eq(<<~ERROR)
+            Error: invalid value "unknown" for --require; accepted values: foo, bar, baz
+
+            Usage: rspec console
+            Run "rspec console --help" for more information.
+          ERROR
         end
       end
 
       context "with an unknown argument" do
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[db rollback 4]) }
-          expect(error).to eq("ERROR: invalid argument \"4\" for \"steps\"; accepted values: 1, 2, 3\n")
+          expect(error).to eq(<<~ERROR)
+            Error: invalid value "4" for STEPS; accepted values: 1, 2, 3
+
+            Usage: rspec db rollback
+            Run "rspec db rollback --help" for more information.
+          ERROR
         end
       end
 
       context "without a required argument limited by values array" do
         it "prints error" do
           error = capture_error { cli.call(arguments: %w[db vacuum]) }
-          expect(error).to eq("ERROR: \"mode\" is required\n")
+          expect(error).to eq(<<~ERROR)
+            Error: missing required argument MODE
+
+            Usage: rspec db vacuum MODE
+            Run "rspec db vacuum --help" for more information.
+          ERROR
         end
       end
 
@@ -272,7 +295,12 @@ RSpec.shared_examples "Commands" do |cli|
 
       it "with unknown param" do
         error = capture_error { cli.call(arguments: %w[new bookshelf --unknown 1234]) }
-        expect(error).to eq("ERROR: \"rspec new\" was called with invalid option \"--unknown\"\n")
+        expect(error).to eq(<<~ERROR)
+          Error: unknown option --unknown
+
+          Usage: rspec new PROJECT
+          Run "rspec new --help" for more information.
+        ERROR
       end
 
       it "no required" do
@@ -286,8 +314,10 @@ RSpec.shared_examples "Commands" do |cli|
       it "an error is displayed if there aren't required params" do
         error = capture_error { cli.call(arguments: ["new"]) }
         expected_error = <<~DESC
-          ERROR: "#{cmd} new" was called with no arguments
-          Usage: "#{cmd} new PROJECT"
+          Error: missing required argument PROJECT
+
+          Usage: #{cmd} new PROJECT
+          Run "#{cmd} new --help" for more information.
         DESC
         expect(error).to eq(expected_error)
       end
@@ -370,8 +400,10 @@ RSpec.shared_examples "Commands" do |cli|
       it "without params" do
         error = capture_error { cli.call(arguments: %w[root-command]) }
         expected = <<~DESC
-          ERROR: "rspec root-command" was called with no arguments
-          Usage: "rspec root-command ROOT_COMMAND_ARGUMENT | rspec root-command SUBCOMMAND"
+          Error: missing required argument ROOT_COMMAND_ARGUMENT
+
+          Usage: rspec root-command ROOT_COMMAND_ARGUMENT | rspec root-command SUBCOMMAND
+          Run "rspec root-command --help" for more information.
         DESC
 
         expect(error).to eq(expected)
