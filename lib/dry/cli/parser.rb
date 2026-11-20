@@ -168,16 +168,16 @@ module Dry
         Result.failure(*messages)
       end
 
-      # Returns the values given after the required arguments, which are passed to the command as
+      # Returns the values given after the declared arguments, which are passed to the command as
       # `args`.
       #
-      # A required array argument takes all the remaining values, so it leaves none.
+      # An array argument takes all the remaining values, so it leaves none.
       #
       # @api private
       def self.unused_arguments(command, arguments)
-        return [] if command.required_arguments.any?(&:array?)
+        return [] if command.arguments.any?(&:array?)
 
-        arguments.drop(command.required_arguments.length)
+        arguments.drop(command.arguments.length)
       end
 
       def self.match_arguments(command_arguments, arguments, default_values)
