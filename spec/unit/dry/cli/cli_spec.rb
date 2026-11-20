@@ -99,12 +99,12 @@ RSpec.describe "CLI" do
       if RUBY_VERSION < "3.4"
         expect(output).to eq(
           "mandatory_arg: first_arg. optional_arg: opt_arg. " \
-          "Options: {:option_with_default=>\"test\", :args=>[\"opt_arg\"]}\n"
+          "Options: {:option_with_default=>\"test\"}\n"
         )
       else
         expect(output).to eq(
           "mandatory_arg: first_arg. optional_arg: opt_arg. " \
-          "Options: {option_with_default: \"test\", args: [\"opt_arg\"]}\n"
+          "Options: {option_with_default: \"test\"}\n"
         )
       end
     end
@@ -732,6 +732,52 @@ RSpec.describe "CLI" do
       output = capture_output { cli.call(arguments: %w[test]) }
 
       expect(output).to eq "task=\"test\" dirs=[\"lib\"]\n"
+    end
+  end
+
+  context "args" do
+    let(:cli) { Dry.CLI(command_class) }
+
+    def call_with(*arguments)
+      capture_output { cli.call(arguments:) }
+    end
+
+    context "with required and optional arguments" do
+      let(:command_class) do
+        Class.new(Dry::CLI::Command) do
+          argument :src, required: true
+          argument :dest
+
+          def call(src:, dest: nil, args: [])
+            puts "src=#{src.inspect} dest=#{dest.inspect} args=#{args.inspect}"
+          end
+        end
+      end
+
+      it "leaves out the values given to optional arguments" do
+        expect(call_with("a", "b", "c", "d")).to eq "src=\"a\" dest=\"b\" args=[\"c\", \"d\"]\n"
+      end
+
+      it "is empty when every value goes to an argument" do
+        expect(call_with("a", "b")).to eq "src=\"a\" dest=\"b\" args=[]\n"
+      end
+    end
+
+    context "with an optional array argument" do
+      let(:command_class) do
+        Class.new(Dry::CLI::Command) do
+          argument :task
+          argument :dirs, type: :array
+
+          def call(task: nil, dirs: nil, args: [])
+            puts "task=#{task.inspect} dirs=#{dirs.inspect} args=#{args.inspect}"
+          end
+        end
+      end
+
+      it "gives every remaining value to the array argument, leaving none in args" do
+        expect(call_with("test", "lib", "spec")).to eq "task=\"test\" dirs=[\"lib\", \"spec\"] args=[]\n"
+      end
     end
   end
 end

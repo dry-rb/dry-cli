@@ -17,7 +17,7 @@ RSpec.describe "arguments casting" do
       output, _, = Open3.capture3("with_casting info system 15 --sudo_mode true")
 
       expect(JSON.parse(output.chomp)).to eq(
-        {"args" => ["15"], "lines" => 15, "sudo_mode" => true, "type" => "system"}
+        {"lines" => 15, "sudo_mode" => true, "type" => "system"}
       )
     end
 
@@ -62,7 +62,7 @@ RSpec.describe "arguments casting" do
       output, _ = Open3.capture3("with_casting tags foo baz")
 
       expect(JSON.parse(output.chomp)).to eq(
-        {"tags" => ["FOO", "BAZ"], "args" => ["foo", "baz"]}
+        {"tags" => ["FOO", "BAZ"]}
       )
     end
 

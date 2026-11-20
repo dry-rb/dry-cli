@@ -50,6 +50,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - A required array argument given no values is now an error (`Error: missing required argument FILES`). Before, the command ran with an empty array. (@timriley)
 - An optional array argument now gets its `default:` when the arguments before it are given. Before, `my-cli test` gave `dirs: []` for `argument :dirs, type: :array, default: ["lib"]`, and the default was only used when no arguments were given at all. (@timriley)
+- `args` now holds only the values left over after the declared arguments. Before, it also held the values given to optional arguments. For example, with `argument :src, required: true` and `argument :dest`, running `my-cli a b c` gave `args: ["b", "c"]`; now it gives `args: ["c"]`. An optional array argument now takes all the remaining values and leaves `args` empty, as a required one already did. (@timriley in #187)
 
 ### Security
 
