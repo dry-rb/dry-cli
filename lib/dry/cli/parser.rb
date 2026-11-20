@@ -10,6 +10,15 @@ module Dry
     # @since 0.1.0
     # @api private
     module Parser
+      # Whether OptionParser's `require_exact` works correctly.
+      #
+      # Before optparse 0.5.0 (which ships with Ruby 3.4), `require_exact` also rejects exact
+      # options given with a value (`--token=x`) or negated (`--no-verbose`). On those versions, we
+      # accept abbreviations instead.
+      #
+      # @api private
+      EXACT_OPTIONS = Gem::Version.new(OptionParser::Version) >= Gem::Version.new("0.5.0")
+
       # @since 0.1.0
       # @api private
       #
@@ -20,7 +29,7 @@ module Dry
         OptionParser.new do |opts|
           # Don't accept abbreviations like `--verb` for `--verbose`. Adding an option could make an
           # abbreviation ambiguous, and break scripts that rely on it.
-          opts.require_exact = true
+          opts.require_exact = true if EXACT_OPTIONS
 
           command.options.each do |option|
             opts.on(*option.parser_options) do |value|
@@ -83,6 +92,9 @@ module Dry
           "option #{flag} doesn't take a value"
         when ::OptionParser::InvalidArgument
           %(invalid value "#{value}" for #{flag})
+        when ::OptionParser::AmbiguousOption
+          # Only raised when we accept abbreviations (see {EXACT_OPTIONS})
+          "ambiguous option #{flag}"
         else
           exception.message
         end

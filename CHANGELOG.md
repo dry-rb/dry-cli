@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- [BREAKING] Abbreviated options are no longer accepted. Before, `--verb` ran as `--verbose` if no other option started with `--verb`. Now it is an unknown option. This stops a new option (e.g. `--version-check`) from breaking a script that used an abbreviation. (@timriley in #185)
+- [BREAKING] Abbreviated options are no longer accepted. Before, `--verb` ran as `--verbose` if no other option started with `--verb`. Now it is an unknown option. This stops a new option (e.g. `--version-check`) from breaking a script that used an abbreviation. This needs optparse 0.5.0 or later, which ships with Ruby 3.4. On Ruby 3.3 with its default optparse, abbreviations are still accepted. (@timriley in #185)
 - Error messages for invalid input all use one format. Each issue gets its own `Error:` line that says what's wrong. This is followed by the usage line (now without quotes) and a hint for where to get help. The CLI still prints to stderr and exits with 1. (@timriley in #185)
 
     ```

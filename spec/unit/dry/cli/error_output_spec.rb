@@ -94,11 +94,17 @@ RSpec.describe "Error output" do
     expect(stderr.string).to eq with_deploy_usage("Error: unknown option --nope")
   end
 
-  it "does not accept abbreviated options" do
+  it "does not accept abbreviated options", if: Dry::CLI::Parser::EXACT_OPTIONS do
     call_cli("deploy", "a", "b", "--token=x", "--verb")
 
     expect(stderr.string).to eq with_deploy_usage("Error: unknown option --verb")
     expect(stdout.string).to eq ""
+  end
+
+  it "names an ambiguous abbreviated option, before optparse 0.5", unless: Dry::CLI::Parser::EXACT_OPTIONS do
+    call_cli("deploy", "a", "b", "--token=x", "--ver")
+
+    expect(stderr.string).to eq with_deploy_usage("Error: ambiguous option --ver")
   end
 
   it "lists the accepted values for an invalid option value" do

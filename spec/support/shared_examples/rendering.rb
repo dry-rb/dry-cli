@@ -6,7 +6,7 @@ RSpec.shared_examples "Rendering" do |cli|
   let(:cmd) { File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME)) }
 
   it "prints required params" do
-    output = capture_output { cli.call }
+    output = capture_output { cli.call(arguments: []) }
     expected = <<~DESC
       Commands:
         #{cmd} assets [SUBCOMMAND]
@@ -103,7 +103,7 @@ RSpec.shared_examples "Rendering" do |cli|
   end
 
   it "prints first level" do
-    output = capture_output { cli.call }
+    output = capture_output { cli.call(arguments: []) }
 
     expected = <<~DESC
       Commands:
