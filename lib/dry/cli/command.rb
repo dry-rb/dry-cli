@@ -287,8 +287,10 @@ module Dry
       #   #   Hello, Luca
       #
       #   # $ foo hello
-      #   #   ERROR: "foo hello" was called with no arguments
-      #   #   Usage: "foo hello NAME"
+      #   #   Error: missing required argument NAME
+      #   #
+      #   #   Usage: foo hello NAME
+      #   #   Run "foo hello --help" for more information.
       #
       # @example Multiple arguments
       #   require "dry/cli"
@@ -308,8 +310,10 @@ module Dry
       #   #   Generating action: home for app: web
       #
       #   # $ foo generate action
-      #   #   ERROR: "foo generate action" was called with no arguments
-      #   #   Usage: "foo generate action APP ACTION"
+      #   #   Error: missing required arguments APP, ACTION
+      #   #
+      #   #   Usage: foo generate action APP ACTION
+      #   #   Run "foo generate action --help" for more information.
       #
       # @example Description
       #   require "dry/cli"
@@ -422,7 +426,10 @@ module Dry
       #   # starting console (engine: pry)
       #
       #   # $ foo console --engine=foo
-      #   # ERROR: Invalid param provided
+      #   # Error: invalid value "foo" for --engine; accepted values: irb, pry, ripl
+      #   #
+      #   # Usage: foo console
+      #   # Run "foo console --help" for more information.
       #
       # @example Description
       #   require "dry/cli"
@@ -506,8 +513,10 @@ module Dry
       #   # deploying to production
       #
       #   # $ foo deploy
-      #   # ERROR: "foo deploy" is missing required option --env
-      #   # Usage: "foo deploy --env=VALUE"
+      #   # Error: missing required option --env
+      #   #
+      #   # Usage: foo deploy --env=VALUE
+      #   # Run "foo deploy --help" for more information.
       #
       #   # $ foo deploy --help
       #   # # ...

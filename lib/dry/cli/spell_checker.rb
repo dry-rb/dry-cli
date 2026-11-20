@@ -7,29 +7,31 @@ module Dry
   class CLI
     # Command(s) usage
     #
-    # @since 1.1.1
     # @api private
     module SpellChecker
-      # @since 1.1.1
-      # @api private
+      # Returns a message for an unknown command, with a suggestion if there's a similar command,
+      # such as:
+      #
+      #   unknown command "serve". Did you mean "foo server"?
+      #
+      # Returns nil when the first unknown argument is an option, not a command name.
       def self.call(result, arguments)
-        commands = result.children.keys
         cmd = cmd_to_spell(arguments, result.names)
+        return if ignore?(cmd)
 
-        suggestions = DidYouMean::SpellChecker.new(dictionary: commands).correct(cmd.first)
-        if suggestions.any?
-          "I don't know how to '#{cmd.join(" ")}'. Did you mean: '#{suggestions.first}' ?"
-        end
+        message = %(unknown command "#{cmd.first}")
+
+        suggestion = DidYouMean::SpellChecker.new(dictionary: result.children.keys).correct(cmd.first).first
+        message += %(. Did you mean "#{ProgramName.call([result.names, suggestion])}"?) if suggestion
+
+        message
       end
 
-      # @since 1.1.1
-      # @api private
+      # Returns the arguments after the names of the commands that were found.
       def self.cmd_to_spell(arguments, result_names)
-        arguments - result_names
+        arguments.drop(result_names.length)
       end
 
-      # @since 1.1.1
-      # @api private
       def self.ignore?(cmd)
         cmd.empty? || cmd.first.start_with?("-")
       end

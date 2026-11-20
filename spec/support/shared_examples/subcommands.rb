@@ -10,8 +10,10 @@ RSpec.shared_examples "Subcommands" do |cli|
   it "calls subcommand" do
     error = capture_error { cli.call(arguments: %w[generate model]) }
     expected = <<~DESC
-      ERROR: "#{cmd} generate model" was called with no arguments
-      Usage: "#{cmd} generate model MODEL"
+      Error: missing required argument MODEL
+
+      Usage: #{cmd} generate model MODEL
+      Run "#{cmd} generate model --help" for more information.
     DESC
 
     expect(error).to eq(expected)
@@ -21,8 +23,10 @@ RSpec.shared_examples "Subcommands" do |cli|
     it "without params" do
       error = capture_error { cli.call(arguments: %w[generate model]) }
       expected = <<~DESC
-        ERROR: "#{cmd} generate model" was called with no arguments
-        Usage: "#{cmd} generate model MODEL"
+        Error: missing required argument MODEL
+
+        Usage: #{cmd} generate model MODEL
+        Run "#{cmd} generate model --help" for more information.
       DESC
 
       expect(error).to eq(expected)
@@ -137,8 +141,10 @@ RSpec.shared_examples "Subcommands" do |cli|
       it "an error is displayed if there aren't required params" do
         error = capture_error { cli.call(arguments: %w[destroy action]) }
         expected = <<~DESC
-          ERROR: "#{cmd} destroy action" was called with no arguments
-          Usage: "#{cmd} destroy action APP ACTION"
+          Error: missing required arguments APP, ACTION
+
+          Usage: #{cmd} destroy action APP ACTION
+          Run "#{cmd} destroy action --help" for more information.
         DESC
 
         expect(error).to eq(expected)
@@ -147,8 +153,10 @@ RSpec.shared_examples "Subcommands" do |cli|
       it "an error is displayed if there are some required params" do
         error = capture_error { cli.call(arguments: %w[destroy action web]) }
         expected = <<~DESC
-          ERROR: "#{cmd} destroy action" was called with arguments [\"web\"]
-          Usage: "#{cmd} destroy action APP ACTION"
+          Error: missing required argument ACTION
+
+          Usage: #{cmd} destroy action APP ACTION
+          Run "#{cmd} destroy action --help" for more information.
         DESC
 
         expect(error).to eq(expected)
@@ -200,8 +208,10 @@ RSpec.shared_examples "Subcommands" do |cli|
       it "without params" do
         error = capture_error { cli.call(arguments: %w[root-command sub-command]) }
         expected = <<~DESC
-          ERROR: "rspec root-command sub-command" was called with no arguments
-          Usage: "rspec root-command sub-command ROOT_COMMAND_SUB_COMMAND_ARGUMENT"
+          Error: missing required argument ROOT_COMMAND_SUB_COMMAND_ARGUMENT
+
+          Usage: rspec root-command sub-command ROOT_COMMAND_SUB_COMMAND_ARGUMENT
+          Run "rspec root-command sub-command --help" for more information.
         DESC
 
         expect(error).to eq(expected)

@@ -63,45 +63,74 @@ module Dry
       end
 
       def message
-        "ERROR: invalid color #{@value.inspect}; expected #{@expected}"
+        "invalid color #{@value.inspect}; expected #{@expected}"
       end
     end
 
+    # Raised when the user gives a value that isn't among an option's or argument's accepted
+    # `values:`.
+    #
     # @since 1.4.0
     class ValueError < Error
-      attr_reader :value, :argument
+      # @return [String, Array<String>, nil] the invalid value, or the invalid values given to an
+      #   array option or argument
+      attr_reader :value
+
+      # @return [Dry::CLI::Option, Dry::CLI::Argument, nil] the option or argument that was given
+      #   the value
+      attr_reader :argument
 
       def initialize(value: nil, argument: nil)
         @value = value
         @argument = argument
-        super
+        super()
       end
 
+      # Returns the message for the user, such as:
+      #
+      #   invalid value "slow" for --mode; accepted values: fast, safe
+      #
+      # The CLI prints it after an `Error:` label.
       def message
-        if @value.nil? && @argument
-          "ERROR: \"#{@argument.name}\" is required"
-        elsif @argument
-          "ERROR: invalid argument \"#{@value}\" for \"#{@argument.name}\"; " \
-            "accepted values: #{@argument.values_description}"
-        else
-          "ERROR: invalid argument \"#{@value}\""
-        end
+        return "missing required #{@argument.kind} #{@argument.display_name}" if @value.nil? && @argument
+
+        values = Array(@value)
+        msg = "#{values.one? ? "invalid value" : "invalid values"} #{values.map { %("#{_1}") }.join(", ")}"
+        msg += " for #{@argument.display_name}" if @argument
+        msg += "; accepted values: #{@argument.values_description}" if @argument&.values
+        msg
       end
     end
 
-    # @since NEXT
+    # Raised when an option's or argument's `cast:` raises an error for a value the user gave.
+    #
+    # @since 2.0.0
     class CastError < Error
-      def initialize(arg_name:, original_exception: nil)
-        super
-        @arg_name = arg_name
+      # @return [String] the value that could not be cast
+      attr_reader :value
+
+      # @return [Dry::CLI::Option, Dry::CLI::Argument] the option or argument that was given the
+      #   value
+      attr_reader :argument
+
+      # @return [Exception, nil] the error raised by the `cast:`
+      attr_reader :original_exception
+
+      def initialize(value:, argument:, original_exception: nil)
+        @value = value
+        @argument = argument
         @original_exception = original_exception
+        super()
       end
 
+      # Returns the message for the user, such as:
+      #
+      #   invalid value "abc" for --port: invalid value for Integer(): "abc"
+      #
+      # The CLI prints it after an `Error:` label.
       def message
-        msg = "ERROR when casting #{@arg_name}"
-        if @original_exception
-          msg += ": #{@original_exception.message}."
-        end
+        msg = %(invalid value "#{@value}" for #{@argument.display_name})
+        msg += ": #{@original_exception.message}" if @original_exception
         msg
       end
     end

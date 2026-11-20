@@ -10,6 +10,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- [BREAKING] Abbreviated options are no longer accepted. Before, `--verb` ran as `--verbose` if no other option started with `--verb`. Now it is an unknown option. This stops a new option (e.g. `--version-check`) from breaking a script that used an abbreviation. This needs optparse 0.5.0 or later, which ships with Ruby 3.4. On Ruby 3.3 with its default optparse, abbreviations are still accepted. (@timriley in #185)
+- Error messages for invalid input all use one format. Each issue gets its own `Error:` line that says what's wrong. This is followed by the usage line (now without quotes) and a hint for where to get help. The CLI still prints to stderr and exits with 1. (@timriley in #185)
+
+    ```
+    $ my-cli copy a --token=x --mode=slow
+    Error: invalid value "slow" for --mode; accepted values: fast, safe
+
+    Usage: my-cli copy SRC DEST --token=VALUE
+    Run "my-cli copy --help" for more information.
+    ```
+
+    Options are named by their flag (`--mode`), and arguments by their name in the usage line (`DEST`). Some examples of the new messages:
+
+    | Input | Before | Now |
+    |---|---|---|
+    | `copy a --token=x` | `ERROR: "my-cli copy" was called with arguments ["a"]` | `Error: missing required argument DEST` |
+    | `copy a b --token` | `ERROR: "my-cli copy" was called with missing argument "--token"` | `Error: option --token needs a value` |
+    | `copy a b --verbose=yes` | `ERROR: "my-cli copy" was called with needless argument "--verbose=yes"` | `Error: option --verbose doesn't take a value` |
+    | `copy a b --nope` | `ERROR: "my-cli copy" was called with invalid option "--nope"` | `Error: unknown option --nope` |
+    | `copy a b --mode=slow` | `ERROR: "my-cli copy" was called with invalid argument "--mode=slow"` | `Error: invalid value "slow" for --mode; accepted values: fast, safe` |
+    | `copy a b --tags=a,c` | `ERROR: invalid argument "["a", "c"]" for "tags"; accepted values: a, b` | `Error: invalid value "c" for --tags; accepted values: a, b` |
+    | `copy a b --port=abc` | `ERROR when casting port: invalid value for Integer(): "abc".` | `Error: invalid value "abc" for --port: invalid value for Integer(): "abc"` |
+    | `db rollback 4` | `ERROR: invalid argument "4" for "steps"; accepted values: 1, 2, 3` | `Error: invalid value "4" for STEPS; accepted values: 1, 2, 3` |
+    | `serve` | `I don't know how to 'serve'. Did you mean: 'server' ?` | `Error: unknown command "serve". Did you mean "my-cli server"?` |
+
+    The `Error:` label is bold red when stderr is a terminal. It is plain text when stderr is a file or a pipe, or when `NO_COLOR` is set.
+
+    If your tests match on error text, you will need to update them.
+- Running a prefix with no command of its own (such as `my-cli db`, when only `db migrate` and `db rollback` are registered), or running the CLI with no arguments, lists the commands on stdout and exits with 0. Before, it printed them to stderr and exited with 1. Running a namespace now also lists its commands on stdout, not stderr. (@timriley in #185)
+
 ### Deprecated
 
 ### Removed

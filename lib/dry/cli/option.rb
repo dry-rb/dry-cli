@@ -73,6 +73,16 @@ module Dry
         false
       end
 
+      # Returns the name to show the user in error messages, such as `--mode`.
+      def display_name
+        "--#{Inflector.dasherize(name)}"
+      end
+
+      # Returns the kind of input this is, for error messages: "option" or "argument".
+      def kind
+        argument? ? "argument" : "option"
+      end
+
       # The subset of `#options` that must match for two declarations of the same option to be
       # interchangeable, normalized for comparison.
       #
@@ -93,7 +103,6 @@ module Dry
         compatibility_options.reject { |name, value| theirs[name] == value }.keys
       end
 
-      # rubocop:disable Metrics/PerceivedComplexity
       def parser_options
         dasherized_name = Inflector.dasherize(name)
         parser_options = []
@@ -107,20 +116,14 @@ module Dry
           parser_options << "--#{dasherized_name} #{name}"
         end
 
-        if array?
-          # Array options can't also give `values` to OptionParser. This would match against the
-          # values array and return a single string member, skipping the `Array` conversion itself.
-          # {Parser} validates their values instead.
-          parser_options << Array
-        elsif values
-          parser_options << values
-        end
+        # Don't give `values` to OptionParser. {Parser} checks them instead, so that it can name
+        # the accepted values in its error message, as it does for arguments.
+        parser_options << Array if array?
 
         parser_options.unshift(*alias_names) if aliases.any?
         parser_options << desc if desc
         parser_options
       end
-      # rubocop:enable Metrics/PerceivedComplexity
 
       def alias_names
         aliases
@@ -131,15 +134,14 @@ module Dry
           .map { |name| boolean? || flag? ? name : "#{name} VALUE" }
       end
 
-      def valid_value?(value)
-        return true if value.nil? && !required?
-        return true if values.nil?
+      # Returns the given values that are not among the accepted `values`.
+      #
+      # Returns an empty array when there are no `values` to check against, or when no value was
+      # given (a missing required value is reported separately).
+      def invalid_values(value)
+        return [] if value.nil? || values.nil?
 
-        if array?
-          value.all? { accepted_value?(_1) }
-        else
-          accepted_value?(value)
-        end
+        Array(value).reject { accepted_value?(_1) }
       end
 
       def cast(value)
@@ -161,7 +163,7 @@ module Dry
       def cast_single(value)
         cast_callable.call(value)
       rescue StandardError => exception
-        raise CastError.new(arg_name: name, original_exception: exception)
+        raise CastError.new(value:, argument: self, original_exception: exception)
       end
     end
 
@@ -181,6 +183,12 @@ module Dry
 
       def argument?
         true
+      end
+
+      # Returns the name to show the user in error messages, such as `DEST`. This matches the name
+      # in the usage line.
+      def display_name
+        description_name.to_s
       end
     end
   end

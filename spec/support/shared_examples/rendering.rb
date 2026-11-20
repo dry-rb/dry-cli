@@ -6,7 +6,7 @@ RSpec.shared_examples "Rendering" do |cli|
   let(:cmd) { File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME)) }
 
   it "prints required params" do
-    error = capture_error { cli.call }
+    output = capture_output { cli.call(arguments: []) }
     expected = <<~DESC
       Commands:
         #{cmd} assets [SUBCOMMAND]
@@ -32,11 +32,11 @@ RSpec.shared_examples "Rendering" do |cli|
         #{cmd} with-initializer
     DESC
 
-    expect(error).to eq(expected)
+    expect(output).to eq(expected)
   end
 
   it "prints required params with labels" do
-    error = capture_error { cli.call(arguments: ["destroy"]) }
+    output = capture_output { cli.call(arguments: ["destroy"]) }
 
     expected = <<~DESC
       Commands:
@@ -47,13 +47,15 @@ RSpec.shared_examples "Rendering" do |cli|
         #{cmd} destroy model MODEL                          # Destroy a model
     DESC
 
-    expect(error).to eq(expected)
+    expect(output).to eq(expected)
   end
 
   it "prints available commands for unknown subcommand" do
     error = capture_error { cli.call(arguments: %w[generate unknown]) }
 
     expected = <<~DESC
+      Error: unknown command "unknown"
+
       Commands:
         #{cmd} generate action APP ACTION                     # Generate an action for app
         #{cmd} generate app APP                               # Generate an app
@@ -71,6 +73,8 @@ RSpec.shared_examples "Rendering" do |cli|
     error = capture_error { cli.call(arguments: ["unknown"]) }
 
     expected = <<~DESC
+      Error: unknown command "unknown"
+
       Commands:
         #{cmd} assets [SUBCOMMAND]
         #{cmd} callbacks DIR                                           # Command with callbacks
@@ -99,7 +103,7 @@ RSpec.shared_examples "Rendering" do |cli|
   end
 
   it "prints first level" do
-    error = capture_error { cli.call }
+    output = capture_output { cli.call(arguments: []) }
 
     expected = <<~DESC
       Commands:
@@ -126,11 +130,11 @@ RSpec.shared_examples "Rendering" do |cli|
         #{cmd} with-initializer
     DESC
 
-    expect(error).to eq(expected)
+    expect(output).to eq(expected)
   end
 
   it "prints subcommand's commands" do
-    error = capture_error { cli.call(arguments: ["generate"]) }
+    output = capture_output { cli.call(arguments: ["generate"]) }
 
     expected = <<~DESC
       Commands:
@@ -143,13 +147,15 @@ RSpec.shared_examples "Rendering" do |cli|
         #{cmd} generate webpack                               # Generate webpack configuration
     DESC
 
-    expect(error).to eq(expected)
+    expect(output).to eq(expected)
   end
 
   it "prints subcommand's subcommand" do
     error = capture_error { cli.call(arguments: %w[generate application]) }
 
     expected = <<~DESC
+      Error: unknown command "application"
+
       Commands:
         #{cmd} generate action APP ACTION                     # Generate an action for app
         #{cmd} generate app APP                               # Generate an app

@@ -7,7 +7,7 @@ RSpec.describe "Spell checker" do
     _, stderr, = Open3.capture3("foo routs")
 
     expected = <<~DESC
-      I don't know how to 'routs'. Did you mean: 'routes' ?
+      Error: unknown command "routs". Did you mean "foo routes"?
 
       Commands:
         foo assets [SUBCOMMAND]
@@ -36,7 +36,7 @@ RSpec.describe "Spell checker" do
     _, stderr, = Open3.capture3("foo sub comand")
 
     expected = <<~DESC
-      I don't know how to 'comand'. Did you mean: 'command' ?
+      Error: unknown command "comand". Did you mean "foo sub command"?
 
       Commands:
         foo sub command         # Override a subcommand

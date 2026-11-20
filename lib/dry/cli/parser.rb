@@ -10,17 +10,30 @@ module Dry
     # @since 0.1.0
     # @api private
     module Parser
+      # Whether OptionParser's `require_exact` works correctly.
+      #
+      # Before optparse 0.5.0 (which ships with Ruby 3.4), `require_exact` also rejects exact
+      # options given with a value (`--token=x`) or negated (`--no-verbose`). On those versions, we
+      # accept abbreviations instead.
+      #
+      # @api private
+      EXACT_OPTIONS = Gem::Version.new(OptionParser::Version) >= Gem::Version.new("0.5.0")
+
       # @since 0.1.0
       # @api private
       #
       # rubocop:disable Metrics/AbcSize
-      def self.call(command, arguments, prog_name)
+      def self.call(command, arguments)
         parsed_options = {}
 
         OptionParser.new do |opts|
+          # Don't accept abbreviations like `--verb` for `--verbose`. Adding an option could make an
+          # abbreviation ambiguous, and break scripts that rely on it.
+          opts.require_exact = true if EXACT_OPTIONS
+
           command.options.each do |option|
             opts.on(*option.parser_options) do |value|
-              raise ValueError.new(value: value, argument: option) unless option.valid_value?(value)
+              check_values(option, value)
 
               option_name = option.name.to_sym
               if option.array?
@@ -41,21 +54,57 @@ module Dry
           end
         end.parse!(arguments)
 
-        parse_required_params(command, arguments, prog_name, parsed_options)
+        parse_required_params(command, arguments, parsed_options)
       rescue ::OptionParser::ParseError => exception
-        Result.failure("ERROR: \"#{prog_name}\" was called with #{exception.reason} \"#{exception.args.join(" ")}\"")
-      rescue ValueError => exception
-        Result.failure(exception.message)
-      rescue CastError => exception
+        Result.failure(option_parser_error_message(exception))
+      rescue ValueError, CastError => exception
         Result.failure(exception.message)
       end
       # rubocop:enable Metrics/AbcSize
+
+      # Raises a {ValueError} naming the values that aren't among the accepted `values:` of the
+      # given option or argument, if any.
+      #
+      # @api private
+      def self.check_values(option, value)
+        invalid_values = option.invalid_values(value)
+        return if invalid_values.empty?
+
+        raise ValueError.new(value: option.array? ? invalid_values : invalid_values.first, argument: option)
+      end
+
+      # Returns a message for an error from OptionParser, in our own words.
+      #
+      # The exception's first arg is the option as the user typed it, such as `--token` or
+      # `--verbose=yes`.
+      #
+      # @api private
+      def self.option_parser_error_message(exception)
+        flag, value = exception.args.first.to_s.split("=", 2)
+        value = exception.args[1] if value.nil?
+
+        case exception
+        when ::OptionParser::InvalidOption
+          "unknown option #{flag}"
+        when ::OptionParser::MissingArgument
+          "option #{flag} needs a value"
+        when ::OptionParser::NeedlessArgument
+          "option #{flag} doesn't take a value"
+        when ::OptionParser::InvalidArgument
+          %(invalid value "#{value}" for #{flag})
+        when ::OptionParser::AmbiguousOption
+          # Only raised when we accept abbreviations (see {EXACT_OPTIONS})
+          "ambiguous option #{flag}"
+        else
+          exception.message
+        end
+      end
 
       # @since 0.1.0
       # @api private
       #
       # rubocop:disable Metrics/AbcSize
-      def self.parse_required_params(command, arguments, prog_name, parsed_options)
+      def self.parse_required_params(command, arguments, parsed_options)
         parsed_options_with_defaults = command.default_params.merge(parsed_options)
         parsed_params = match_arguments(command.arguments, arguments, parsed_options_with_defaults)
         parsed_required_params = match_arguments(command.required_arguments, arguments, parsed_options_with_defaults)
@@ -66,9 +115,7 @@ module Dry
         args = unused_arguments(command, arguments)
 
         if missing_arguments.any? || missing_options.any?
-          return missing_params_failure(
-            command, prog_name, parsed_required_params, missing_arguments, missing_options
-          )
+          return missing_params_failure(missing_arguments, missing_options)
         end
 
         parsed_params.reject! { |_key, value| value.nil? }
@@ -78,6 +125,10 @@ module Dry
       end
       # rubocop:enable Metrics/AbcSize
 
+      # Returns the short usage line printed after an input error, such as:
+      #
+      #   Usage: foo copy SRC DEST --token=VALUE
+      #
       # @api private
       def self.short_usage(command, prog_name)
         usage = [
@@ -87,41 +138,25 @@ module Dry
         ].join(" ")
         usage += " | #{prog_name} SUBCOMMAND" if command.subcommands.any?
 
-        "Usage: \"#{usage}\""
+        "Usage: #{usage}"
       end
 
+      # Returns a failure with one message for the missing arguments and one for the missing
+      # options, such as:
+      #
+      #   missing required arguments SRC, DEST
+      #   missing required option --token
+      #
       # @api private
-      def self.missing_params_failure(command, prog_name, parsed_required_params, missing_arguments, missing_options)
-        lines = []
+      def self.missing_params_failure(missing_arguments, missing_options)
+        messages = [missing_arguments, missing_options].reject(&:empty?).map { |params|
+          kind = params.first.kind
+          label = params.one? ? "required #{kind}" : "required #{kind}s"
 
-        if missing_arguments.any?
-          # Drop nils as well as empty arrays; an array argument that consumed nothing was not
-          # given, so it shouldn't be listed among the arguments that were.
-          parsed_required_params_values =
-            parsed_required_params.values.compact.reject { |v| v.is_a?(Array) && v.empty? }
+          "missing #{label} #{params.map(&:display_name).join(", ")}"
+        }
 
-          lines <<
-            if parsed_required_params_values.empty?
-              "ERROR: \"#{prog_name}\" was called with no arguments"
-            else
-              "ERROR: \"#{prog_name}\" was called with arguments #{parsed_required_params_values}"
-            end
-          lines << "Missing #{missing_options_label(missing_options)}" if missing_options.any?
-        else
-          lines << "ERROR: \"#{prog_name}\" is missing #{missing_options_label(missing_options, separator: " ")}"
-        end
-
-        lines << short_usage(command, prog_name)
-
-        Result.failure(lines.join("\n"))
-      end
-
-      # @api private
-      def self.missing_options_label(options, separator: ": ")
-        label = options.one? ? "required option" : "required options"
-        names = options.map { |option| "--#{Inflector.dasherize(option.name)}" }
-
-        "#{label}#{separator}#{names.join(", ")}"
+        Result.failure(*messages)
       end
 
       # Returns the values given after the required arguments, which are passed to the command as
@@ -136,7 +171,6 @@ module Dry
         arguments.drop(command.required_arguments.length)
       end
 
-      # rubocop:disable Metrics/PerceivedComplexity
       def self.match_arguments(command_arguments, arguments, default_values)
         result = {}
 
@@ -150,7 +184,7 @@ module Dry
               arguments.at(index) || default_values[cmd_arg.name]
             end
 
-          raise ValueError.new(value: value, argument: cmd_arg) unless cmd_arg.valid_value?(value)
+          check_values(cmd_arg, value)
 
           result[cmd_arg.name] = cmd_arg.cast(value)
 
@@ -159,7 +193,6 @@ module Dry
 
         result
       end
-      # rubocop:enable Metrics/PerceivedComplexity
 
       # @since 0.1.0
       # @api private
@@ -176,25 +209,27 @@ module Dry
           new(arguments: arguments)
         end
 
+        # Returns a failure with one or more messages for the user. Each message says what's wrong,
+        # with no `Error:` label.
+        #
         # @since 0.1.0
         # @api private
-        def self.failure(error = "Error: Invalid param provided")
-          new(error: error)
+        def self.failure(*errors)
+          new(errors:)
         end
 
         # @since 0.1.0
         # @api private
         attr_reader :arguments
 
-        # @since 0.1.0
         # @api private
-        attr_reader :error
+        attr_reader :errors
 
         # @since 0.1.0
         # @api private
-        def initialize(arguments: {}, error: nil, help: false, long_help: false)
+        def initialize(arguments: {}, errors: [], help: false, long_help: false)
           @arguments = arguments
-          @error     = error
+          @errors    = errors
           @help      = help
           @long_help = long_help
         end
@@ -202,7 +237,7 @@ module Dry
         # @since 0.1.0
         # @api private
         def error?
-          !error.nil?
+          errors.any?
         end
 
         # @since 0.1.0
