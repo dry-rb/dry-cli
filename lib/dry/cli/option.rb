@@ -190,6 +190,12 @@ module Dry
       def display_name
         description_name.to_s
       end
+
+      # Returns the name to show in a usage line. Optional arguments are in brackets, such as
+      # `[STEPS]`.
+      def usage_name
+        required? ? display_name : "[#{display_name}]"
+      end
     end
   end
 end

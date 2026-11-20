@@ -21,6 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     Run "my-cli copy --help" for more information.
     ```
 
+    The usage line shows all the arguments, with optional ones in brackets (such as `my-cli db rollback [STEPS]`), and only the required options.
+
     Options are named by their flag (`--mode`), and arguments by their name in the usage line (`DEST`). Some examples of the new messages:
 
     | Input | Before | Now |

@@ -33,7 +33,7 @@ RSpec.describe "arguments casting" do
       _, stderr, = Open3.capture3("with_casting info system --sudo_mode not_false")
       expect(stderr).to eq(
         "Error: invalid value \"not_false\" for --sudo-mode: not_false cannot be coerced to false\n\n" \
-        "Usage: with_casting info TYPE\n" \
+        "Usage: with_casting info TYPE [LINES]\n" \
         "Run \"with_casting info --help\" for more information.\n"
       )
     end

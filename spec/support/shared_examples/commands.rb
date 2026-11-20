@@ -225,7 +225,7 @@ RSpec.shared_examples "Commands" do |cli|
           expect(error).to eq(<<~ERROR)
             Error: invalid value "4" for STEPS; accepted values: 1, 2, 3
 
-            Usage: rspec db rollback
+            Usage: rspec db rollback [STEPS]
             Run "rspec db rollback --help" for more information.
           ERROR
         end
@@ -237,7 +237,7 @@ RSpec.shared_examples "Commands" do |cli|
           expect(error).to eq(<<~ERROR)
             Error: missing required argument MODE
 
-            Usage: rspec db vacuum MODE
+            Usage: rspec db vacuum MODE [PARALLEL]
             Run "rspec db vacuum --help" for more information.
           ERROR
         end

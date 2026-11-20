@@ -10,7 +10,7 @@ RSpec.describe "Single command" do
       _, stderr, = Open3.capture3("baz")
       expect(stderr).to eq(
         "Error: missing required argument MANDATORY_ARG\n\n" \
-        "Usage: #{cmd} MANDATORY_ARG\n" \
+        "Usage: #{cmd} MANDATORY_ARG [OPTIONAL_ARG]\n" \
         "Run \"#{cmd} --help\" for more information.\n"
       )
     end

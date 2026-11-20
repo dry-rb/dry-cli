@@ -138,7 +138,7 @@ RSpec.describe "Error output" do
     expect(stderr.string).to eq <<~ERROR
       Error: invalid value "4" for STEPS; accepted values: 1, 2, 3
 
-      Usage: rspec db rollback
+      Usage: rspec db rollback [STEPS]
       Run "rspec db rollback --help" for more information.
     ERROR
   end

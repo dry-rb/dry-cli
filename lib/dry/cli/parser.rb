@@ -136,13 +136,15 @@ module Dry
 
       # Returns the short usage line printed after an input error, such as:
       #
-      #   Usage: foo copy SRC DEST --token=VALUE
+      #   Usage: foo copy SRC DEST [MODE] --token=VALUE
+      #
+      # It shows all the arguments, with optional ones in brackets, but only the required options.
       #
       # @api private
       def self.short_usage(command, prog_name)
         usage = [
           prog_name,
-          *command.required_arguments.map(&:description_name),
+          *command.arguments_sorted_by_usage_order.map(&:usage_name),
           *command.required_options.map { |option| Banner.option_usage(option) }
         ].join(" ")
         usage += " | #{prog_name} SUBCOMMAND" if command.subcommands.any?

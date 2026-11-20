@@ -111,9 +111,7 @@ module Dry
 
       # @api private
       def self.arguments(command)
-        args = command.arguments_sorted_by_usage_order.map { |a|
-          a.required? ? a.name.to_s.upcase : "[#{a.name.to_s.upcase}]"
-        }
+        args = command.arguments_sorted_by_usage_order.map(&:usage_name)
 
         " #{args.join(" ")}" unless args.empty?
       end
