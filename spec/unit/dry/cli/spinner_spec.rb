@@ -154,6 +154,21 @@ RSpec.describe Dry::CLI::Spinner do
       expect(terminal.string).to include "\r<frame>\e[K"
     end
 
+    it "keeps self as the caller inside a block that takes the DSL" do
+      selves = []
+
+      spinner.run(stream: terminal) do |s|
+        selves << self
+        s.before_tick { |_stream, _data| selves << self }
+        s.after_tick { |_stream| selves << self }
+        s.run { selves << self }
+      end
+      render_ticks
+
+      expect(selves).to all(be(self))
+      expect(selves.size).to eq 4
+    end
+
     it "does not need the DSL to register a worker" do
       expect { spinner.run(stream: terminal) { |_s| } }.to_not raise_error
     end

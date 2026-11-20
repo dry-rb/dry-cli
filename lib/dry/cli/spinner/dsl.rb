@@ -5,6 +5,10 @@ module Dry
     # Block argument yielded to `Spinner.run`. Acts as a pass-through for zero-arity blocks, and provides hooks for
     # per-tick updates for one-arity blocks.
     #
+    # The block is called with the DSL as its argument, not evaluated against it, so `self` inside
+    # the block and its hooks stays the same as outside it. In a command, this means methods like
+    # `puts`, `stderr` and `style` still work inside the hooks and the worker.
+    #
     # @api public
     # @since x.y.z
     class Spinner::DSL
@@ -16,7 +20,7 @@ module Dry
           dsl.run(&block)
         else
           # support per-tick stream output
-          dsl.instance_eval(&block)
+          block.call(dsl)
         end
 
         dsl
