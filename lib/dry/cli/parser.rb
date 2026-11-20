@@ -109,7 +109,7 @@ module Dry
         parsed_params = match_arguments(command.arguments, arguments, parsed_options_with_defaults)
         parsed_required_params = match_arguments(command.required_arguments, arguments, parsed_options_with_defaults)
 
-        missing_arguments = command.required_arguments.select { |param| parsed_required_params[param.name].nil? }
+        missing_arguments = command.required_arguments.select { missing_value?(_1, parsed_required_params[_1.name]) }
         missing_options = command.required_options.select { |option| parsed_options_with_defaults[option.name].nil? }
 
         args = unused_arguments(command, arguments)
@@ -124,6 +124,15 @@ module Dry
         Result.success(parsed_options)
       end
       # rubocop:enable Metrics/AbcSize
+
+      # Returns true if the given value for a required argument means the user didn't give it.
+      #
+      # An array argument gets an empty array when no values are given.
+      #
+      # @api private
+      def self.missing_value?(argument, value)
+        value.nil? || (argument.array? && value.empty?)
+      end
 
       # Returns the short usage line printed after an input error, such as:
       #
@@ -178,8 +187,8 @@ module Dry
           value =
             if cmd_arg.array?
               # An array argument consumes all the remaining arguments, so it's always the last.
-              # The slice is nil when the command declares more arguments than were given.
-              arguments[index..] || default_values[cmd_arg.name] || []
+              given = arguments.drop(index)
+              given.empty? ? default_values[cmd_arg.name] || [] : given
             else
               arguments.at(index) || default_values[cmd_arg.name]
             end
