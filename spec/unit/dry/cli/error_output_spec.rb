@@ -187,6 +187,44 @@ RSpec.describe "Error output" do
     end
   end
 
+  describe "options with no command" do
+    it "names an unknown option given to the CLI" do
+      call_cli("--nope=1")
+
+      expect(stderr.string).to start_with %(Error: unknown option --nope\n\nCommands:\n  rspec db [SUBCOMMAND]\n)
+      expect(stdout.string).to eq ""
+      expect(exit_codes).to eq [1]
+    end
+
+    it "names an unknown option given to a prefix" do
+      call_cli("db", "-x")
+
+      expect(stderr.string).to eq <<~ERROR
+        Error: unknown option -x
+
+        Commands:
+          rspec db rollback [STEPS]
+      ERROR
+      expect(exit_codes).to eq [1]
+    end
+
+    it "lists the commands on stdout for --help" do
+      call_cli("--help")
+
+      expect(stdout.string).to start_with "Commands:\n  rspec db [SUBCOMMAND]\n"
+      expect(stderr.string).to eq ""
+      expect(exit_codes).to eq []
+    end
+
+    it "lists a prefix's commands on stdout for -h" do
+      call_cli("db", "-h")
+
+      expect(stdout.string).to eq "Commands:\n  rspec db rollback [STEPS]\n"
+      expect(stderr.string).to eq ""
+      expect(exit_codes).to eq []
+    end
+  end
+
   describe "a prefix with no command" do
     it "lists its commands on stdout" do
       call_cli("db")

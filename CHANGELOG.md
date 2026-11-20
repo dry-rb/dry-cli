@@ -39,12 +39,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
     If your tests match on error text, you will need to update them.
 - Running a prefix with no command of its own (such as `my-cli db`, when only `db migrate` and `db rollback` are registered), or running the CLI with no arguments, lists the commands on stdout and exits with 0. Before, it printed them to stderr and exited with 1. Running a namespace now also lists its commands on stdout, not stderr. (@timriley in #185)
+- Giving `--help` or `-h` to the CLI or to a prefix (such as `my-cli --help` or `my-cli db -h`) lists the commands on stdout and exits with 0. Before, it printed them to stderr and exited with 1. (@timriley in #186)
+- Giving an unknown option to the CLI or to a prefix (such as `my-cli --nope`) prints `Error: unknown option --nope` before the command list. Before, it printed only the command list. (@timriley in #186)
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- A required array argument given no values is now an error (`Error: missing required argument FILES`). Before, the command ran with an empty array. (@timriley)
+- An optional array argument now gets its `default:` when the arguments before it are given. Before, `my-cli test` gave `dirs: []` for `argument :dirs, type: :array, default: ["lib"]`, and the default was only used when no arguments were given at all. (@timriley)
 
 ### Security
 

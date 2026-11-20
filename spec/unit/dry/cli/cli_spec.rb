@@ -702,5 +702,36 @@ RSpec.describe "CLI" do
 
       expect(output).to eq "dirs=[\"lib\", \"spec\"] task=\"test\"\n"
     end
+
+    it "names the array argument when it gets no values" do
+      stderr = StringIO.new
+      exit_codes = []
+
+      cli.call(arguments: %w[test], stderr:, exit: ->(code) { exit_codes << code })
+
+      expect(stderr.string).to start_with "Error: missing required argument DIRS\n"
+      expect(exit_codes).to eq [1]
+    end
+  end
+
+  context "with an optional array argument with a default" do
+    let(:cli) { Dry.CLI(command_class) }
+
+    let(:command_class) do
+      Class.new(Dry::CLI::Command) do
+        argument :task
+        argument :dirs, type: :array, default: %w[lib]
+
+        def call(task: nil, dirs: nil, **)
+          puts "task=#{task.inspect} dirs=#{dirs.inspect}"
+        end
+      end
+    end
+
+    it "uses the default when the arguments before it are given" do
+      output = capture_output { cli.call(arguments: %w[test]) }
+
+      expect(output).to eq "task=\"test\" dirs=[\"lib\"]\n"
+    end
   end
 end
