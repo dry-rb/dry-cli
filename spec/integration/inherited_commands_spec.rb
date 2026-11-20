@@ -5,7 +5,7 @@ require "open3"
 RSpec.describe "Inherited commands" do
   context "with --help flag" do
     it "includes inherited arguments in help output" do
-      _, stderr, = Open3.capture3("based --help")
+      stdout, stderr, status = Open3.capture3("based --help")
       expected = <<~OUT
         Commands:
           based addons APP                # Lists your add-ons and attachments
@@ -13,7 +13,9 @@ RSpec.describe "Inherited commands" do
           based run APP CMD               # Run a one-off process inside your app
           based subrun APP CMD
       OUT
-      expect(stderr).to eq(expected)
+      expect(stdout).to eq(expected)
+      expect(stderr).to eq ""
+      expect(status.exitstatus).to eq 0
     end
   end
 

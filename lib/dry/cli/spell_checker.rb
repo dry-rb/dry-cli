@@ -9,31 +9,25 @@ module Dry
     #
     # @api private
     module SpellChecker
-      # Returns a message for an unknown command, with a suggestion if there's a similar command,
-      # such as:
+      # Returns a message for the first argument after the names of the commands that were found.
+      #
+      # For a command name, the message has a suggestion if there's a similar command, such as:
       #
       #   unknown command "serve". Did you mean "foo server"?
       #
-      # Returns nil when the first unknown argument is an option, not a command name.
+      # For an option, the message names it as the user typed it, without any value:
+      #
+      #   unknown option --nope
       def self.call(result, arguments)
-        cmd = cmd_to_spell(arguments, result.names)
-        return if ignore?(cmd)
+        name = arguments[result.names.length]
+        return "unknown option #{name.split("=", 2).first}" if name.start_with?("-")
 
-        message = %(unknown command "#{cmd.first}")
+        message = %(unknown command "#{name}")
 
-        suggestion = DidYouMean::SpellChecker.new(dictionary: result.children.keys).correct(cmd.first).first
+        suggestion = DidYouMean::SpellChecker.new(dictionary: result.children.keys).correct(name).first
         message += %(. Did you mean "#{ProgramName.call([result.names, suggestion])}"?) if suggestion
 
         message
-      end
-
-      # Returns the arguments after the names of the commands that were found.
-      def self.cmd_to_spell(arguments, result_names)
-        arguments.drop(result_names.length)
-      end
-
-      def self.ignore?(cmd)
-        cmd.empty? || cmd.first.start_with?("-")
       end
     end
   end

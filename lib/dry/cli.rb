@@ -300,19 +300,26 @@ module Dry
 
     # Lists the commands under the given result.
     #
-    # When no more arguments were given (such as `foo db` for a prefix with no command), this lists
-    # the commands on stdout, as for a namespace. Otherwise, the arguments name an unknown command,
-    # so this prints an error and the commands to stderr, and exits with 1.
+    # When no more arguments were given (such as `foo db` for a prefix with no command), or when
+    # the next one is `--help` or `-h`, this lists the commands on stdout, as for a namespace.
+    # Otherwise, the next argument is an unknown command or option, so this prints an error and the
+    # commands to stderr, and exits with 1.
     #
     # @api private
     def spell_checker(result, arguments)
-      return stdout.puts(Usage.call(result)) if arguments.length == result.names.length
+      next_argument = arguments[result.names.length]
+      return stdout.puts(Usage.call(result)) if next_argument.nil? || HELP_FLAGS.include?(next_argument)
 
-      message = SpellChecker.call(result, arguments)
-      stderr.puts(error_message(message), "") if message
+      stderr.puts(error_message(SpellChecker.call(result, arguments)), "")
       stderr.puts Usage.call(result)
       throw :exit, 1
     end
+
+    # The arguments that ask for help.
+    #
+    # @api private
+    HELP_FLAGS = %w[--help -h].freeze
+    private_constant :HELP_FLAGS
 
     # The label printed before each input error.
     #
